@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário de Atividades - Templo de Umbanda Vovó Maria Conga</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fontes Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        umbanda: {
+                            green: '#0D472B',
+                            lightgreen: '#15673E',
+                            gold: '#C59B27',
+                            goldlight: '#E6C665',
+                            cream: '#FCFAF5',
+                            cardBg: '#FFFFFF',
+                            dark: '#1C2822'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: #ffffff !important; padding: 0 !important; }
+            .print-container { max-width: 100% !important; width: 100% !important; margin: 0 !important; shadow: none !important; border: none !important; }
+            .page-break { page-break-inside: avoid; }
+        }
+
+        /* REFLEXO DE LUZ ANIMADO PASSANDO PELA IMAGEM */
+        @keyframes shineSweep {
+            0% { left: -120%; opacity: 0; }
+            20% { opacity: 0.5; }
+            50% { left: 140%; opacity: 0; }
+            100% { left: 140%; opacity: 0; }
+        }
+
+        .shine-effect {
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.6) 50%,
+                transparent 100%
+            );
+            transform: skewX(-25deg);
+            animation: shineSweep 4s infinite ease-in-out;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-stone-100 font-sans text-stone-800 antialiased min-h-screen py-6 px-3 sm:px-6">
+
+    <!-- BARRA DE AÇÕES (NO-PRINT) -->
+    <div class="max-w-5xl mx-auto mb-6 flex flex-wrap justify-between items-center gap-4 no-print bg-white p-4 rounded-xl shadow-md border border-stone-200">
+        <div class="flex items-center gap-2">
+            <span class="inline-block w-3 h-3 rounded-full bg-umbanda-green"></span>
+            <h1 class="font-semibold text-stone-700">Painel do Calendário - Junho 2026</h1>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button onclick="window.print()" class="bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-medium px-4 py-2 rounded-lg transition duration-200 flex items-center gap-2 shadow-sm text-sm">
+                <i class="fa-solid fa-print"></i> Imprimir / Salvar PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- CARTAZ PRINCIPAL -->
+    <div class="print-container max-w-5xl mx-auto bg-umbanda-cream rounded-2xl shadow-xl border border-amber-900/10 overflow-hidden relative">
+        
+        <!-- DETALHE DE BORDA SUPERIOR -->
+        <div class="h-2 bg-gradient-to-r from-umbanda-green via-umbanda-gold to-umbanda-green"></div>
+
+        <!-- CABEÇALHO CARREGANDO O SEU LOGO DO GOOGLE DRIVE -->
+        <header class="pt-8 pb-6 px-6 text-center relative border-b border-amber-900/10">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8 max-w-4xl mx-auto">
+                
+                <!-- CONTAINER DO LOGO ORIGINAL DO GOOGLE DRIVE -->
+                <div class="w-64 h-64 sm:w-80 sm:h-80 relative flex-shrink-0 flex items-center justify-center overflow-hidden rounded-full">
+                    <img id="drive-logo" 
+                         src="https://lh3.googleusercontent.com/d/1y5WQ02UIxoDa6lEu08sofZUiFOde1Tbb" 
+                         alt="Templo de Umbanda Vovó Maria Conga" 
+                         class="w-full h-full object-contain"
+                         onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=1y5WQ02UIxoDa6lEu08sofZUiFOde1Tbb&sz=w1000';">
+                    
+                    <!-- EFEITO DE REFLEXO DE LUZ PASSANDO NO LOGO -->
+                    <div class="shine-effect"></div>
+                </div>
+
+                <!-- TÍTULOS DO TERREIRO -->
+                <div class="text-center md:text-left">
+                    <span class="text-xs sm:text-sm font-bold tracking-widest text-umbanda-gold uppercase block mb-1">Programação Oficial de Atividades</span>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-serif font-extrabold text-umbanda-green leading-tight">Templo de Umbanda<br><span class="text-amber-800">Vovó Maria Conga</span></h2>
+                    <div class="mt-3 inline-flex items-center gap-2 bg-amber-100/90 text-amber-900 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold border border-amber-300/80 shadow-sm">
+                        <i class="fa-solid fa-users text-umbanda-gold"></i> Calendário dos Filhos da Casa
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MÊS E ANO EM DESTAQUE (COMPACTO) -->
+            <div class="mt-4 inline-block bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green text-white px-5 py-1.5 rounded-full shadow-md border border-amber-400/30">
+                <h3 class="text-sm sm:text-base font-serif font-bold tracking-wide flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-calendar-days text-umbanda-goldlight text-xs sm:text-sm"></i>
+                    Junho de 2026
+                </h3>
+            </div>
+        </header>
+
+        <!-- SEÇÃO DO CALENDÁRIO EM GRADE -->
+        <main class="p-4 sm:p-8">
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200/80 p-3 sm:p-6 mb-8">
+                
+                <!-- LEGENDA RÁPIDA -->
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-stone-100 text-xs">
+                    <span class="font-bold text-stone-500 uppercase tracking-wider">Legenda de Eventos:</span>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-600 inline-block"></span> Giras de Esquerda / Caveira</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Mutirão / Limpeza</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span> Oferendas / Consultas</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-600 inline-block"></span> Rituais Xamânicos</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-600 inline-block"></span> Benzimento & Erês</span>
+                    </div>
+                </div>
+
+                <!-- CABEÇALHO DIAS DA SEMANA -->
+                <div class="grid grid-cols-7 gap-1 sm:gap-2 mb-2 text-center font-serif font-bold text-stone-600 text-xs sm:text-sm">
+                    <div class="py-2 bg-red-50 text-red-800 rounded">Dom</div>
+                    <div class="py-2 bg-stone-50 rounded">Seg</div>
+                    <div class="py-2 bg-stone-50 rounded">Ter</div>
+                    <div class="py-2 bg-stone-50 rounded">Qua</div>
+                    <div class="py-2 bg-stone-50 rounded">Qui</div>
+                    <div class="py-2 bg-stone-50 rounded">Sex</div>
+                    <div class="py-2 bg-emerald-50 text-emerald-800 rounded">Sáb</div>
+                </div>
+
+                <!-- DIAS DO MÊS (JUNHO 2026 COMEÇA NA SEGUNDA-FEIRA DIA 1) -->
+                <div class="grid grid-cols-7 gap-1 sm:gap-2 text-xs sm:text-sm">
+                    
+                    <!-- DIA 31 MAIO -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1 bg-stone-50/50 rounded border border-dashed border-stone-200 opacity-40">
+                        <span class="text-stone-400 font-medium">31</span>
+                    </div>
+
+                    <!-- DIA 01 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-red-50/80 rounded-lg border border-red-200 flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-red-900 bg-red-200/80 w-6 h-6 rounded-full flex items-center justify-center text-xs">01</span>
+                            <span class="w-2 h-2 rounded-full bg-red-600"></span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="font-bold text-[10px] sm:text-xs text-red-950 leading-tight">Gira de Esquerda</p>
+                            <span class="text-[9px] sm:text-[10px] text-red-700 block mt-0.5"><i class="fa-regular fa-clock"></i> 17:00h</span>
+                        </div>
+                    </div>
+
+                    <!-- DIA 02 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">02</span>
+                    </div>
+
+                    <!-- DIA 03 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">03</span>
+                    </div>
+
+                    <!-- DIA 04 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">04</span>
+                    </div>
+
+                    <!-- DIA 05 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-amber-50/80 rounded-lg border border-amber-200 flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-amber-900 bg-amber-200/80 w-6 h-6 rounded-full flex items-center justify-center text-xs">05</span>
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="font-bold text-[10px] sm:text-xs text-amber-950 leading-tight">Ajuda & Limpeza</p>
+                            <span class="text-[9px] text-amber-800 block mt-0.5">Terreiro</span>
+                        </div>
+                    </div>
+
+                    <!-- DIA 06 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-emerald-50/80 rounded-lg border border-emerald-200 flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-emerald-900 bg-emerald-200/80 w-6 h-6 rounded-full flex items-center justify-center text-xs">06</span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="font-bold text-[10px] sm:text-xs text-emerald-950 leading-tight">Oferenda Obará</p>
+                            <span class="text-[9px] text-emerald-800 block mt-0.5">Oxossi</span>
+                        </div>
+                    </div>
+
+                    <!-- DIA 07 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-red-50/30 rounded-lg border border-stone-200">
+                        <span class="text-red-400 font-medium">07</span>
+                    </div>
+
+                    <!-- DIA 08 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-emerald-50/80 rounded-lg border border-emerald-200 flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-emerald-900 bg-emerald-200/80 w-6 h-6 rounded-full flex items-center justify-center text-xs">08</span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="font-bold text-[10px] sm:text-xs text-emerald-950 leading-tight">Consulta Jurema</p>
+                            <span class="text-[9px] text-emerald-800 font-semibold block mt-0.5">R$ 70,00</span>
+                        </div>
+                    </div>
+
+                    <!-- DIA 09 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">09</span>
+                    </div>
+
+                    <!-- DIA 10 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">10</span>
+                    </div>
+
+                    <!-- DIA 11 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">11</span>
+                    </div>
+
+                    <!-- DIA 12 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-purple-50/80 rounded-lg border border-purple-200 flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-purple-900 bg-purple-200/80 w-6 h-6 rounded-full flex items-center justify-center text-xs">12</span>
+                            <span class="w-2 h-2 rounded-full bg-purple-600"></span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="font-bold text-[10px] sm:text-xs text-purple-950 leading-tight">Ritual Xamânico</p>
+                            <span class="text-[9px] text-purple-800 block mt-0.5"><i class="fa-regular fa-clock"></i> 13:00h</span>
+                        </div>
+                    </div>
+
+                    <!-- DIA 13 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-purple-50/80 rounded-lg border border-purple-200 flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-purple-900 bg-purple-200/80 w-6 h-6 rounded-full flex items-center justify-center text-xs">13</span>
+                            <span class="w-2 h-2 rounded-full bg-purple-600"></span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="font-bold text-[10px] sm:text-xs text-purple-950 leading-tight">Ritual Xamânico</p>
+                            <span class="text-[9px] text-purple-800 block mt-0.5"><i class="fa-regular fa-clock"></i> 13:00h</span>
+                        </div>
+                    </div>
+
+                    <!-- DIA 14 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-red-50/30 rounded-lg border border-stone-200">
+                        <span class="text-red-400 font-medium">14</span>
+                    </div>
+
+                    <!-- DIA 15 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-red-50/80 rounded-lg border border-red-200 flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-red-900 bg-red-200/80 w-6 h-6 rounded-full flex items-center justify-center text-xs">15</span>
+                            <span class="w-2 h-2 rounded-full bg-red-600"></span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="font-bold text-[10px] sm:text-xs text-red-950 leading-tight">Sr. João Caveira</p>
+                            <span class="text-[9px] text-red-800 font-semibold block mt-0.5">R$ 100,00</span>
+                        </div>
+                    </div>
+
+                    <!-- DIA 16 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">16</span>
+                    </div>
+
+                    <!-- DIA 17 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">17</span>
+                    </div>
+
+                    <!-- DIA 18 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">18</span>
+                    </div>
+
+                    <!-- DIA 19 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">19</span>
+                    </div>
+
+                    <!-- DIA 20 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">20</span>
+                    </div>
+
+                    <!-- DIA 21 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-red-50/30 rounded-lg border border-stone-200">
+                        <span class="text-red-400 font-medium">21</span>
+                    </div>
+
+                    <!-- DIA 22 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">22</span>
+                    </div>
+
+                    <!-- DIA 23 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">23</span>
+                    </div>
+
+                    <!-- DIA 24 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">24</span>
+                    </div>
+
+                    <!-- DIA 25 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">25</span>
+                    </div>
+
+                    <!-- DIA 26 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">26</span>
+                    </div>
+
+                    <!-- DIA 27 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-sky-50/80 rounded-lg border border-sky-300 flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-sky-900 bg-sky-200/80 w-6 h-6 rounded-full flex items-center justify-center text-xs">27</span>
+                            <span class="w-2 h-2 rounded-full bg-sky-600"></span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="font-bold text-[10px] sm:text-xs text-sky-950 leading-tight">Benzimento & Erês</p>
+                            <span class="text-[9px] text-sky-800 block mt-0.5"><i class="fa-regular fa-clock"></i> 10h e 12h</span>
+                        </div>
+                    </div>
+
+                    <!-- DIA 28 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-red-50/30 rounded-lg border border-stone-200">
+                        <span class="text-red-400 font-medium">28</span>
+                    </div>
+
+                    <!-- DIA 29 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-emerald-50/80 rounded-lg border border-emerald-200 flex flex-col justify-between hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-emerald-900 bg-emerald-200/80 w-6 h-6 rounded-full flex items-center justify-center text-xs">29</span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                        </div>
+                        <div class="mt-1">
+                            <p class="font-bold text-[10px] sm:text-xs text-emerald-950 leading-tight">Consulta Jurema</p>
+                            <span class="text-[9px] text-emerald-800 font-semibold block mt-0.5">R$ 70,00</span>
+                        </div>
+                    </div>
+
+                    <!-- DIA 30 -->
+                    <div class="min-h-[60px] sm:min-h-[85px] p-1.5 bg-white rounded-lg border border-stone-200">
+                        <span class="text-stone-500 font-medium">30</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- DETALHAMENTO COMPLETO DAS ATIVIDADES -->
+            <div class="mb-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-full bg-umbanda-green text-white flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <h3 class="text-2xl font-serif font-bold text-umbanda-green">Detalhamento dos Trabalhos e Atividades</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <!-- DIA 01 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-red-100 text-red-800 font-extrabold text-sm px-3 py-1 rounded-md">Dia 01/06 - Segunda</span>
+                            <span class="text-xs bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full"><i class="fa-regular fa-clock"></i> 17:00h</span>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Gira de Esquerda</h4>
+                        <p class="text-xs text-stone-600">Trabalhos com as forças da Esquerda. Favor atentar para a pontualidade e trajes adequados.</p>
+                    </div>
+
+                    <!-- DIA 05 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-amber-500 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-amber-100 text-amber-900 font-extrabold text-sm px-3 py-1 rounded-md">Dia 05/06 - Sexta</span>
+                            <span class="text-xs bg-amber-50 text-amber-800 font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart"></i> Mutirão</span>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Organização e Limpeza do Terreiro</h4>
+                        <p class="text-xs text-stone-600">Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para a Oferenda.</p>
+                    </div>
+
+                    <!-- DIA 06 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-emerald-100 text-emerald-900 font-extrabold text-sm px-3 py-1 rounded-md">Dia 06/06 - Sábado</span>
+                            <span class="text-xs bg-emerald-50 text-emerald-800 font-semibold px-2.5 py-1 rounded-full"><i class="fa-solid fa-tree"></i> Oxossi</span>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Oferenda para Obará de Oxossi</h4>
+                        <p class="text-xs text-stone-600">Aguardem o comunicado interno no grupo referente ao horário e materiais de entrega.</p>
+                    </div>
+
+                    <!-- DIA 08 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-emerald-100 text-emerald-900 font-extrabold text-sm px-3 py-1 rounded-md">Dia 08/06 - Segunda</span>
+                            <span class="text-xs bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-full">R$ 70,00</span>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
+                        <p class="text-xs text-stone-600">Interessados em passar por consulta devem agendar com antecedência diretamente com a <strong>Paula</strong>.</p>
+                    </div>
+
+                    <!-- DIA 12 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-purple-100 text-purple-900 font-extrabold text-sm px-3 py-1 rounded-md">Dia 12/06 - Sexta</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
+                                <span class="text-xs bg-purple-600 text-white font-bold px-2.5 py-1 rounded-full">R$ 180,00</span>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Ritual Xamânico da Mãe Marli</h4>
+                        <p class="text-xs text-stone-600">Trabalho de elevação e cura espiritual com o sagrado xamanismo.</p>
+                    </div>
+
+                    <!-- DIA 13 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-purple-100 text-purple-900 font-extrabold text-sm px-3 py-1 rounded-md">Dia 13/06 - Sábado</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
+                                <span class="text-xs bg-purple-600 text-white font-bold px-2.5 py-1 rounded-full">R$ 180,00</span>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Ritual Xamânico</h4>
+                        <p class="text-xs text-stone-600">Continuação das atividades de firmeza xamânica no terreiro.</p>
+                    </div>
+
+                    <!-- DIA 15 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-red-100 text-red-900 font-extrabold text-sm px-3 py-1 rounded-md">Dia 15/06 - Segunda</span>
+                            <span class="text-xs bg-red-600 text-white font-bold px-2.5 py-1 rounded-full">R$ 100,00</span>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Consulta Particular com Sr. João Caveira</h4>
+                        <p class="text-xs text-stone-600">Agendamento prévio indispensável. Entrar em contato antecipadamente com a <strong>Paula</strong>.</p>
+                    </div>
+
+                    <!-- DIA 27 - PARTE 1 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-sky-500 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-sky-100 text-sky-900 font-extrabold text-sm px-3 py-1 rounded-md">Dia 27/06 - Sábado</span>
+                            <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">GRATUITO</span>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Benzimento e Cura (Pessoas e Animais)</h4>
+                        <p class="text-xs text-stone-600 mb-2">Horário: <strong>10:00h às 12:00h</strong> (Atendimento por ordem de chegada).</p>
+                        <div class="p-2 bg-stone-50 rounded text-[11px] text-stone-600 space-y-1">
+                            <p><i class="fa-solid fa-paw text-amber-700"></i> <strong>Animais:</strong> coleira, guia (corrente), focinheira ou caixa de transporte.</p>
+                            <p><i class="fa-solid fa-location-dot text-red-600"></i> <strong>Entrada/Saída:</strong> Av. Eng. Heitor Antonio Eiras Garcia, 2708.</p>
+                        </div>
+                    </div>
+
+                    <!-- DIA 27 - PARTE 2 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-pink-400 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-pink-100 text-pink-900 font-extrabold text-sm px-3 py-1 rounded-md">Dia 27/06 - Sábado</span>
+                            <span class="text-xs bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full"><i class="fa-regular fa-clock"></i> 12:00h</span>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Gira de Erês</h4>
+                        <p class="text-xs text-stone-600">Cada filho que incorpora deverá levar obrigatoriamente os doces e bebidas que seus Erês consomem.</p>
+                    </div>
+
+                    <!-- DIA 29 -->
+                    <div class="bg-white rounded-xl p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-emerald-100 text-emerald-900 font-extrabold text-sm px-3 py-1 rounded-md">Dia 29/06 - Segunda</span>
+                            <span class="text-xs bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-full">R$ 70,00</span>
+                        </div>
+                        <h4 class="font-bold text-stone-800 text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
+                        <p class="text-xs text-stone-600">Interessados agendar com a <strong>Paula</strong> com antecedência.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- NORMAS DA CASA E INSTAGRAM -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 page-break">
+                
+                <!-- NORMAS DE ENTRADA E CONDUTA -->
+                <div class="lg:col-span-2 bg-gradient-to-br from-umbanda-green to-emerald-950 text-white rounded-xl p-6 shadow-md relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-9xl">
+                        <i class="fa-solid fa-place-of-worship"></i>
+                    </div>
+                    <h4 class="font-serif font-bold text-lg text-umbanda-goldlight mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved"></i> Normas e Horários de Entrada do Terreiro
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div class="bg-white/10 backdrop-blur-sm p-3 rounded-lg border border-white/10">
+                            <span class="text-amber-300 font-bold block mb-1"><i class="fa-solid fa-clock"></i> Dias de Semana</span>
+                            <p class="text-stone-200">A entrada de assistência e filhos é permitida somente até às <strong>20:00h</strong>.</p>
+                        </div>
+
+                        <div class="bg-white/10 backdrop-blur-sm p-3 rounded-lg border border-white/10">
+                            <span class="text-amber-300 font-bold block mb-1"><i class="fa-solid fa-clock"></i> Trabalhos de Sábado</span>
+                            <p class="text-stone-200">A entrada de assistência e filhos é permitida somente até às <strong>17:00h</strong>.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 bg-red-900/40 border border-red-400/30 p-3 rounded-lg text-xs text-stone-200 flex items-start gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-base mt-0.5"></i>
+                        <p><strong>Vestimentas Respeitosas:</strong> Não é permitida a entrada com roupas curtas, transparentes, decotadas ou inadequadas. Atentem-se ao respeito com o solo sagrado.</p>
+                    </div>
+                </div>
+
+                <!-- INSTAGRAM E CONTATO -->
+                <div class="bg-amber-50 rounded-xl p-6 border border-amber-200 flex flex-col justify-between items-center text-center shadow-sm">
+                    <div>
+                        <span class="text-xs font-bold text-amber-800 uppercase tracking-widest block mb-1">Conecte-se Conosco</span>
+                        <h4 class="font-serif font-bold text-stone-800 text-lg mb-2">Nos Siga no Instagram</h4>
+                        <a href="https://instagram.com/TEMPLOVOMARIACONGA" target="_blank" class="inline-flex items-center gap-2 font-bold text-amber-900 hover:text-amber-700 bg-amber-200/70 px-3 py-1.5 rounded-lg text-sm transition mb-4">
+                            <i class="fa-brands fa-instagram text-base text-pink-700"></i> @TEMPLOVOMARIACONGA
+                        </a>
+                    </div>
+
+                    <!-- QR CODE -->
+                    <div class="bg-white p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://instagram.com/TEMPLOVOMARIACONGA&color=0D472B" alt="QR Code Instagram" class="w-24 h-24">
+                        <span class="text-[10px] font-semibold text-stone-500 mt-2">Aponte a câmera para seguir</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <!-- RODAPÉ FINAL -->
+        <footer class="bg-stone-900 text-stone-400 text-center py-4 text-xs border-t border-stone-800 flex flex-col sm:flex-row justify-between items-center px-8 gap-2">
+            <span>© 2026 Templo de Umbanda Vovó Maria Conga - Todos os direitos reservados.</span>
+            <span class="text-stone-500"><i class="fa-solid fa-leaf text-umbanda-gold"></i> Fé, Amor e Caridade</span>
+        </footer>
+
+    </div>
+
+    <script>
+        function toggleFilter(category) {
+            alert('Você pode visualizar e imprimir este calendário diretamente no navegador ou salvar em formato PDF utilizando o botão de impressão.');
+        }
+    </script>
+</body>
+</html>
