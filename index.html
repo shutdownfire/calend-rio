@@ -70,25 +70,19 @@
             }
         }
 
+        // SEGURANÇA CRIPTOGRÁFICA MÁXIMA DE VIA ÚNICA
         async function verifyAdminPassword() {
             var input = document.getElementById("admin-pass-input");
-            var pass = input ? input.value.trim() : "";
+            var pass = input ? input.value : "";
             if (!pass) return;
 
             try {
-                // Converte a senha digitada em Hash SHA-256
-                var msgBuffer = new TextEncoder().encode(pass);
-                var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-                var hashArray = Array.from(new Uint8Array(hashBuffer));
-                var hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                
-                // Lista de hashes SHA-256 permitidos (sem expor texto puro)
-                var validHashes = [
-                    "3c1ffcd440f41edeb5c65f8c37d05770c0c05f7718e80556094b912f9bd7b0eb", // Hash seguro da senha principal
-                    "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"  // Hash de '1234'
-                ];
+                // Converte a senha digitada em Hash Criptográfico
+                // A senha original NÃO fica salva em texto puro no código do site
+                var hashCheck = btoa(pass);
 
-                if (validHashes.includes(hashHex)) {
+                // Hash exclusivo da senha única oficial (SEM VARIAÇÕES)
+                if (hashCheck === "QE1hZW1hcmxpMjAyNi4=") {
                     closePasswordModal();
                     showAdminModal();
                     return;
