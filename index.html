@@ -19,6 +19,9 @@
 
     <!-- JAVASCRIPT DOS BOTOES E SEGURANCA -->
     <script>
+        // TELEFONE DE TESTE CONFIGURADO COM SEU NÚMERO
+        var PAULA_WHATSAPP_NUMERO = "5511957945506"; 
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -77,11 +80,7 @@
             if (!pass) return;
 
             try {
-                // Converte a senha digitada em Hash Criptográfico
-                // A senha original NÃO fica salva em texto puro no código do site
                 var hashCheck = btoa(pass);
-
-                // Hash exclusivo da senha única oficial (SEM VARIAÇÕES)
                 if (hashCheck === "QE1hZW1hcmxpMjAyNi4=") {
                     closePasswordModal();
                     showAdminModal();
@@ -104,6 +103,24 @@
             if (adminModal) adminModal.classList.add("hidden");
         }
 
+        // SISTEMA 1: AGENDAMENTO INTELIGENTE DE CONSULTAS PAGAS VIA WHATSAPP
+        function agendarConsultaWhatsApp(dataEvento, entidade) {
+            var agora = new Date();
+            var hora = agora.getHours();
+            var saudacao = "Bom dia!";
+
+            if (hora >= 12 && hora < 18) {
+                saudacao = "Boa tarde!";
+            } else if (hora >= 18 || hora < 5) {
+                saudacao = "Boa noite!";
+            }
+
+            var mensagem = saudacao + " Olá, gostaria de marcar uma consulta para o dia " + dataEvento + " com " + entidade + ", poderia me informar o horário disponível?";
+            var url = "https://wa.me/" + PAULA_WHATSAPP_NUMERO + "?text=" + encodeURIComponent(mensagem);
+            
+            window.open(url, "_blank");
+        }
+
         // FUNÇÃO ATUALIZADA COM COMPATIBILIDADE AO VIVO E ANTI-CACHE
         function fetchRealGoatCounterData() {
             var elem = document.getElementById("stat-total-visits");
@@ -124,7 +141,6 @@
                     return;
                 }
 
-                // adicionado timestamp t=Date.now() para forçar atualização sem usar o cache do navegador
                 fetch(endpoints[index] + "?t=" + Date.now())
                     .then(res => {
                         if (!res.ok) throw new Error("HTTP " + res.status);
@@ -562,6 +578,7 @@
                         <p class="text-xs text-stone-600 leading-relaxed">Aguardem o comunicado interno no grupo referente ao horário e materiais de entrega.</p>
                     </div>
 
+                    <!-- DIA 08/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO WHATSAPP DA PAULA) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 08/06 - Segunda</span>
@@ -569,6 +586,9 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Interessados em passar por consulta devem agendar com antecedência diretamente com a <strong>Paula</strong>.</p>
+                        <button onclick="agendarConsultaWhatsApp('08/06', 'a Cabocla Jurema')" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-3 rounded-lg transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Agendar Consulta no WhatsApp
+                        </button>
                     </div>
 
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition">
@@ -595,6 +615,7 @@
                         <p class="text-xs text-stone-600 leading-relaxed">Continuação das atividades de firmeza xamânica no terreiro.</p>
                     </div>
 
+                    <!-- DIA 15/06 - CONSULTA SR. JOÃO CAVEIRA (SISTEMA 1 - BOTÃO WHATSAPP DA PAULA) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-red-100 text-red-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 15/06 - Segunda</span>
@@ -602,6 +623,9 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Sr. João Caveira</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Agendamento prévio indispensável. Entrar em contato antecipadamente com a <strong>Paula</strong>.</p>
+                        <button onclick="agendarConsultaWhatsApp('15/06', 'o Sr. João Caveira')" class="mt-3 w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2 px-3 rounded-lg transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Agendar Consulta no WhatsApp
+                        </button>
                     </div>
 
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-sky-500 border border-stone-200 shadow-sm hover:shadow-md transition">
@@ -626,6 +650,7 @@
                         <p class="text-xs text-stone-600 leading-relaxed">Cada filho que incorpora deverá levar obrigatoriamente os doces e bebidas que seus Erês consomem.</p>
                     </div>
 
+                    <!-- DIA 29/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO WHATSAPP DA PAULA) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 29/06 - Segunda</span>
@@ -633,6 +658,9 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Interessados agendar com a <strong>Paula</strong> com antecedência.</p>
+                        <button onclick="agendarConsultaWhatsApp('29/06', 'a Cabocla Jurema')" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-3 rounded-lg transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Agendar Consulta no WhatsApp
+                        </button>
                     </div>
                 </div>
             </div>
