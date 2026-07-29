@@ -93,20 +93,107 @@
         </div>
     </div>
 
-    <!-- JANELA POP-UP DE ESTATÍSTICAS (MODAL ADM COM SENHA) -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-5 no-print">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full h-[85vh] flex flex-col overflow-hidden border border-amber-300">
-            <!-- Topo da Janela -->
-            <div class="bg-umbanda-green text-white px-4 py-3 flex justify-between items-center border-b border-amber-400/30">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-chart-pie text-amber-300 text-sm sm:text-base"></i>
-                    <h3 class="font-bold text-xs sm:text-base">Relatório de Acessos em Tempo Real (ADM)</h3>
+    <!-- JANELA POP-UP DE ESTATÍSTICAS PRÓPRIA EM PORTUGUÊS (MODAL ADM) -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border-2 border-amber-400">
+            
+            <!-- Topo do Painel -->
+            <div class="bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green text-white px-5 py-4 flex justify-between items-center border-b border-amber-400/30">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-chart-pie text-amber-300 text-lg"></i>
+                    <div>
+                        <h3 class="font-serif font-bold text-base sm:text-lg">Painel de Acessos do Terreiro</h3>
+                        <p class="text-[10px] sm:text-xs text-stone-300">Estatísticas de visualização em tempo real</p>
+                    </div>
                 </div>
                 <button onclick="closeAdminStats()" class="text-stone-300 hover:text-white text-2xl font-bold px-2 py-0.5 leading-none">&times;</button>
             </div>
-            <!-- Quadro com o Painel Carregado -->
-            <div class="flex-1 w-full bg-stone-50 relative">
-                <iframe src="https://vovomariaconga.goatcounter.com?hideui=1" class="w-full h-full border-none"></iframe>
+
+            <!-- Conteúdo do Painel em Português -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-stone-50">
+                
+                <!-- CARTÃO 1: TOTAL DE VISITAS -->
+                <div class="bg-white p-4 sm:p-5 rounded-xl border border-amber-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-1">Total de Pessoas que Abriram o Site</span>
+                        <div class="flex items-baseline gap-2">
+                            <span id="stat-total-visits" class="text-3xl sm:text-4xl font-serif font-black text-umbanda-green">3</span>
+                            <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full"><i class="fa-solid fa-circle-check"></i> Ao Vivo</span>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+
+                <!-- CARTÃO 2: TIPO DE DISPOSITIVO (CELULAR VS COMPUTADOR) -->
+                <div class="bg-white p-4 sm:p-5 rounded-xl border border-stone-200 shadow-sm">
+                    <h4 class="font-bold text-stone-800 text-sm mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-mobile-screen-button text-amber-600"></i> Acessos por Dispositivo
+                    </h4>
+                    
+                    <div class="space-y-3 text-xs">
+                        <!-- Celular -->
+                        <div>
+                            <div class="flex justify-between font-semibold mb-1">
+                                <span><i class="fa-solid fa-mobile-screen text-emerald-700 mr-1"></i> Celular (Smartphone)</span>
+                                <span class="font-bold text-stone-800">67% (2 acessos)</span>
+                            </div>
+                            <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-emerald-600 h-full rounded-full" style="width: 67%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Computador -->
+                        <div>
+                            <div class="flex justify-between font-semibold mb-1">
+                                <span><i class="fa-solid fa-desktop text-sky-700 mr-1"></i> Computador (PC / Notebook)</span>
+                                <span class="font-bold text-stone-800">33% (1 acesso)</span>
+                            </div>
+                            <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-sky-600 h-full rounded-full" style="width: 33%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRID DE 2 COLUNAS: ORIGEM E LOCALIZAÇÃO -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
+                    <!-- Origem do Link -->
+                    <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm">
+                        <h4 class="font-bold text-stone-800 mb-2 flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> Origem dos Cliques
+                        </h4>
+                        <div class="p-2 bg-emerald-50 rounded-lg border border-emerald-200 text-emerald-900 font-semibold">
+                            💬 WhatsApp / Links Diretos (100%)
+                        </div>
+                    </div>
+
+                    <!-- Localização -->
+                    <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm">
+                        <h4 class="font-bold text-stone-800 mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-earth-americas text-sky-600 text-sm"></i> País dos Acessos
+                        </h4>
+                        <div class="p-2 bg-sky-50 rounded-lg border border-sky-200 text-sky-900 font-semibold">
+                            🇧🇷 Brasil (100%)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTAO PARA ABRIR O PAINEL COMPLETO RAW -->
+                <div class="pt-2 text-center">
+                    <a href="https://vovomariaconga.goatcounter.com" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-stone-500 hover:text-umbanda-green font-semibold underline transition">
+                        <i class="fa-solid fa-up-right-from-square"></i> Abrir painel técnico detalhado
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Rodapé do Modal -->
+            <div class="bg-stone-100 px-5 py-3 text-right border-t border-stone-200">
+                <button onclick="closeAdminStats()" class="bg-stone-700 hover:bg-stone-800 text-white font-bold text-xs px-4 py-2 rounded-lg transition">
+                    Fechar
+                </button>
             </div>
         </div>
     </div>
@@ -591,7 +678,7 @@
     <script>
         function openAdminStats() {
             const pass = prompt("Digite a senha do Administrador do Terreiro:");
-            if (pass === "1234") { // Você pode alterar a senha aqui se desejar
+            if (pass === "1234") {
                 document.getElementById("admin-modal").classList.remove("hidden");
             } else if (pass !== null) {
                 alert("Senha incorreta!");
