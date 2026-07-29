@@ -84,12 +84,53 @@
         </div>
         <div class="flex flex-wrap gap-2">
             <!-- BOTÃO EXCLUSIVO DO ADMINISTRADOR -->
-            <button onclick="openAdminStats()" class="bg-amber-600 hover:bg-amber-700 text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
+            <button onclick="openPasswordModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
                 <i class="fa-solid fa-chart-line"></i> Acessos (ADM)
             </button>
             <button onclick="window.print()" class="bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
                 <i class="fa-solid fa-print"></i> Imprimir / Salvar PDF
             </button>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOMIZADO DE DIGITAR A SENHA ADM (SEM MENSAGEM DO LINK DO NAVEGADOR) -->
+    <div id="password-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-5 sm:p-6 border-2 border-amber-400 relative text-center space-y-4">
+            
+            <!-- Ícone e Título -->
+            <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-2xl mx-auto shadow-inner">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+                <h3 class="font-serif font-bold text-lg sm:text-xl text-umbanda-green">Área do Administrador</h3>
+                <p class="text-xs text-stone-500 mt-1">Digite a senha do Terreiro para acessar o painel</p>
+            </div>
+
+            <!-- Campo de Senha com Olhinho -->
+            <div class="relative">
+                <input type="password" id="admin-pass-input" placeholder="Digite a senha..." 
+                       class="w-full px-4 py-2.5 rounded-xl border-2 border-stone-200 focus:border-umbanda-green focus:outline-none text-center text-sm font-semibold text-stone-800 pr-10"
+                       onkeyup="if(event.key === 'Enter') verifyAdminPassword()">
+                <button type="button" onclick="togglePassVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600">
+                    <i id="eye-icon" class="fa-solid fa-eye text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Mensagem de Erro de Senha Incorreta -->
+            <p id="pass-error-msg" class="text-xs font-bold text-red-600 hidden">
+                <i class="fa-solid fa-circle-exclamation mr-1"></i> Senha incorreta! Tente novamente.
+            </p>
+
+            <!-- Botões de Ação -->
+            <div class="flex gap-2 pt-1">
+                <button onclick="closePasswordModal()" class="w-1/2 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl text-xs transition">
+                    Cancelar
+                </button>
+                <button onclick="verifyAdminPassword()" class="w-1/2 py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-bold rounded-xl text-xs transition shadow-md">
+                    Acessar Painel
+                </button>
+            </div>
+
         </div>
     </div>
 
@@ -200,7 +241,7 @@
                     </div>
                 </div>
 
-                <!-- BOTAO PARA ABRIR O PAINEL COMPLETO PAINEL TÉCNICO -->
+                <!-- BOTAO PARA ABRIR O PAINEL TÉCNICO -->
                 <div class="pt-2 text-center">
                     <a href="https://vovomariaconga.goatcounter.com" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-stone-500 hover:text-umbanda-green font-semibold underline transition">
                         <i class="fa-solid fa-up-right-from-square"></i> Abrir painel técnico do GoatCounter
@@ -287,7 +328,7 @@
                     <div class="py-1 sm:py-2 bg-emerald-50 text-emerald-800 rounded">Sáb</div>
                 </div>
 
-                <!-- DIAS DO MÊS (GRADE COM ESPAÇAMENTO OTIMIZADO PARA CELULAR) -->
+                <!-- DIAS DO MÊS (GRADE ADAPTADA) -->
                 <div class="grid grid-cols-7 gap-0.5 sm:gap-2 text-[10px] sm:text-xs md:text-sm">
                     
                     <!-- DIA 31 MAIO -->
@@ -531,185 +572,3 @@
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Esquerda</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Trabalhos com as forças da Esquerda. Favor atentar para a pontualidade e trajes adequados.</p>
                     </div>
-
-                    <!-- DIA 05 -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-amber-500 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-amber-100 text-amber-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 05/06 - Sexta</span>
-                            <span class="text-[11px] sm:text-xs bg-amber-50 text-amber-800 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart"></i> Mutirão</span>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Organização e Limpeza do Terreiro</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para a Oferenda.</p>
-                    </div>
-
-                    <!-- DIA 06 -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 06/06 - Sábado</span>
-                            <span class="text-[11px] sm:text-xs bg-emerald-50 text-emerald-800 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-tree"></i> Oxóssi</span>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Oferenda para Obará de Oxóssi</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Aguardem o comunicado interno no grupo referente ao horário e materiais de entrega.</p>
-                    </div>
-
-                    <!-- DIA 08 -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 08/06 - Segunda</span>
-                            <span class="text-[11px] sm:text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 70,00</span>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Interessados em passar por consulta devem agendar com antecedência diretamente com a <strong>Paula</strong>.</p>
-                    </div>
-
-                    <!-- DIA 12 -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 12/06 - Sexta</span>
-                            <div class="flex items-center gap-1.5 sm:gap-2">
-                                <span class="text-[10px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-1.5 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
-                                <span class="text-[11px] sm:text-xs bg-purple-600 text-white font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">R$ 180</span>
-                            </div>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico da Mãe Marli</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Trabalho de elevação e cura espiritual com o sagrado xamanismo.</p>
-                    </div>
-
-                    <!-- DIA 13 -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 13/06 - Sábado</span>
-                            <div class="flex items-center gap-1.5 sm:gap-2">
-                                <span class="text-[10px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-1.5 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
-                                <span class="text-[11px] sm:text-xs bg-purple-600 text-white font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">R$ 180</span>
-                            </div>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Continuação das atividades de firmeza xamânica no terreiro.</p>
-                    </div>
-
-                    <!-- DIA 15 -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-red-100 text-red-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 15/06 - Segunda</span>
-                            <span class="text-[11px] sm:text-xs bg-red-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 100,00</span>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Sr. João Caveira</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Agendamento prévio indispensável. Entrar em contato antecipadamente com a <strong>Paula</strong>.</p>
-                    </div>
-
-                    <!-- DIA 27 - PARTE 1 -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-sky-500 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-sky-100 text-sky-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
-                            <span class="text-[11px] sm:text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">GRATUITO</span>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Benzimento e Cura (Pessoas e Animais)</h4>
-                        <p class="text-xs text-stone-600 mb-2">Horário: <strong>10:00h às 12:00h</strong> (Atendimento por ordem de chegada).</p>
-                        <div class="p-2 bg-stone-50 rounded text-[11px] text-stone-600 space-y-1 border border-stone-200/60">
-                            <p><i class="fa-solid fa-paw text-amber-700"></i> <strong>Animais:</strong> coleira, guia (corrente), focinheira ou caixa de transporte.</p>
-                            <p><i class="fa-solid fa-location-dot text-red-600"></i> <strong>Entrada/Saída:</strong> Av. Eng. Heitor Antonio Eiras Garcia, 2708.</p>
-                        </div>
-                    </div>
-
-                    <!-- DIA 27 - PARTE 2 -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-pink-400 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-pink-100 text-pink-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
-                            <span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> 12:00h</span>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Erês</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Cada filho que incorpora deverá levar obrigatoriamente os doces e bebidas que seus Erês consomem.</p>
-                    </div>
-
-                    <!-- DIA 29 -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 29/06 - Segunda</span>
-                            <span class="text-[11px] sm:text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 70,00</span>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Interessados agendar com a <strong>Paula</strong> com antecedência.</p>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- NORMAS DA CASA E INSTAGRAM -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 page-break">
-                
-                <!-- NORMAS DE ENTRADA E CONDUTA -->
-                <div class="lg:col-span-2 bg-gradient-to-br from-umbanda-green to-emerald-950 text-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md relative overflow-hidden">
-                    <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-8xl sm:text-9xl">
-                        <i class="fa-solid fa-place-of-worship"></i>
-                    </div>
-                    <h4 class="font-serif font-bold text-base sm:text-lg text-umbanda-goldlight mb-3 sm:mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved"></i> Normas e Horários do Terreiro
-                    </h4>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mb-3 sm:mb-4">
-                        <div class="bg-white/10 backdrop-blur-sm p-2.5 sm:p-3 rounded-lg border border-white/10">
-                            <span class="text-amber-300 font-bold block mb-0.5 sm:mb-1"><i class="fa-solid fa-clock"></i> Dias de Semana</span>
-                            <p class="text-stone-200">A entrada de assistência e filhos é permitida somente até às <strong>20:00h</strong>.</p>
-                        </div>
-
-                        <div class="bg-white/10 backdrop-blur-sm p-3 rounded-lg border border-white/10">
-                            <span class="text-amber-300 font-bold block mb-0.5 sm:mb-1"><i class="fa-solid fa-clock"></i> Trabalhos de Sábado</span>
-                            <p class="text-stone-200">A entrada de assistência e filhos é permitida somente até às <strong>17:00h</strong>.</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-red-900/40 border border-red-400/30 p-2.5 sm:p-3 rounded-lg text-xs text-stone-200 flex items-start gap-2">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm sm:text-base mt-0.5"></i>
-                        <p><strong>Vestimentas Respeitosas:</strong> Não é permitida a entrada com roupas curtas, transparentes, decotadas ou inadequadas. Atentem-se ao respeito com o solo sagrado.</p>
-                    </div>
-                </div>
-
-                <!-- INSTAGRAM E CONTATO -->
-                <div class="bg-amber-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-amber-200 flex flex-col justify-between items-center text-center shadow-sm">
-                    <div>
-                        <span class="text-[10px] sm:text-xs font-bold text-amber-800 uppercase tracking-widest block mb-1">Conecte-se Conosco</span>
-                        <h4 class="font-serif font-bold text-stone-800 text-base sm:text-lg mb-2">Nos Siga no Instagram</h4>
-                        <a href="https://instagram.com/TEMPLOVOMARIACONGA" target="_blank" class="inline-flex items-center gap-2 font-bold text-amber-900 hover:text-amber-700 bg-amber-200/70 px-3 py-1.5 rounded-lg text-xs sm:text-sm transition mb-3 sm:mb-4">
-                            <i class="fa-brands fa-instagram text-sm sm:text-base text-pink-700"></i> @TEMPLOVOMARIACONGA
-                        </a>
-                    </div>
-
-                    <!-- QR CODE -->
-                    <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-amber-200 shadow-sm flex flex-col items-center">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://instagram.com/TEMPLOVOMARIACONGA&color=0D472B" alt="QR Code Instagram" class="w-20 h-20 sm:w-24 sm:h-24">
-                        <span class="text-[9px] sm:text-[10px] font-semibold text-stone-500 mt-1.5">Aponte a câmera para seguir</span>
-                    </div>
-                </div>
-
-            </div>
-
-        </main>
-
-        <!-- RODAPÉ FINAL -->
-        <footer class="bg-stone-900 text-stone-400 text-center py-3 sm:py-4 text-[11px] sm:text-xs border-t border-stone-800 flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 gap-1.5 sm:gap-2">
-            <span>© 2026 Templo de Umbanda Vovó Maria Conga - Todos os direitos reservados.</span>
-            <span class="text-stone-500"><i class="fa-solid fa-leaf text-umbanda-gold"></i> Fé, Amor e Caridade</span>
-        </footer>
-
-    </div>
-
-    <!-- SCRIPT DE INTERAÇÃO -->
-    <script>
-        function openAdminStats() {
-            const pass = prompt("Digite a senha do Administrador do Terreiro:");
-            if (pass === "1234") {
-                document.getElementById("admin-modal").classList.remove("hidden");
-            } else if (pass !== null) {
-                alert("Senha incorreta!");
-            }
-        }
-        function closeAdminStats() {
-            document.getElementById("admin-modal").classList.add("hidden");
-        }
-        function toggleFilter(category) {
-            alert('Você pode visualizar e imprimir este calendário diretamente no navegador ou salvar em formato PDF utilizando o botão de impressão.');
-        }
-    </script>
-</body>
-</html>
