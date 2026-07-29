@@ -76,16 +76,38 @@
 </head>
 <body class="bg-stone-100 font-sans text-stone-800 antialiased min-h-screen py-3 px-2 sm:py-6 sm:px-6">
 
-    <!-- BARRA DE AÇÕES (NO-PRINT) -->
+    <!-- BARRA DE AÇÕES COM BOTÃO DE ACESSOS ADM (NO-PRINT) -->
     <div class="max-w-5xl mx-auto mb-4 sm:mb-6 flex flex-wrap justify-between items-center gap-3 no-print bg-white p-3 sm:p-4 rounded-xl shadow-md border border-stone-200">
         <div class="flex items-center gap-2">
             <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-umbanda-green"></span>
             <h1 class="font-semibold text-stone-700 text-xs sm:text-base">Painel do Calendário - Junho 2026</h1>
         </div>
         <div class="flex flex-wrap gap-2">
+            <!-- BOTÃO EXCLUSIVO DO ADMINISTRADOR -->
+            <button onclick="openAdminStats()" class="bg-amber-600 hover:bg-amber-700 text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
+                <i class="fa-solid fa-chart-line"></i> Acessos (ADM)
+            </button>
             <button onclick="window.print()" class="bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
                 <i class="fa-solid fa-print"></i> Imprimir / Salvar PDF
             </button>
+        </div>
+    </div>
+
+    <!-- JANELA POP-UP DE ESTATÍSTICAS (MODAL ADM COM SENHA) -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-5 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full h-[85vh] flex flex-col overflow-hidden border border-amber-300">
+            <!-- Topo da Janela -->
+            <div class="bg-umbanda-green text-white px-4 py-3 flex justify-between items-center border-b border-amber-400/30">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-amber-300 text-sm sm:text-base"></i>
+                    <h3 class="font-bold text-xs sm:text-base">Relatório de Acessos em Tempo Real (ADM)</h3>
+                </div>
+                <button onclick="closeAdminStats()" class="text-stone-300 hover:text-white text-2xl font-bold px-2 py-0.5 leading-none">&times;</button>
+            </div>
+            <!-- Quadro com o Painel Carregado -->
+            <div class="flex-1 w-full bg-stone-50 relative">
+                <iframe src="https://vovomariaconga.goatcounter.com?hideui=1" class="w-full h-full border-none"></iframe>
+            </div>
         </div>
     </div>
 
@@ -249,7 +271,7 @@
                         <span class="text-stone-500 font-medium text-[8px] sm:text-xs">11</span>
                     </div>
 
-                    <!-- DIA 12 (XAMANISMO 100% AJUSTADO SEM VAZAR DA CAIXINHA) -->
+                    <!-- DIA 12 -->
                     <div class="min-h-[48px] sm:min-h-[85px] p-0.5 sm:p-1.5 bg-purple-50/90 rounded sm:rounded-lg border border-purple-200 flex flex-col justify-between hover:shadow-md transition overflow-hidden">
                         <div class="flex justify-between items-center">
                             <span class="font-bold text-purple-900 bg-purple-200/80 w-3.5 h-3.5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[8px] sm:text-xs">12</span>
@@ -261,7 +283,7 @@
                         </div>
                     </div>
 
-                    <!-- DIA 13 (XAMANISMO 100% AJUSTADO SEM VAZAR DA CAIXINHA) -->
+                    <!-- DIA 13 -->
                     <div class="min-h-[48px] sm:min-h-[85px] p-0.5 sm:p-1.5 bg-purple-50/90 rounded sm:rounded-lg border border-purple-200 flex flex-col justify-between hover:shadow-md transition overflow-hidden">
                         <div class="flex justify-between items-center">
                             <span class="font-bold text-purple-900 bg-purple-200/80 w-3.5 h-3.5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[8px] sm:text-xs">13</span>
@@ -565,7 +587,19 @@
 
     </div>
 
+    <!-- SCRIPT DE INTERAÇÃO -->
     <script>
+        function openAdminStats() {
+            const pass = prompt("Digite a senha do Administrador do Terreiro:");
+            if (pass === "1234") { // Você pode alterar a senha aqui se desejar
+                document.getElementById("admin-modal").classList.remove("hidden");
+            } else if (pass !== null) {
+                alert("Senha incorreta!");
+            }
+        }
+        function closeAdminStats() {
+            document.getElementById("admin-modal").classList.add("hidden");
+        }
         function toggleFilter(category) {
             alert('Você pode visualizar e imprimir este calendário diretamente no navegador ou salvar em formato PDF utilizando o botão de impressão.');
         }
