@@ -22,6 +22,9 @@
         // TELEFONE DE TESTE CONFIGURADO COM SEU NÚMERO
         var PAULA_WHATSAPP_NUMERO = "5511957945506"; 
 
+        // LISTA DOS EVENTOS GRATUITOS COM CONTADOR DE PRESENÇA (SISTEMA 2)
+        var EVENTOS_PRESENCA = ['0106', '0506', '0606', '2706-benzimento', '2706-eres'];
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -103,8 +106,8 @@
             if (adminModal) adminModal.classList.add("hidden");
         }
 
-        // SISTEMA 1: AGENDAMENTO INTELIGENTE DE CONSULTAS PAGAS VIA WHATSAPP
-        function agendarConsultaWhatsApp(dataEvento, entidade) {
+        // SISTEMA 1: AGENDAMENTO INTELIGENTE DE CONSULTAS E EVENTOS PAGOS VIA WHATSAPP
+        function agendarConsultaWhatsApp(dataEvento, entidade, tipo) {
             var agora = new Date();
             var hora = agora.getHours();
             var saudacao = "Bom dia!";
@@ -115,11 +118,110 @@
                 saudacao = "Boa noite!";
             }
 
-            var mensagem = saudacao + " Olá, gostaria de marcar uma consulta para o dia " + dataEvento + " com " + entidade + ", poderia me informar o horário disponível?";
+            var mensagem = "";
+            if (tipo === 'ritual') {
+                mensagem = saudacao + " Gostaria de agendar " + entidade + " para o dia " + dataEvento + ".";
+            } else {
+                mensagem = saudacao + " Gostaria de marcar uma consulta para o dia " + dataEvento + " com " + entidade + ", poderia me informar o horário disponível?";
+            }
+
             var url = "https://wa.me/" + PAULA_WHATSAPP_NUMERO + "?text=" + encodeURIComponent(mensagem);
             
             window.open(url, "_blank");
         }
+
+        // SISTEMA 2: CARREGAR CONTADORES DE PRESENÇA NA NUVEM + GARANTIA LOCAL
+        function carregarContadoresPresenca() {
+            EVENTOS_PRESENCA.forEach(function(id) {
+                var countElem = document.getElementById("count-" + id);
+                var btnElem = document.getElementById("btn-presenca-" + id);
+                var jaConfirmou = localStorage.getItem("confirmado_gira_" + id);
+
+                // Se o usuário já confirmou neste aparelho, ativa o selo de confirmação
+                if (jaConfirmou && btnElem) {
+                    btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Confirmado';
+                    btnElem.className = 'inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold text-[11px] py-1 px-3 rounded-full cursor-default';
+                    btnElem.disabled = true;
+                    // Garantia visual: se já confirmou, exibe no mínimo 1
+                    if (countElem && (countElem.innerText === '--' || countElem.innerText === '0')) {
+                        countElem.innerText = '1';
+                    }
+                }
+
+                // Busca a contagem real na nuvem
+                fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "?t=" + Date.now())
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        var realCount = null;
+                        if (data) {
+                            if (data.count !== undefined) realCount = data.count;
+                            else if (data.value !== undefined) realCount = data.value;
+                            else if (data.data !== undefined) realCount = data.data;
+                        }
+
+                        if (realCount !== null && realCount !== undefined && countElem) {
+                            countElem.innerText = realCount;
+                        } else if (jaConfirmou && countElem && countElem.innerText === '--') {
+                            countElem.innerText = '1';
+                        }
+                    })
+                    .catch(function() {
+                        if (jaConfirmou && countElem && countElem.innerText === '--') {
+                            countElem.innerText = '1';
+                        }
+                    });
+            });
+        }
+
+        // SISTEMA 2: CONFIRMAR PRESENÇA COM ATUALIZAÇÃO IMEDIATA E PROTEÇÃO ANTI-BURLAGEM
+        function confirmarPresencaGira(id) {
+            var jaConfirmou = localStorage.getItem("confirmado_gira_" + id);
+            if (jaConfirmou) {
+                alert("Você já confirmou sua presença nesta atividade!");
+                return;
+            }
+
+            var btnElem = document.getElementById("btn-presenca-" + id);
+            var countElem = document.getElementById("count-" + id);
+
+            // Trava imediatamente o dispositivo local para impedir cliques duplos
+            localStorage.setItem("confirmado_gira_" + id, "true");
+
+            // Atualização Instantânea na Tela
+            if (countElem) {
+                var atualVal = parseInt(countElem.innerText);
+                if (isNaN(atualVal) || countElem.innerText === '--') {
+                    countElem.innerText = '1';
+                } else {
+                    countElem.innerText = atualVal + 1;
+                }
+            }
+
+            if (btnElem) {
+                btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Confirmado';
+                btnElem.className = 'inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold text-[11px] py-1 px-3 rounded-full cursor-default';
+                btnElem.disabled = true;
+            }
+
+            // Envia para a nuvem em segundo plano
+            fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "/up?t=" + Date.now())
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    var realCount = null;
+                    if (data) {
+                        if (data.count !== undefined) realCount = data.count;
+                        else if (data.value !== undefined) realCount = data.value;
+                        else if (data.data !== undefined) realCount = data.data;
+                    }
+                    if (realCount !== null && realCount !== undefined && countElem) {
+                        countElem.innerText = realCount;
+                    }
+                })
+                .catch(function() {});
+        }
+
+        // CARREGA OS DADOS AUTOMATICAMENTE AO ABRIR A PÁGINA
+        window.addEventListener('DOMContentLoaded', carregarContadoresPresenca);
 
         // FUNÇÃO ATUALIZADA COM COMPATIBILIDADE AO VIVO E ANTI-CACHE
         function fetchRealGoatCounterData() {
@@ -551,6 +653,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- DIA 01/06 - GIRA DE ESQUERDA (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-red-100 text-red-800 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 01/06 - Segunda</span>
@@ -558,8 +661,19 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Esquerda</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Trabalhos com as forças da Esquerda. Favor atentar para a pontualidade e trajes adequados.</p>
+                        
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-users text-red-500 text-xs"></i>
+                                <span><strong id="count-0106" class="font-bold text-stone-800">--</strong> confirmados</span>
+                            </div>
+                            <button id="btn-presenca-0106" onclick="confirmarPresencaGira('0106')" class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- DIA 05/06 - MUTIRÃO (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-amber-500 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-amber-100 text-amber-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 05/06 - Sexta</span>
@@ -567,8 +681,19 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Organização e Limpeza do Terreiro</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para a Oferenda.</p>
+                        
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-users text-amber-500 text-xs"></i>
+                                <span><strong id="count-0506" class="font-bold text-stone-800">--</strong> confirmados</span>
+                            </div>
+                            <button id="btn-presenca-0506" onclick="confirmarPresencaGira('0506')" class="inline-flex items-center gap-1.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- DIA 06/06 - OFERENDA OXÓSSI (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 06/06 - Sábado</span>
@@ -576,9 +701,19 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Oferenda para Obará de Oxóssi</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Aguardem o comunicado interno no grupo referente ao horário e materiais de entrega.</p>
+                        
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-users text-emerald-500 text-xs"></i>
+                                <span><strong id="count-0606" class="font-bold text-stone-800">--</strong> confirmados</span>
+                            </div>
+                            <button id="btn-presenca-0606" onclick="confirmarPresencaGira('0606')" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- DIA 08/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO WHATSAPP DA PAULA) -->
+                    <!-- DIA 08/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 08/06 - Segunda</span>
@@ -586,11 +721,19 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Interessados em passar por consulta devem agendar com antecedência diretamente com a <strong>Paula</strong>.</p>
-                        <button onclick="agendarConsultaWhatsApp('08/06', 'a Cabocla Jurema')" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-3 rounded-lg transition shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> Agendar Consulta no WhatsApp
-                        </button>
+                        
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-calendar-check text-emerald-600 text-xs"></i>
+                                <span>Agendamento</span>
+                            </div>
+                            <button onclick="agendarConsultaWhatsApp('08/06', 'a Cabocla Jurema', 'consulta')" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- DIA 12/06 - RITUAL XAMÂNICO (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 12/06 - Sexta</span>
@@ -601,8 +744,19 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico da Mãe Marli</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Trabalho de elevação e cura espiritual com o sagrado xamanismo.</p>
+                        
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-calendar-check text-purple-600 text-xs"></i>
+                                <span>Agendamento</span>
+                            </div>
+                            <button onclick="agendarConsultaWhatsApp('12/06', 'o Ritual Xamânico da Mãe Marli', 'ritual')" class="inline-flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- DIA 13/06 - RITUAL XAMÂNICO (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 13/06 - Sábado</span>
@@ -613,9 +767,19 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Continuação das atividades de firmeza xamânica no terreiro.</p>
+                        
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-calendar-check text-purple-600 text-xs"></i>
+                                <span>Agendamento</span>
+                            </div>
+                            <button onclick="agendarConsultaWhatsApp('13/06', 'o Ritual Xamânico', 'ritual')" class="inline-flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- DIA 15/06 - CONSULTA SR. JOÃO CAVEIRA (SISTEMA 1 - BOTÃO WHATSAPP DA PAULA) -->
+                    <!-- DIA 15/06 - CONSULTA SR. JOÃO CAVEIRA (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-red-100 text-red-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 15/06 - Segunda</span>
@@ -623,11 +787,19 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Sr. João Caveira</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Agendamento prévio indispensável. Entrar em contato antecipadamente com a <strong>Paula</strong>.</p>
-                        <button onclick="agendarConsultaWhatsApp('15/06', 'o Sr. João Caveira')" class="mt-3 w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2 px-3 rounded-lg transition shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> Agendar Consulta no WhatsApp
-                        </button>
+                        
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-calendar-check text-red-600 text-xs"></i>
+                                <span>Agendamento</span>
+                            </div>
+                            <button onclick="agendarConsultaWhatsApp('15/06', 'o Sr. João Caveira', 'consulta')" class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- DIA 27/06 - BENZIMENTO (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-sky-500 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-sky-100 text-sky-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
@@ -635,22 +807,43 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Benzimento e Cura (Pessoas e Animais)</h4>
                         <p class="text-xs text-stone-600 mb-2">Horário: <strong>10:00h às 12:00h</strong> (Atendimento por ordem de chegada).</p>
-                        <div class="p-2 bg-stone-50 rounded text-[11px] text-stone-600 space-y-1 border border-stone-200/60">
+                        <div class="p-2 bg-stone-50 rounded text-[11px] text-stone-600 space-y-1 border border-stone-200/60 mb-2">
                             <p><i class="fa-solid fa-paw text-amber-700"></i> <strong>Animais:</strong> coleira, guia (corrente), focinheira ou caixa de transporte.</p>
                             <p><i class="fa-solid fa-location-dot text-red-600"></i> <strong>Entrada/Saída:</strong> Av. Eng. Heitor Antonio Eiras Garcia, 2708.</p>
                         </div>
+
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-users text-sky-500 text-xs"></i>
+                                <span><strong id="count-2706-benzimento" class="font-bold text-stone-800">--</strong> confirmados</span>
+                            </div>
+                            <button id="btn-presenca-2706-benzimento" onclick="confirmarPresencaGira('2706-benzimento')" class="inline-flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- DIA 27/06 - GIRA DE ERÊS (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-pink-400 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-pink-100 text-pink-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
                             <span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> 12:00h</span>
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Erês</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Cada filho que incorpora deverá levar obrigatoriamente os doces e bebidas que seus Erês consomem.</p>
+                        <p class="text-xs text-stone-600 leading-relaxed mb-2">Cada filho que incorpora deverá levar obrigatoriamente os doces e bebidas que seus Erês consomem.</p>
+                        
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-users text-pink-500 text-xs"></i>
+                                <span><strong id="count-2706-eres" class="font-bold text-stone-800">--</strong> confirmados</span>
+                            </div>
+                            <button id="btn-presenca-2706-eres" onclick="confirmarPresencaGira('2706-eres')" class="inline-flex items-center gap-1.5 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- DIA 29/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO WHATSAPP DA PAULA) -->
+                    <!-- DIA 29/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
                     <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-1.5 sm:mb-2">
                             <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 29/06 - Segunda</span>
@@ -658,9 +851,16 @@
                         </div>
                         <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
                         <p class="text-xs text-stone-600 leading-relaxed">Interessados agendar com a <strong>Paula</strong> com antecedência.</p>
-                        <button onclick="agendarConsultaWhatsApp('29/06', 'a Cabocla Jurema')" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-3 rounded-lg transition shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> Agendar Consulta no WhatsApp
-                        </button>
+                        
+                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+                                <i class="fa-solid fa-calendar-check text-emerald-600 text-xs"></i>
+                                <span>Agendamento</span>
+                            </div>
+                            <button onclick="agendarConsultaWhatsApp('29/06', 'a Cabocla Jurema', 'consulta')" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
