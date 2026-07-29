@@ -75,19 +75,20 @@
             var pass = input ? input.value.trim() : "";
             if (!pass) return;
 
-            // Validação da senha @Maemarli2026.
-            if (pass === "@Maemarli2026." || pass === "@Maemali2026." || pass === "Maemarli2026" || pass === "1234") {
-                closePasswordModal();
-                showAdminModal();
-                return;
-            }
-
             try {
+                // Converte a senha digitada em Hash SHA-256
                 var msgBuffer = new TextEncoder().encode(pass);
                 var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
                 var hashArray = Array.from(new Uint8Array(hashBuffer));
                 var hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                if (hashHex === "3c1ffcd440f41edeb5c65f8c37d05770c0c05f7718e80556094b912f9bd7b0eb") {
+                
+                // Lista de hashes SHA-256 permitidos (sem expor texto puro)
+                var validHashes = [
+                    "3c1ffcd440f41edeb5c65f8c37d05770c0c05f7718e80556094b912f9bd7b0eb", // Hash seguro da senha principal
+                    "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"  // Hash de '1234'
+                ];
+
+                if (validHashes.includes(hashHex)) {
                     closePasswordModal();
                     showAdminModal();
                     return;
@@ -109,34 +110,36 @@
             if (adminModal) adminModal.classList.add("hidden");
         }
 
-        // FUNÇÃO MELHORADA QUE BUSCA OS DADOS COM VÁRIAS ROTAS DE FALLBACK
+        // FUNÇÃO ATUALIZADA COM COMPATIBILIDADE AO VIVO E ANTI-CACHE
         function fetchRealGoatCounterData() {
             var elem = document.getElementById("stat-total-visits");
             if (!elem) return;
 
+            var currentPath = encodeURIComponent(window.location.pathname);
             var endpoints = [
                 "https://vovomariaconga.goatcounter.com/counter/TOTAL.json",
-                "https://vovomariaconga.goatcounter.com/counter/calend-rio.json",
-                "https://vovomariaconga.goatcounter.com/counter//.json"
+                "https://vovomariaconga.goatcounter.com/counter//.json",
+                "https://vovomariaconga.goatcounter.com/counter/" + currentPath + ".json"
             ];
 
             function tryEndpoint(index) {
                 if (index >= endpoints.length) {
-                    // Fallback para caso o arquivo seja aberto via file:// e o navegador bloqueie por CORS
                     if (elem.innerText === "--") {
-                        elem.innerText = "4"; // Exibe a contagem detectada no seu painel
+                        elem.innerText = "4"; 
                     }
                     return;
                 }
 
-                fetch(endpoints[index])
+                // adicionado timestamp t=Date.now() para forçar atualização sem usar o cache do navegador
+                fetch(endpoints[index] + "?t=" + Date.now())
                     .then(res => {
                         if (!res.ok) throw new Error("HTTP " + res.status);
                         return res.json();
                     })
                     .then(data => {
-                        if (data && data.count !== undefined) {
-                            var cleanCount = String(data.count).replace(/[^0-9]/g, '');
+                        if (data && (data.count !== undefined || data.count_unique !== undefined)) {
+                            var val = data.count !== undefined ? data.count : data.count_unique;
+                            var cleanCount = String(val).replace(/[^0-9]/g, '');
                             if (cleanCount) {
                                 elem.innerText = cleanCount;
                                 return;
@@ -390,7 +393,7 @@
                         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-600 inline-block"></span> Esquerda</span>
                         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500 inline-block"></span> Mutirão</span>
                         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-600 inline-block"></span> Consultas</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-purple-600 inline-block"></span> Xamanismo</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-purple-600 inline-block"></span> Ritual Xamânico</span>
                         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-sky-600 inline-block"></span> Benzimento</span>
                     </div>
                 </div>
@@ -449,7 +452,7 @@
                             <span class="w-1 h-1 sm:w-2 sm:h-2 rounded-full bg-emerald-600"></span>
                         </div>
                         <div class="mt-0.5">
-                            <p class="font-bold text-[7.5px] sm:text-xs text-emerald-950 leading-tight tracking-tighter truncate">Consulta</p>
+                            <p class="font-bold text-[7.5px] sm:text-xs text-emerald-950 leading-tight tracking-tighter truncate">Cabocla Jurema</p>
                             <span class="text-[6.5px] sm:text-[10px] text-emerald-800 font-semibold block mt-0.5">R$ 70</span>
                         </div>
                     </div>
@@ -462,7 +465,7 @@
                             <span class="w-1 h-1 sm:w-2 sm:h-2 rounded-full bg-purple-600"></span>
                         </div>
                         <div class="mt-0.5">
-                            <p class="font-bold text-[7px] sm:text-xs text-purple-950 leading-tight tracking-tighter truncate">Xamanismo</p>
+                            <p class="font-bold text-[7px] sm:text-xs text-purple-950 leading-tight tracking-tighter truncate">Ritual Xamânico</p>
                             <span class="text-[6.5px] sm:text-[10px] text-purple-800 block mt-0.5 font-medium"><i class="fa-regular fa-clock text-[6px] sm:text-xs"></i> 13h</span>
                         </div>
                     </div>
@@ -472,7 +475,7 @@
                             <span class="w-1 h-1 sm:w-2 sm:h-2 rounded-full bg-purple-600"></span>
                         </div>
                         <div class="mt-0.5">
-                            <p class="font-bold text-[7px] sm:text-xs text-purple-950 leading-tight tracking-tighter truncate">Xamanismo</p>
+                            <p class="font-bold text-[7px] sm:text-xs text-purple-950 leading-tight tracking-tighter truncate">Ritual Xamânico</p>
                             <span class="text-[6.5px] sm:text-[10px] text-purple-800 block mt-0.5 font-medium"><i class="fa-regular fa-clock text-[6px] sm:text-xs"></i> 13h</span>
                         </div>
                     </div>
@@ -483,7 +486,7 @@
                             <span class="w-1 h-1 sm:w-2 sm:h-2 rounded-full bg-red-600"></span>
                         </div>
                         <div class="mt-0.5">
-                            <p class="font-bold text-[7.5px] sm:text-xs text-red-950 leading-tight tracking-tighter truncate">Sr. Caveira</p>
+                            <p class="font-bold text-[7.5px] sm:text-xs text-red-950 leading-tight tracking-tighter truncate">Sr. João Caveira</p>
                             <span class="text-[6.5px] sm:text-[10px] text-red-800 font-semibold block mt-0.5">R$ 100</span>
                         </div>
                     </div>
@@ -515,7 +518,7 @@
                             <span class="w-1 h-1 sm:w-2 sm:h-2 rounded-full bg-emerald-600"></span>
                         </div>
                         <div class="mt-0.5">
-                            <p class="font-bold text-[7.5px] sm:text-xs text-emerald-950 leading-tight tracking-tighter truncate">Consulta</p>
+                            <p class="font-bold text-[7.5px] sm:text-xs text-emerald-950 leading-tight tracking-tighter truncate">Cabocla Jurema</p>
                             <span class="text-[6.5px] sm:text-[10px] text-emerald-800 font-semibold block mt-0.5">R$ 70</span>
                         </div>
                     </div>
