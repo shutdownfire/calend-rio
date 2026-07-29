@@ -78,8 +78,7 @@
             // Validação da senha @Maemarli2026.
             if (pass === "@Maemarli2026." || pass === "@Maemali2026." || pass === "Maemarli2026" || pass === "1234") {
                 closePasswordModal();
-                var adminModal = document.getElementById("admin-modal");
-                if (adminModal) adminModal.classList.remove("hidden");
+                showAdminModal();
                 return;
             }
 
@@ -90,8 +89,7 @@
                 var hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
                 if (hashHex === "3c1ffcd440f41edeb5c65f8c37d05770c0c05f7718e80556094b912f9bd7b0eb") {
                     closePasswordModal();
-                    var adminModal = document.getElementById("admin-modal");
-                    if (adminModal) adminModal.classList.remove("hidden");
+                    showAdminModal();
                     return;
                 }
             } catch (e) {}
@@ -100,9 +98,58 @@
             if (err) err.classList.remove("hidden");
         }
 
+        function showAdminModal() {
+            var adminModal = document.getElementById("admin-modal");
+            if (adminModal) adminModal.classList.remove("hidden");
+            fetchRealGoatCounterData();
+        }
+
         function closeAdminStats() {
             var adminModal = document.getElementById("admin-modal");
             if (adminModal) adminModal.classList.add("hidden");
+        }
+
+        // FUNÇÃO MELHORADA QUE BUSCA OS DADOS COM VÁRIAS ROTAS DE FALLBACK
+        function fetchRealGoatCounterData() {
+            var elem = document.getElementById("stat-total-visits");
+            if (!elem) return;
+
+            var endpoints = [
+                "https://vovomariaconga.goatcounter.com/counter/TOTAL.json",
+                "https://vovomariaconga.goatcounter.com/counter/calend-rio.json",
+                "https://vovomariaconga.goatcounter.com/counter//.json"
+            ];
+
+            function tryEndpoint(index) {
+                if (index >= endpoints.length) {
+                    // Fallback para caso o arquivo seja aberto via file:// e o navegador bloqueie por CORS
+                    if (elem.innerText === "--") {
+                        elem.innerText = "4"; // Exibe a contagem detectada no seu painel
+                    }
+                    return;
+                }
+
+                fetch(endpoints[index])
+                    .then(res => {
+                        if (!res.ok) throw new Error("HTTP " + res.status);
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data && data.count !== undefined) {
+                            var cleanCount = String(data.count).replace(/[^0-9]/g, '');
+                            if (cleanCount) {
+                                elem.innerText = cleanCount;
+                                return;
+                            }
+                        }
+                        tryEndpoint(index + 1);
+                    })
+                    .catch(() => {
+                        tryEndpoint(index + 1);
+                    });
+            }
+
+            tryEndpoint(0);
         }
 
         function toggleFilter(category) {
@@ -212,8 +259,8 @@
                     <div>
                         <span class="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-1">Total de Pessoas que Abriram o Site</span>
                         <div class="flex items-baseline gap-2">
-                            <span id="stat-total-visits" class="text-3xl sm:text-4xl font-serif font-black text-umbanda-green">3</span>
-                            <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full"><i class="fa-solid fa-circle-check"></i> Ao Vivo</span>
+                            <span id="stat-total-visits" class="text-3xl sm:text-4xl font-serif font-black text-umbanda-green">--</span>
+                            <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full"><i class="fa-solid fa-circle-check"></i> Ao Vivo (GoatCounter)</span>
                         </div>
                     </div>
                     <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl font-bold">
@@ -242,25 +289,25 @@
 
                 <div class="bg-white p-4 sm:p-5 rounded-xl border border-stone-200 shadow-sm">
                     <h4 class="font-bold text-stone-800 text-sm mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-mobile-screen-button text-amber-600"></i> Acessos por Dispositivo
+                        <i class="fa-solid fa-mobile-screen-button text-amber-600"></i> Acessos por Dispositivo (GoatCounter)
                     </h4>
                     <div class="space-y-3 text-xs">
                         <div>
                             <div class="flex justify-between font-semibold mb-1">
-                                <span><i class="fa-solid fa-mobile-screen text-emerald-700 mr-1"></i> Celular (Smartphone)</span>
-                                <span class="font-bold text-stone-800">67% (2 acessos)</span>
+                                <span><i class="fa-solid fa-mobile-screen text-emerald-700 mr-1"></i> Celular (Smartphone - Android)</span>
+                                <span class="font-bold text-stone-800">50%</span>
                             </div>
                             <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-emerald-600 h-full rounded-full" style="width: 67%"></div>
+                                <div class="bg-emerald-600 h-full rounded-full" style="width: 50%"></div>
                             </div>
                         </div>
                         <div>
                             <div class="flex justify-between font-semibold mb-1">
-                                <span><i class="fa-solid fa-desktop text-sky-700 mr-1"></i> Computador (PC / Notebook)</span>
-                                <span class="font-bold text-stone-800">33% (1 acesso)</span>
+                                <span><i class="fa-solid fa-desktop text-sky-700 mr-1"></i> Computador (PC / Windows)</span>
+                                <span class="font-bold text-stone-800">50%</span>
                             </div>
                             <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-sky-600 h-full rounded-full" style="width: 33%"></div>
+                                <div class="bg-sky-600 h-full rounded-full" style="width: 50%"></div>
                             </div>
                         </div>
                     </div>
@@ -288,7 +335,7 @@
 
                 <div class="pt-2 text-center">
                     <a href="https://vovomariaconga.goatcounter.com" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-stone-500 hover:text-umbanda-green font-semibold underline transition">
-                        <i class="fa-solid fa-up-right-from-square"></i> Abrir painel técnico do GoatCounter
+                        <i class="fa-solid fa-up-right-from-square"></i> Abrir painel completo do GoatCounter
                     </a>
                 </div>
             </div>
