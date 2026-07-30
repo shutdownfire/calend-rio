@@ -137,11 +137,13 @@
                 var btnElem = document.getElementById("btn-presenca-" + id);
                 var jaConfirmou = localStorage.getItem("confirmado_gira_" + id);
 
-                // Se o usuário já confirmou neste aparelho, ativa o selo de confirmação
+                // Se o usuário já confirmou neste aparelho, deixa APENAS O VISTO (check)
                 if (jaConfirmou && btnElem) {
-                    btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Confirmado';
-                    btnElem.className = 'inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold text-[11px] py-1 px-3 rounded-full cursor-default';
+                    btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>';
+                    btnElem.className = 'inline-flex items-center justify-center bg-emerald-50 border border-emerald-200/80 p-1.5 rounded-full cursor-default shadow-2xs';
                     btnElem.disabled = true;
+                    btnElem.title = 'Presença Confirmada';
+
                     // Garantia visual: se já confirmou, exibe no mínimo 1
                     if (countElem && (countElem.innerText === '--' || countElem.innerText === '0')) {
                         countElem.innerText = '1';
@@ -173,7 +175,7 @@
             });
         }
 
-        // SISTEMA 2: CONFIRMAR PRESENÇA COM ATUALIZAÇÃO IMEDIATA E PROTEÇÃO ANTI-BURLAGEM
+        // SISTEMA 2: CONFIRMAR PRESENÇA COM MENSAGEM DE OK + EXIBIR APENAS O VISTO
         function confirmarPresencaGira(id) {
             var jaConfirmou = localStorage.getItem("confirmado_gira_" + id);
             if (jaConfirmou) {
@@ -197,11 +199,16 @@
                 }
             }
 
+            // Transforma o botão deixando APENAS O VISTO
             if (btnElem) {
-                btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Confirmado';
-                btnElem.className = 'inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold text-[11px] py-1 px-3 rounded-full cursor-default';
+                btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>';
+                btnElem.className = 'inline-flex items-center justify-center bg-emerald-50 border border-emerald-200/80 p-1.5 rounded-full cursor-default shadow-2xs';
                 btnElem.disabled = true;
+                btnElem.title = 'Presença Confirmada';
             }
+
+            // MENSAGEM DE SUCESSO COM BOTÃO OK
+            alert("Presença confirmada com sucesso! Axé! 🌿");
 
             // Envia para a nuvem em segundo plano
             fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "/up?t=" + Date.now())
@@ -728,7 +735,7 @@
                                 <span>Agendamento</span>
                             </div>
                             <button onclick="agendarConsultaWhatsApp('08/06', 'a Cabocla Jurema', 'consulta')" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
                             </button>
                         </div>
                     </div>
@@ -751,7 +758,7 @@
                                 <span>Agendamento</span>
                             </div>
                             <button onclick="agendarConsultaWhatsApp('12/06', 'o Ritual Xamânico da Mãe Marli', 'ritual')" class="inline-flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
                             </button>
                         </div>
                     </div>
@@ -774,7 +781,7 @@
                                 <span>Agendamento</span>
                             </div>
                             <button onclick="agendarConsultaWhatsApp('13/06', 'o Ritual Xamânico', 'ritual')" class="inline-flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
                             </button>
                         </div>
                     </div>
@@ -794,7 +801,7 @@
                                 <span>Agendamento</span>
                             </div>
                             <button onclick="agendarConsultaWhatsApp('15/06', 'o Sr. João Caveira', 'consulta')" class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
                             </button>
                         </div>
                     </div>
@@ -858,7 +865,7 @@
                                 <span>Agendamento</span>
                             </div>
                             <button onclick="agendarConsultaWhatsApp('29/06', 'a Cabocla Jurema', 'consulta')" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar WhatsApp
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
                             </button>
                         </div>
                     </div>
