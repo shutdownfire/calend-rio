@@ -25,6 +25,53 @@
         // LISTA DOS EVENTOS GRATUITOS COM CONTADOR DE PRESENÇA (SISTEMA 2)
         var EVENTOS_PRESENCA = ['0106', '0506', '0606', '2706-benzimento', '2706-eres'];
 
+        // MAPEAMENTO DE TEMAS DE CORES PARA O MODAL DINÂMICO
+        var COR_EVENTO = {
+            '0106': 'red',
+            '0506': 'amber',
+            '0606': 'emerald',
+            '2706-benzimento': 'sky',
+            '2706-eres': 'pink'
+        };
+
+        var TEMAS_MODAL = {
+            'red': {
+                border: 'border-2 border-red-500',
+                iconBg: 'w-16 h-16 rounded-full bg-red-100 text-red-700 flex items-center justify-center text-3xl mx-auto shadow-inner',
+                iconClass: 'fa-solid fa-fire text-red-600',
+                axeText: 'text-red-700 font-extrabold text-base block mt-2',
+                btnBg: 'w-full py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
+            },
+            'amber': {
+                border: 'border-2 border-amber-500',
+                iconBg: 'w-16 h-16 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-3xl mx-auto shadow-inner',
+                iconClass: 'fa-solid fa-hand-holding-heart text-amber-600',
+                axeText: 'text-amber-800 font-extrabold text-base block mt-2',
+                btnBg: 'w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
+            },
+            'emerald': {
+                border: 'border-2 border-emerald-500',
+                iconBg: 'w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-inner',
+                iconClass: 'fa-solid fa-leaf text-emerald-700',
+                axeText: 'text-emerald-700 font-extrabold text-base block mt-2',
+                btnBg: 'w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
+            },
+            'sky': {
+                border: 'border-2 border-sky-500',
+                iconBg: 'w-16 h-16 rounded-full bg-sky-100 text-sky-800 flex items-center justify-center text-3xl mx-auto shadow-inner',
+                iconClass: 'fa-solid fa-hands-holding text-sky-600',
+                axeText: 'text-sky-800 font-extrabold text-base block mt-2',
+                btnBg: 'w-full py-2.5 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
+            },
+            'pink': {
+                border: 'border-2 border-pink-400',
+                iconBg: 'w-16 h-16 rounded-full bg-pink-100 text-pink-800 flex items-center justify-center text-3xl mx-auto shadow-inner',
+                iconClass: 'fa-solid fa-candy-cane text-pink-600',
+                axeText: 'text-pink-700 font-extrabold text-base block mt-2',
+                btnBg: 'w-full py-2.5 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
+            }
+        };
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -59,6 +106,30 @@
 
         function closePasswordModal() {
             var modal = document.getElementById("password-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        // ABRIR MODAL COM TEMA DE COR DINÂMICO
+        function openSucessoModal(cor) {
+            var tema = TEMAS_MODAL[cor] || TEMAS_MODAL['emerald'];
+            var card = document.getElementById("sucesso-card");
+            var iconBox = document.getElementById("sucesso-icon-box");
+            var icon = document.getElementById("sucesso-icon");
+            var axe = document.getElementById("sucesso-axe");
+            var btn = document.getElementById("sucesso-btn");
+
+            if (card) card.className = "bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative " + tema.border;
+            if (iconBox) iconBox.className = tema.iconBg;
+            if (icon) icon.className = tema.iconClass;
+            if (axe) axe.className = tema.axeText;
+            if (btn) btn.className = tema.btnBg;
+
+            var modal = document.getElementById("sucesso-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function closeSucessoModal() {
+            var modal = document.getElementById("sucesso-modal");
             if (modal) modal.classList.add("hidden");
         }
 
@@ -137,7 +208,7 @@
                 var btnElem = document.getElementById("btn-presenca-" + id);
                 var jaConfirmou = localStorage.getItem("confirmado_gira_" + id);
 
-                // Se o usuário já confirmou neste aparelho, deixa APENAS O VISTO (check)
+                // Se o usuário já confirmou neste aparelho, ativa o visto de confirmação
                 if (jaConfirmou && btnElem) {
                     btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>';
                     btnElem.className = 'inline-flex items-center justify-center bg-emerald-50 border border-emerald-200/80 p-1.5 rounded-full cursor-default shadow-2xs';
@@ -175,11 +246,12 @@
             });
         }
 
-        // SISTEMA 2: CONFIRMAR PRESENÇA COM MENSAGEM DE OK + EXIBIR APENAS O VISTO
+        // SISTEMA 2: CONFIRMAR PRESENÇA COM MODAL CUSTOMIZADO DE COR DINÂMICA
         function confirmarPresencaGira(id) {
+            var cor = COR_EVENTO[id] || 'emerald';
             var jaConfirmou = localStorage.getItem("confirmado_gira_" + id);
             if (jaConfirmou) {
-                alert("Você já confirmou sua presença nesta atividade!");
+                openSucessoModal(cor);
                 return;
             }
 
@@ -207,8 +279,8 @@
                 btnElem.title = 'Presença Confirmada';
             }
 
-            // MENSAGEM DE SUCESSO COM BOTÃO OK
-            alert("Presença confirmada com sucesso! Axé! 🌿");
+            // ABRE O MODAL CUSTOMIZADO NA COR DO EVENTO
+            openSucessoModal(cor);
 
             // Envia para a nuvem em segundo plano
             fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "/up?t=" + Date.now())
@@ -327,6 +399,23 @@
             </button>
             <button onclick="window.print()" class="bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
                 <i class="fa-solid fa-print"></i> Imprimir / Salvar PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOMIZADO DE SUCESSO DE PRESENÇA (COM TEMA DE COR DINÂMICO) -->
+    <div id="sucesso-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div id="sucesso-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 border-2 border-emerald-400 relative">
+            <div id="sucesso-icon-box" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                <i id="sucesso-icon" class="fa-solid fa-leaf text-emerald-700"></i>
+            </div>
+            <div>
+                <h3 class="font-serif font-bold text-xl text-umbanda-green">Presença Confirmada!</h3>
+                <p class="text-xs text-stone-600 mt-2 font-medium">Sua presença foi registrada com sucesso.</p>
+                <span id="sucesso-axe" class="text-emerald-700 font-extrabold text-base block mt-2">Axé! 🌿✨</span>
+            </div>
+            <button id="sucesso-btn" onclick="closeSucessoModal()" class="w-full py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">
+                Concluído
             </button>
         </div>
     </div>
@@ -661,13 +750,15 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     <!-- DIA 01/06 - GIRA DE ESQUERDA (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-red-100 text-red-800 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 01/06 - Segunda</span>
-                            <span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> 17:00h</span>
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-red-100 text-red-800 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 01/06 - Segunda</span>
+                                <span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> 17:00h</span>
+                            </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Esquerda</h4>
+                            <p class="text-xs text-stone-600 leading-relaxed">Trabalhos com as forças da Esquerda. Favor atentar para a pontualidade e trajes adequados.</p>
                         </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Esquerda</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Trabalhos com as forças da Esquerda. Favor atentar para a pontualidade e trajes adequados.</p>
                         
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
                             <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
@@ -681,13 +772,15 @@
                     </div>
 
                     <!-- DIA 05/06 - MUTIRÃO (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-amber-500 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-amber-100 text-amber-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 05/06 - Sexta</span>
-                            <span class="text-[11px] sm:text-xs bg-amber-50 text-amber-800 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart"></i> Mutirão</span>
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-amber-500 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-amber-100 text-amber-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 05/06 - Sexta</span>
+                                <span class="text-[11px] sm:text-xs bg-amber-50 text-amber-800 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart"></i> Mutirão</span>
+                            </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Organização e Limpeza do Terreiro</h4>
+                            <p class="text-xs text-stone-600 leading-relaxed">Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para a Oferenda.</p>
                         </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Organização e Limpeza do Terreiro</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para a Oferenda.</p>
                         
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
                             <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
@@ -701,13 +794,15 @@
                     </div>
 
                     <!-- DIA 06/06 - OFERENDA OXÓSSI (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 06/06 - Sábado</span>
-                            <span class="text-[11px] sm:text-xs bg-emerald-50 text-emerald-800 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-tree"></i> Oxóssi</span>
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 06/06 - Sábado</span>
+                                <span class="text-[11px] sm:text-xs bg-emerald-50 text-emerald-800 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-tree"></i> Oxóssi</span>
+                            </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Oferenda para Obará de Oxóssi</h4>
+                            <p class="text-xs text-stone-600 leading-relaxed">Aguardem o comunicado interno no grupo referente ao horário e materiais de entrega.</p>
                         </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Oferenda para Obará de Oxóssi</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Aguardem o comunicado interno no grupo referente ao horário e materiais de entrega.</p>
                         
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
                             <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
@@ -721,13 +816,15 @@
                     </div>
 
                     <!-- DIA 08/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 08/06 - Segunda</span>
-                            <span class="text-[11px] sm:text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 70,00</span>
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 08/06 - Segunda</span>
+                                <span class="text-[11px] sm:text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 70,00</span>
+                            </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
+                            <p class="text-xs text-stone-600 leading-relaxed">Interessados em passar por consulta devem agendar com antecedência diretamente com a <strong>Paula</strong>.</p>
                         </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Interessados em passar por consulta devem agendar com antecedência diretamente com a <strong>Paula</strong>.</p>
                         
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
                             <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
@@ -741,16 +838,18 @@
                     </div>
 
                     <!-- DIA 12/06 - RITUAL XAMÂNICO (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 12/06 - Sexta</span>
-                            <div class="flex items-center gap-1.5 sm:gap-2">
-                                <span class="text-[10px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-1.5 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
-                                <span class="text-[11px] sm:text-xs bg-purple-600 text-white font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">R$ 180</span>
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 12/06 - Sexta</span>
+                                <div class="flex items-center gap-1.5 sm:gap-2">
+                                    <span class="text-[10px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-1.5 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
+                                    <span class="text-[11px] sm:text-xs bg-purple-600 text-white font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">R$ 180</span>
+                                </div>
                             </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico da Mãe Marli</h4>
+                            <p class="text-xs text-stone-600 leading-relaxed">Trabalho de elevação e cura espiritual com o sagrado xamanismo.</p>
                         </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico da Mãe Marli</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Trabalho de elevação e cura espiritual com o sagrado xamanismo.</p>
                         
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
                             <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
@@ -764,16 +863,18 @@
                     </div>
 
                     <!-- DIA 13/06 - RITUAL XAMÂNICO (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 13/06 - Sábado</span>
-                            <div class="flex items-center gap-1.5 sm:gap-2">
-                                <span class="text-[10px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-1.5 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
-                                <span class="text-[11px] sm:text-xs bg-purple-600 text-white font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">R$ 180</span>
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 13/06 - Sábado</span>
+                                <div class="flex items-center gap-1.5 sm:gap-2">
+                                    <span class="text-[10px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-1.5 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
+                                    <span class="text-[11px] sm:text-xs bg-purple-600 text-white font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">R$ 180</span>
+                                </div>
                             </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico</h4>
+                            <p class="text-xs text-stone-600 leading-relaxed">Continuação das atividades de firmeza xamânica no terreiro.</p>
                         </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Continuação das atividades de firmeza xamânica no terreiro.</p>
                         
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
                             <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
@@ -787,13 +888,15 @@
                     </div>
 
                     <!-- DIA 15/06 - CONSULTA SR. JOÃO CAVEIRA (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-red-100 text-red-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 15/06 - Segunda</span>
-                            <span class="text-[11px] sm:text-xs bg-red-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 100,00</span>
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-red-100 text-red-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 15/06 - Segunda</span>
+                                <span class="text-[11px] sm:text-xs bg-red-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 100,00</span>
+                            </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Sr. João Caveira</h4>
+                            <p class="text-xs text-stone-600 leading-relaxed">Agendamento prévio indispensável. Entrar em contato antecipadamente com a <strong>Paula</strong>.</p>
                         </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Sr. João Caveira</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Agendamento prévio indispensável. Entrar em contato antecipadamente com a <strong>Paula</strong>.</p>
                         
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
                             <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
@@ -806,17 +909,19 @@
                         </div>
                     </div>
 
-                    <!-- DIA 27/06 - BENZIMENTO (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-sky-500 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-sky-100 text-sky-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
-                            <span class="text-[11px] sm:text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">GRATUITO</span>
-                        </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Benzimento e Cura (Pessoas e Animais)</h4>
-                        <p class="text-xs text-stone-600 mb-2">Horário: <strong>10:00h às 12:00h</strong> (Atendimento por ordem de chegada).</p>
-                        <div class="p-2 bg-stone-50 rounded text-[11px] text-stone-600 space-y-1 border border-stone-200/60 mb-2">
-                            <p><i class="fa-solid fa-paw text-amber-700"></i> <strong>Animais:</strong> coleira, guia (corrente), focinheira ou caixa de transporte.</p>
-                            <p><i class="fa-solid fa-location-dot text-red-600"></i> <strong>Entrada/Saída:</strong> Av. Eng. Heitor Antonio Eiras Garcia, 2708.</p>
+                    <!-- DIA 27/06 - BENZIMENTO (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO RESTRUTURADO) -->
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-sky-500 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-sky-100 text-sky-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
+                                <span class="text-[11px] sm:text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">GRATUITO</span>
+                            </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Benzimento e Cura (Pessoas e Animais)</h4>
+                            <p class="text-xs text-stone-600 mb-1.5"><i class="fa-regular fa-clock text-sky-600 mr-1"></i> <strong>10:00h às 12:00h</strong> (Por ordem de chegada)</p>
+                            <p class="text-[11px] text-stone-500 leading-tight mb-2">
+                                <i class="fa-solid fa-paw text-amber-700 mr-1"></i> <strong>Animais:</strong> coleira/caixa. 
+                                <i class="fa-solid fa-location-dot text-red-600 ml-1.5 mr-1"></i> <strong>Entrada:</strong> Av. Eng. Heitor A. E. Garcia, 2708.
+                            </p>
                         </div>
 
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
@@ -831,13 +936,15 @@
                     </div>
 
                     <!-- DIA 27/06 - GIRA DE ERÊS (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-pink-400 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-pink-100 text-pink-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
-                            <span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> 12:00h</span>
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-pink-400 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-pink-100 text-pink-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
+                                <span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> 12:00h</span>
+                            </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Erês</h4>
+                            <p class="text-xs text-stone-600 leading-relaxed mb-2">Cada filho que incorpora deverá levar obrigatoriamente os doces e bebidas que seus Erês consomem.</p>
                         </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Erês</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed mb-2">Cada filho que incorpora deverá levar obrigatoriamente os doces e bebidas que seus Erês consomem.</p>
                         
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
                             <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
@@ -851,13 +958,15 @@
                     </div>
 
                     <!-- DIA 29/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition">
-                        <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                            <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 29/06 - Segunda</span>
-                            <span class="text-[11px] sm:text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 70,00</span>
+                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
+                                <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 29/06 - Segunda</span>
+                                <span class="text-[11px] sm:text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 70,00</span>
+                            </div>
+                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
+                            <p class="text-xs text-stone-600 leading-relaxed">Interessados agendar com a <strong>Paula</strong> com antecedência.</p>
                         </div>
-                        <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
-                        <p class="text-xs text-stone-600 leading-relaxed">Interessados agendar com a <strong>Paula</strong> com antecedência.</p>
                         
                         <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
                             <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
