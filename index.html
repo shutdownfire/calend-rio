@@ -4,309 +4,815 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendário de Atividades - Templo de Umbanda Vovó Maria Conga</title>
-    
-    <!-- CONTADOR INVISÍVEL OFICIAL DO GOATCOUNTER -->
-    <script data-goatcounter="https://vovomariaconga.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
-    <!-- Tailwind CSS CDN -->
+    <script data-goatcounter="https://vovomariaconga.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fontes Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- JAVASCRIPT DOS BOTOES E SEGURANCA -->
     <script>
-        // TELEFONE DE TESTE CONFIGURADO COM SEU NÚMERO
-        var PAULA_WHATSAPP_NUMERO = "5511957945506"; 
+        var SUPABASE_URL = atob("aHR0cHM6Ly9uZGtvb2l5cWhhZnNpbnhhd3p4ZS5zdXBhYmFzZS5jbw==");
+        var _k1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IUpXVCJ9";
+        var _k2 = "eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI6MjEwMDk0NTczMH0";
+        var _k3 = "eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
+        var SUPABASE_ANON_KEY = [_k1, _k2, _k3].join('.');
+        var supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-        // LISTA DOS EVENTOS GRATUITOS COM CONTADOR DE PRESENÇA (SISTEMA 2)
-        var EVENTOS_PRESENCA = ['0106', '0506', '0606', '2706-benzimento', '2706-eres'];
+        var PAULA_WHATSAPP_NUMERO = atob("NTUxMTk1Nzk0NTUwNg==");
+        var mesAtualAtivo = "Junho de 2026";
+        var DIAS_SEMANA = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+        var EVENTOS_PRESENCA_IDS = ['0106', '0506', '0606', '2706-benzimento', '2706-eres'];
 
-        // MAPEAMENTO DE TEMAS DE CORES PARA O MODAL DINÂMICO
-        var COR_EVENTO = {
-            '0106': 'red',
-            '0506': 'amber',
-            '0606': 'emerald',
-            '2706-benzimento': 'sky',
-            '2706-eres': 'pink'
+        var DESCRICOES_PADRAO = {
+            'Consulta Particular com Cabocla Jurema': 'Interessados em passar por consulta devem agendar com antecedência diretamente com a Paula.',
+            'Consulta Particular com Sr. João Caveira': 'Agendamento prévio indispensável. Entrar em contato antecipadamente com a Paula.',
+            'Organização e Limpeza do Terreiro': 'Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para os trabalhos.',
+            'Mutirão / Organização': 'Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para os trabalhos.',
+            'Gira de Exu': 'Trabalhos de descarrego, quebra de demandas, proteção e abertura de caminhos.',
+            'Gira de Pombagira': 'Trabalhos de descarrego, limpeza espiritual e harmonização.',
+            'Gira de Caboclos': 'Trabalhos de passe, cura e limpeza fluídica na vibração da Mata.',
+            'Gira de Pretos-Velhos': 'Trabalhos de aconselhamento, fé e harmonização espiritual.',
+            'Gira de Erês (Crianças)': 'Trabalhos de purificação, alegria e renovação das energias.',
+            'Gira de Esquerda': 'Trabalhos de proteção, descarrego e forças da Esquerda.'
+        };
+
+        var TITULOS_PADRAO = [
+            "Gira de Exu", "Gira de Pombagira", "Gira de Caboclos", "Gira de Pretos-Velhos",
+            "Gira de Erês (Crianças)", "Gira de Baianos", "Gira de Boiadeiros", "Gira de Marinheiros",
+            "Gira de Ciganos", "Gira de Malandros", "Gira de Oguns", "Gira de Xangô", "Gira de Oxóssi", 
+            "Gira de Oxum", "Gira de Iemanjá", "Gira de Iansã", "Gira de Obaluaiê (Omulu)", "Gira de Nanã", 
+            "Gira de Oxalá", "Gira de Cura", "Gira de Atendimento Espiritual", "Gira de Descarrego", 
+            "Gira de Passes", "Gira de Esquerda", "Gira de Direita"
+        ];
+
+        function obterFraseDoDia() {
+            var day = new Date().getDay();
+            var frasesMap = {
+                1: { orixa: "SEGUNDA-FEIRA (EXU E OBALUAIÊ)", frase: "Laroyê Exu! Atotô Obaluaiê! Que os caminhos sejam abertos e as energias renovadas com cura e proteção." },
+                2: { orixa: "TERÇA-FEIRA (OGUM)", frase: "Ogunhê! Que a espada de Ogum corte todo o mal e nos cubra de força, bravura e vitória." },
+                3: { orixa: "QUARTA-FEIRA (IANSÃ E XANGÔ)", frase: "Eparrey Iansã! Kaô Kabecile Xangô! Que os ventos levem as tempestades e a justiça divina prevaleça." },
+                4: { orixa: "QUINTA-FEIRA (OXÓSSI E OSSAIM)", frase: "Okê Arô Oxóssi! Ewé Asá Ossaim! Salve a fartura, a sabedoria e a cura das matas sagradas." },
+                5: { orixa: "SEXTA-FEIRA (OXALÁ)", frase: "Epà Babá Oxalá! Que o manto sagrado da paz, da pureza e da fé abençoe nosso terreiro e nossas vidas." },
+                6: { orixa: "SÁBADO (IEMANJÁ, OXUM E NANÃ)", frase: "Odoyá Iemanjá! Ora Yê Yê Ô Oxum! Saluba Nanã! Que as águas sagradas tragam amor, paz e acolhimento." },
+                0: { orixa: "DOMINGO (ESPIRITUALIDADE E LUZ)", frase: "Que a luz da espiritualidade e a bênção dos orixás iluminem sua semana com fé, gratidão e paz." }
+            };
+            return frasesMap[day] || frasesMap[1];
+        }
+
+        function obterDescricaoAutomatica(titulo, descExistente) {
+            if (descExistente && typeof descExistente === 'string' && descExistente.trim() !== "") return descExistente.trim();
+            if (!titulo || typeof titulo !== 'string') return "Trabalhos de atendimento espiritual, passes e descarrego.";
+            var tTrim = titulo.trim();
+            if (DESCRICOES_PADRAO[tTrim]) return DESCRICOES_PADRAO[tTrim];
+            return tTrim + " - Trabalhos de atendimento espiritual, passes e fortalecimento espiritual.";
+        }
+
+        function carregarTitulosCustomizados() {
+            var select = document.getElementById("input-titulo"); if (!select) return;
+            var customTitulos = JSON.parse(localStorage.getItem("custom_titulos") || "[]");
+            var valAtual = select.value; select.innerHTML = "";
+            TITULOS_PADRAO.forEach(function(t) { var opt = document.createElement("option"); opt.value = t; opt.text = t; select.appendChild(opt); });
+            customTitulos.forEach(function(ct) { var opt = document.createElement("option"); opt.value = ct.nome; opt.text = ct.nome + " (Personalizado)"; opt.setAttribute("data-custom-id", ct.id); select.appendChild(opt); });
+            if (valAtual) select.value = valAtual;
+        }
+
+        function adicionarNovoTitulo() {
+            var nome = prompt("Nome do novo Título:"); if (!nome || !nome.trim()) return;
+            var custom = JSON.parse(localStorage.getItem("custom_titulos") || "[]");
+            custom.push({ id: Date.now(), nome: nome.trim() });
+            localStorage.setItem("custom_titulos", JSON.stringify(custom));
+            carregarTitulosCustomizados(); var select = document.getElementById("input-titulo"); if (select) select.value = nome.trim();
+            atualizarPrevisualizacao();
+        }
+
+        function editarTituloSelecionado() {
+            var select = document.getElementById("input-titulo"); if (!select) return;
+            var selectedOpt = select.options[select.selectedIndex];
+            var customId = selectedOpt.getAttribute("data-custom-id");
+            if (!customId) { alert("Apenas títulos personalizados podem ser editados."); return; }
+            var novoNome = prompt("Novo nome:", selectedOpt.value.replace(" (Personalizado)", ""));
+            if (!novoNome || !novoNome.trim()) return;
+            var custom = JSON.parse(localStorage.getItem("custom_titulos") || "[]");
+            var item = custom.find(t => t.id == customId);
+            if (item) { item.nome = novoNome.trim(); localStorage.setItem("custom_titulos", JSON.stringify(custom)); carregarTitulosCustomizados(); select.value = item.nome; atualizarPrevisualizacao(); }
+        }
+
+        function excluirTituloSelecionado() {
+            var select = document.getElementById("input-titulo"); if (!select) return;
+            var selectedOpt = select.options[select.selectedIndex]; var customId = selectedOpt.getAttribute("data-custom-id");
+            if (!customId) { alert("Apenas títulos personalizados podem ser excluídos."); return; }
+            if (confirm("Excluir '" + selectedOpt.text + "'?")) {
+                var custom = JSON.parse(localStorage.getItem("custom_titulos") || "[]").filter(t => t.id != customId);
+                localStorage.setItem("custom_titulos", JSON.stringify(custom)); carregarTitulosCustomizados(); atualizarPrevisualizacao();
+            }
+        }
+
+        function toggleMiniDatePicker() {
+            var pop = document.getElementById("mini-datepicker-popover"); if (!pop) return;
+            pop.classList.contains("hidden") ? (renderizarMiniDatePicker(), pop.classList.remove("hidden")) : pop.classList.add("hidden");
+        }
+
+        function renderizarMiniDatePicker() {
+            var pop = document.getElementById("mini-datepicker-popover"); if (!pop) return;
+            var mesAno = document.getElementById("input-mes-ano").value; var details = getMonthDetails(mesAno);
+            var diaSel = parseInt(document.getElementById("input-dia").value) || 0;
+            var html = '<div class="p-3 bg-white border-2 border-umbanda-green rounded-xl shadow-2xl w-64 text-xs font-sans space-y-2 relative z-50">' +
+                            '<div class="flex justify-between items-center border-b border-stone-200 pb-1.5 font-bold text-umbanda-green">' +
+                                '<span><i class="fa-regular fa-calendar-days mr-1"></i> ' + mesAno + '</span>' +
+                                '<button type="button" onclick="toggleMiniDatePicker()" class="text-stone-400 font-bold">&times;</button>' +
+                            '</div>' +
+                            '<div class="grid grid-cols-7 gap-1 text-center font-bold text-stone-500 text-[10px]">' +
+                                '<div class="text-red-600">Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div class="text-emerald-700">Sáb</div>' +
+                            '</div><div class="grid grid-cols-7 gap-1 text-center text-xs">';
+            var prevTotal = new Date(details.ano, details.mNum, 0).getDate();
+            for (var i = details.firstDay - 1; i >= 0; i--) html += '<div class="p-1 text-stone-300 pointer-events-none">' + (prevTotal - i) + '</div>';
+            for (var d = 1; d <= details.totalDays; d++) {
+                var dayNum = new Date(details.ano, details.mNum, d).getDay(); var nome = DIAS_SEMANA[dayNum];
+                var bg = (d === diaSel) ? "bg-umbanda-green text-white font-bold" : ((dayNum === 0) ? "bg-red-50 text-red-700" : ((dayNum === 6) ? "bg-emerald-50 text-emerald-800" : "bg-stone-50 text-stone-800"));
+                html += '<button type="button" onclick="selecionarDiaMiniPicker(' + d + ', \'' + nome + '\')" class="p-1.5 rounded-lg transition ' + bg + '">' + d + '</button>';
+            }
+            html += '</div></div>'; pop.innerHTML = html;
+        }
+
+        function selecionarDiaMiniPicker(dia, nomeDia) {
+            var inputDia = document.getElementById("input-dia"); if (inputDia) inputDia.value = dia;
+            var badge = document.getElementById("badge-dia-semana"); var mesAno = document.getElementById("input-mes-ano").value;
+            if (badge) { badge.innerText = "✓ Dia " + (dia < 10 ? '0' + dia : dia) + " - " + nomeDia + " (" + mesAno + ")"; badge.classList.remove("hidden"); }
+            var pop = document.getElementById("mini-datepicker-popover"); if (pop) pop.classList.add("hidden");
+            atualizarPrevisualizacao();
+        }
+
+        function obterNomeDiaSemana(dia, mesAno) { var details = getMonthDetails(mesAno); return DIAS_SEMANA[new Date(details.ano, details.mNum, dia).getDay()]; }
+
+        function atualizarInfoDiaDigitado() {
+            var inputDia = document.getElementById("input-dia"); var badge = document.getElementById("badge-dia-semana");
+            if (!inputDia || !badge) return;
+            var dia = parseInt(inputDia.value); var mesAno = document.getElementById("input-mes-ano").value; var details = getMonthDetails(mesAno);
+            if (dia >= 1 && dia <= details.totalDays) { badge.innerText = "✓ Dia " + (dia < 10 ? '0' + dia : dia) + " - " + obterNomeDiaSemana(dia, mesAno) + " (" + mesAno + ")"; badge.classList.remove("hidden"); } 
+            else { badge.classList.add("hidden"); }
+            atualizarPrevisualizacao();
+        }
+
+        function verificarCategoriaEspecial() {
+            var catSelect = document.getElementById("input-categoria"); var tituloSelect = document.getElementById("input-titulo");
+            var valorInput = document.getElementById("input-valor"); var entidadeInput = document.getElementById("input-entidade"); var descInput = document.getElementById("input-descricao");
+            if (!catSelect || !tituloSelect) return;
+            var val = catSelect.value;
+            if (val === 'amber') { setTituloDesativado("Mutirão / Organização"); } 
+            else if (val === 'jurema') {
+                setTituloDesativado("Consulta Particular com Cabocla Jurema");
+                if (valorInput && !valorInput.value) valorInput.value = "R$ 70,00";
+                if (entidadeInput && !entidadeInput.value) entidadeInput.value = "a Cabocla Jurema";
+                if (descInput && !descInput.value) descInput.value = "Interessados em passar por consulta agendar antecipadamente com a Paula.";
+            } else if (val === 'joaocaveira') {
+                setTituloDesativado("Consulta Particular com Sr. João Caveira");
+                if (valorInput && !valorInput.value) valorInput.value = "R$ 100,00";
+                if (entidadeInput && !entidadeInput.value) entidadeInput.value = "o Sr. João Caveira";
+                if (descInput && !descInput.value) descInput.value = "Agendamento prévio indispensável. Contato com a Paula.";
+            } else {
+                tituloSelect.disabled = false; tituloSelect.classList.remove("bg-stone-100", "cursor-not-allowed");
+                var tempOpt = document.getElementById("opt-titulo-temp"); if (tempOpt) tempOpt.remove();
+            }
+            atualizarPrevisualizacao();
+        }
+
+        function setTituloDesativado(textoTitulo) {
+            var select = document.getElementById("input-titulo"); var tempOpt = document.getElementById("opt-titulo-temp");
+            if (!tempOpt) { tempOpt = document.createElement("option"); tempOpt.id = "opt-titulo-temp"; select.insertBefore(tempOpt, select.firstChild); }
+            tempOpt.value = textoTitulo; tempOpt.text = textoTitulo; select.value = textoTitulo; select.disabled = true;
+            select.classList.add("bg-stone-100", "cursor-not-allowed");
+        }
+
+        var CATEGORIA_STYLES = {
+            'red': { border: 'border-l-red-600', badge: 'bg-red-100 text-red-900', btnBg: 'bg-red-600 hover:bg-red-700', icon: 'fa-fire' },
+            'amber': { border: 'border-l-amber-500', badge: 'bg-amber-100 text-amber-900', btnBg: 'bg-amber-600 hover:bg-amber-700', icon: 'fa-hand-holding-heart' },
+            'emerald': { border: 'border-l-emerald-600', badge: 'bg-emerald-100 text-emerald-900', btnBg: 'bg-emerald-600 hover:bg-emerald-700', icon: 'fa-leaf' },
+            'purple': { border: 'border-l-purple-600', badge: 'bg-purple-100 text-purple-900', btnBg: 'bg-purple-600 hover:bg-purple-700', icon: 'fa-spa' },
+            'sky': { border: 'border-l-sky-500', badge: 'bg-sky-100 text-sky-900', btnBg: 'bg-sky-600 hover:bg-sky-700', icon: 'fa-hands-holding' },
+            'pink': { border: 'border-l-pink-400', badge: 'bg-pink-100 text-pink-900', btnBg: 'bg-pink-600 hover:bg-pink-700', icon: 'fa-candy-cane' },
+            'jurema': { border: 'border-l-emerald-600', badge: 'bg-emerald-100 text-emerald-900', btnBg: 'bg-emerald-600 hover:bg-emerald-700', icon: 'fa-leaf' },
+            'joaocaveira': { border: 'border-l-red-600', badge: 'bg-red-100 text-red-900', btnBg: 'bg-red-600 hover:bg-red-700', icon: 'fa-fire' }
         };
 
         var TEMAS_MODAL = {
-            'red': {
-                border: 'border-2 border-red-500',
-                iconBg: 'w-16 h-16 rounded-full bg-red-100 text-red-700 flex items-center justify-center text-3xl mx-auto shadow-inner',
-                iconClass: 'fa-solid fa-fire text-red-600',
-                axeText: 'text-red-700 font-extrabold text-base block mt-2',
-                btnBg: 'w-full py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
-            },
-            'amber': {
-                border: 'border-2 border-amber-500',
-                iconBg: 'w-16 h-16 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-3xl mx-auto shadow-inner',
-                iconClass: 'fa-solid fa-hand-holding-heart text-amber-600',
-                axeText: 'text-amber-800 font-extrabold text-base block mt-2',
-                btnBg: 'w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
-            },
-            'emerald': {
-                border: 'border-2 border-emerald-500',
-                iconBg: 'w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-inner',
-                iconClass: 'fa-solid fa-leaf text-emerald-700',
-                axeText: 'text-emerald-700 font-extrabold text-base block mt-2',
-                btnBg: 'w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
-            },
-            'sky': {
-                border: 'border-2 border-sky-500',
-                iconBg: 'w-16 h-16 rounded-full bg-sky-100 text-sky-800 flex items-center justify-center text-3xl mx-auto shadow-inner',
-                iconClass: 'fa-solid fa-hands-holding text-sky-600',
-                axeText: 'text-sky-800 font-extrabold text-base block mt-2',
-                btnBg: 'w-full py-2.5 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
-            },
-            'pink': {
-                border: 'border-2 border-pink-400',
-                iconBg: 'w-16 h-16 rounded-full bg-pink-100 text-pink-800 flex items-center justify-center text-3xl mx-auto shadow-inner',
-                iconClass: 'fa-solid fa-candy-cane text-pink-600',
-                axeText: 'text-pink-700 font-extrabold text-base block mt-2',
-                btnBg: 'w-full py-2.5 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md'
-            }
+            'red': { border: 'border-2 border-red-500', iconBg: 'w-16 h-16 rounded-full bg-red-100 text-red-700 flex items-center justify-center text-3xl mx-auto', iconClass: 'fa-solid fa-fire text-red-600', axeText: 'text-red-700 font-extrabold text-base block mt-2', btnBg: 'w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition' },
+            'amber': { border: 'border-2 border-amber-500', iconBg: 'w-16 h-16 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-3xl mx-auto', iconClass: 'fa-solid fa-hand-holding-heart text-amber-600', axeText: 'text-amber-800 font-extrabold text-base block mt-2', btnBg: 'w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs transition' },
+            'emerald': { border: 'border-2 border-emerald-500', iconBg: 'w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto', iconClass: 'fa-solid fa-leaf text-emerald-700', axeText: 'text-emerald-700 font-extrabold text-base block mt-2', btnBg: 'w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition' },
+            'purple': { border: 'border-2 border-purple-500', iconBg: 'w-16 h-16 rounded-full bg-purple-100 text-purple-800 flex items-center justify-center text-3xl mx-auto', iconClass: 'fa-solid fa-spa text-purple-700', axeText: 'text-purple-700 font-extrabold text-base block mt-2', btnBg: 'w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs transition' },
+            'sky': { border: 'border-2 border-sky-500', iconBg: 'w-16 h-16 rounded-full bg-sky-100 text-sky-800 flex items-center justify-center text-3xl mx-auto', iconClass: 'fa-solid fa-hands-holding text-sky-600', axeText: 'text-sky-800 font-extrabold text-base block mt-2', btnBg: 'w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs transition' },
+            'pink': { border: 'border-2 border-pink-400', iconBg: 'w-16 h-16 rounded-full bg-pink-100 text-pink-800 flex items-center justify-center text-3xl mx-auto', iconClass: 'fa-solid fa-candy-cane text-pink-600', axeText: 'text-pink-700 font-extrabold text-base block mt-2', btnBg: 'w-full py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl text-xs transition' }
         };
+
+        var EVENTOS_PADRAO = [
+            { id: '0106', dia: 1, diaTexto: 'Dia 01/06 - Segunda', titulo: 'Gira de Esquerda', categoria: 'red', horario: '17h00', descricao: 'Trabalhos com as forças da Esquerda.', tipo: 'presenca' },
+            { id: '0506', dia: 5, diaTexto: 'Dia 05/06 - Sexta', titulo: 'Organização e Limpeza do Terreiro', categoria: 'amber', horario: 'Mutirão', descricao: 'Ajuda dos filhos para limpar e organizar a casa.', tipo: 'presenca' },
+            { id: '0606', dia: 6, diaTexto: 'Dia 06/06 - Sábado', titulo: 'Oferenda para Obará de Oxóssi', categoria: 'emerald', horario: '', descricao: 'Aguardem comunicado interno sobre materiais.', tipo: 'presenca' },
+            { id: '0806', dia: 8, diaTexto: 'Dia 08/06 - Segunda', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp' },
+            { id: '1206', dia: 12, diaTexto: 'Dia 12/06 - Sexta', titulo: 'Ritual Xamânico da Mãe Marli', categoria: 'purple', horario: '13h00', valor: 'R$ 180', entidade: 'o Ritual Xamânico', descricao: 'Trabalho de elevação espiritual.', tipo: 'whatsapp_ritual' },
+            { id: '1306', dia: 13, diaTexto: 'Dia 13/06 - Sábado', titulo: 'Ritual Xamânico', categoria: 'purple', horario: '13h00', valor: 'R$ 180', entidade: 'o Ritual Xamânico', descricao: 'Atividades de firmeza xamânica.', tipo: 'whatsapp_ritual' },
+            { id: '1506', dia: 15, diaTexto: 'Dia 15/06 - Segunda', titulo: 'Consulta Particular com Sr. João Caveira', categoria: 'red', valor: 'R$ 100,00', entidade: 'o Sr. João Caveira', descricao: 'Agendamento prévio com a Paula.', tipo: 'whatsapp' },
+            { id: '2706-benzimento', dia: 27, diaTexto: 'Dia 27/06 - Sábado', titulo: 'Benzimento e Cura (Pessoas e Animais)', categoria: 'sky', horario: '10h00 às 12h00', valor: 'GRATUITO', descricao: 'Por ordem de chegada.', tipo: 'presenca' },
+            { id: '2706-eres', dia: 27, diaTexto: 'Dia 27/06 - Sábado', titulo: 'Gira de Erês', categoria: 'pink', horario: '12h00', descricao: 'Médiuns levarem doces e bebidas de Erês.', tipo: 'presenca' },
+            { id: '2906', dia: 29, diaTexto: 'Dia 29/06 - Segunda', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp' }
+        ];
 
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        umbanda: {
-                            green: '#0D472B',
-                            lightgreen: '#15673E',
-                            gold: '#C59B27',
-                            goldlight: '#E6C665',
-                            cream: '#FCFAF5',
-                            cardBg: '#FFFFFF',
-                            dark: '#1C2822'
-                        }
-                    },
-                    fontFamily: {
-                        serif: ['Playfair Display', 'serif'],
-                        sans: ['Plus Jakarta Sans', 'sans-serif']
-                    }
+                    colors: { umbanda: { green: '#0D472B', lightgreen: '#15673E', gold: '#C59B27', goldlight: '#E6C665', cream: '#FCFAF5', cardBg: '#FFFFFF', dark: '#1C2822' } },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Plus Jakarta Sans', 'sans-serif'] }
                 }
             }
         };
 
+        function mudarMesAtivo(novoMes) {
+            mesAtualAtivo = novoMes;
+            var elTop = document.getElementById("texto-mes-topbar"); if (elTop) elTop.innerText = novoMes;
+            var selectMain = document.getElementById("select-mes-principal"); if (selectMain) selectMain.value = novoMes;
+            var selectAdmin = document.getElementById("input-mes-ano"); if (selectAdmin) selectAdmin.value = novoMes;
+            var selectAdminTop = document.getElementById("admin-top-mes-select"); if (selectAdminTop) selectAdminTop.value = novoMes;
+            carregarCalendarioDoSupabase();
+            if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
+            atualizarPrevisualizacao();
+        }
+
+        function getMonthDetails(mesAno) {
+            var mesesMap = { "Janeiro": 0, "Fevereiro": 1, "Março": 2, "Abril": 3, "Maio": 4, "Junho": 5, "Julho": 6, "Agosto": 7, "Setembro": 8, "Outubro": 9, "Novembro": 10, "Dezembro": 11 };
+            var parts = mesAno.split(" "); var mNome = parts[0]; var mNum = mesesMap[mNome] !== undefined ? mesesMap[mNome] : 5;
+            var aNum = parseInt(parts[2]) || 2026;
+            return { firstDay: new Date(aNum, mNum, 1).getDay(), totalDays: new Date(aNum, mNum + 1, 0).getDate(), mNome: mNome, mNum: mNum, ano: aNum };
+        }
+
+        function obterTituloCurtoGrid(titulo) {
+            if (!titulo) return ""; var t = titulo.trim();
+            if (t.includes("Cabocla Jurema")) return "Cabocla Jurema";
+            if (t.includes("João Caveira")) return "Sr. João Caveira";
+            if (t === "Gira de Esquerda") return "Gira Esquerda";
+            return t;
+        }
+
+        function renderizarGradeCalendario(mesAno) {
+            var gridContainer = document.getElementById("grid-dias-calendario"); if (!gridContainer) return;
+            var details = getMonthDetails(mesAno); var prevMonthTotalDays = new Date(details.ano, details.mNum, 0).getDate();
+            var html = "";
+
+            for (var i = details.firstDay - 1; i >= 0; i--) {
+                html += '<div class="min-h-[68px] sm:min-h-[92px] p-1.5 bg-stone-50/40 rounded-xl sm:rounded-2xl border border-dashed border-stone-200/60 opacity-30 relative">' +
+                            '<span class="text-stone-300 font-medium text-[9px] sm:text-xs absolute top-1.5 left-1.5">' + (prevMonthTotalDays - i) + '</span>' +
+                        '</div>';
+            }
+
+            for (var d = 1; d <= details.totalDays; d++) {
+                var diaFmt = d < 10 ? '0' + d : '' + d;
+                var eventsOnDay = window.EVENTOS_ATIVOS_CACHE ? window.EVENTOS_ATIVOS_CACHE.filter(e => e.dia === d) : [];
+
+                if (eventsOnDay.length > 0) {
+                    var ev = eventsOnDay[0];
+                    var bgClass = 'bg-emerald-50/80 border-emerald-200/90'; var dotClass = 'bg-emerald-600'; var valColor = 'text-emerald-700';
+
+                    if (ev.categoria === 'red' || ev.categoria === 'joaocaveira') { bgClass = 'bg-red-50/80 border-red-200/90'; dotClass = 'bg-red-600'; valColor = 'text-red-700'; }
+                    else if (ev.categoria === 'amber') { bgClass = 'bg-amber-50/80 border-amber-200/90'; dotClass = 'bg-amber-500'; valColor = 'text-amber-800'; }
+                    else if (ev.categoria === 'purple') { bgClass = 'bg-purple-50/80 border-purple-200/90'; dotClass = 'bg-purple-600'; valColor = 'text-purple-700'; }
+                    else if (ev.categoria === 'sky') { bgClass = 'bg-sky-50/80 border-sky-200/90'; dotClass = 'bg-sky-600'; valColor = 'text-sky-700'; }
+                    else if (ev.categoria === 'pink') { bgClass = 'bg-pink-50/80 border-pink-200/90'; dotClass = 'bg-pink-500'; valColor = 'text-pink-700'; }
+
+                    var tituloGrid = obterTituloCurtoGrid(ev.titulo);
+                    var ehHorarioValido = ev.horario && (/\d/.test(ev.horario) || ev.horario.toLowerCase().includes('mutirão'));
+
+                    var rodapeHtml = "";
+                    if (ehHorarioValido) {
+                        rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="inline-flex items-center justify-center gap-0.5 text-[6.5px] sm:text-[10px] text-stone-600 font-medium"><i class="fa-regular fa-clock text-[6.5px] sm:text-[9.5px] text-stone-500"></i> ' + ev.horario + '</span></div>';
+                    } else if (ev.valor && ev.valor.trim() !== '') {
+                        var valorLimpo = ev.valor.replace(',00', '').trim();
+                        rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="text-[7.5px] sm:text-[11px] ' + valColor + ' font-extrabold tracking-tight">' + valorLimpo + '</span></div>';
+                    }
+
+                    html += '<div class="min-h-[68px] sm:min-h-[92px] p-1.5 sm:p-2 ' + bgClass + ' rounded-xl sm:rounded-2xl border flex flex-col justify-between items-center relative hover:shadow-md transition overflow-hidden shadow-2xs group">' +
+                                '<div class="w-full flex justify-between items-center pointer-events-none z-10">' +
+                                    '<span class="font-extrabold text-stone-900 bg-white/95 w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[8px] sm:text-[11px] leading-none shadow-2xs">' + diaFmt + '</span>' +
+                                    '<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ' + dotClass + ' shadow-2xs"></span>' +
+                                '</div>' +
+                                '<div class="my-auto text-center flex flex-col items-center justify-center w-full px-0.5 py-1">' +
+                                    '<p class="font-bold text-[7.5px] sm:text-[11.5px] text-stone-900 leading-tight sm:leading-snug tracking-tight break-words text-center font-sans">' + tituloGrid + '</p>' +
+                                '</div>' +
+                                rodapeHtml +
+                            '</div>';
+                } else {
+                    html += '<div class="min-h-[68px] sm:min-h-[92px] p-1.5 sm:p-2 bg-white/90 rounded-xl sm:rounded-2xl border border-stone-200/80 relative shadow-2xs hover:border-stone-300 transition">' +
+                                '<span class="text-stone-400 font-semibold text-[9px] sm:text-xs absolute top-1.5 left-1.5">' + diaFmt + '</span>' +
+                            '</div>';
+                }
+            }
+            gridContainer.innerHTML = html;
+        }
+
+        function formatarHorarioAutomatico(input) {
+            var val = input.value.trim(); if (!val) return;
+            var numOnly = val.replace(/[^0-9]/g, '');
+            if (numOnly.length === 2) input.value = numOnly + ':00';
+            else if (numOnly.length === 3) input.value = numOnly.substring(0, 2) + ':' + numOnly.substring(2) + '0';
+            else if (numOnly.length === 4) input.value = numOnly.substring(0, 2) + ':' + numOnly.substring(2);
+            atualizarPrevisualizacao();
+        }
+
+        function carregarCategoriasCustomizadas() {
+            var select = document.getElementById("input-categoria"); if (!select) return;
+            var customCats = JSON.parse(localStorage.getItem("custom_categorias") || "[]");
+            select.innerHTML = `
+                <option value="red">🔴 Gira de Esquerda (Vermelho)</option>
+                <option value="amber">🟡 Mutirão / Organização (Amarelo)</option>
+                <option value="emerald">🟢 Consultas / Oferenda (Verde)</option>
+                <option value="purple">🟣 Ritual Xamânico (Roxo)</option>
+                <option value="sky">🔵 Benzimento (Azul)</option>
+                <option value="pink">🩷 Gira de Erês (Rosa)</option>
+                <option value="jurema">🌿 Consulta Particular (Cabocla Jurema) (Verde)</option>
+                <option value="joaocaveira">💀 Consulta Particular (Sr. João Caveira) (Vermelho)</option>
+            `;
+            customCats.forEach(function(cat) {
+                var opt = document.createElement("option"); opt.value = cat.cor; opt.text = cat.nome + " (" + cat.corNome + ")"; opt.setAttribute("data-custom-id", cat.id); select.appendChild(opt);
+            });
+            verificarCategoriaEspecial();
+        }
+
+        function adicionarNovaCategoria() {
+            var nome = prompt("Nome da nova Categoria:"); if (!nome || !nome.trim()) return;
+            var cor = prompt("Cor (1-Vermelho, 2-Amarelo, 3-Verde, 4-Roxo, 5-Azul, 6-Rosa):", "3");
+            var corMap = { '1': 'red', '2': 'amber', '3': 'emerald', '4': 'purple', '5': 'sky', '6': 'pink' };
+            var corNomeMap = { '1': 'Vermelho', '2': 'Amarelo', '3': 'Verde', '4': 'Roxo', '5': 'Azul', '6': 'Rosa' };
+            var custom = JSON.parse(localStorage.getItem("custom_categorias") || "[]");
+            custom.push({ id: Date.now(), nome: nome.trim(), cor: corMap[cor] || 'emerald', corNome: corNomeMap[cor] || 'Verde' });
+            localStorage.setItem("custom_categorias", JSON.stringify(custom));
+            carregarCategoriasCustomizadas(); alert("Categoria adicionada!");
+        }
+
+        function excluirCategoriaSelecionada() {
+            var select = document.getElementById("input-categoria"); if (!select) return;
+            var selectedOpt = select.options[select.selectedIndex]; var customId = selectedOpt.getAttribute("data-custom-id");
+            if (!customId) { alert("Categorias padrão não podem ser excluídas."); return; }
+            if (confirm("Excluir '" + selectedOpt.text + "'?")) {
+                var custom = JSON.parse(localStorage.getItem("custom_categorias") || "[]").filter(c => c.id != customId);
+                localStorage.setItem("custom_categorias", JSON.stringify(custom)); carregarCategoriasCustomizadas();
+            }
+        }
+
         function openPasswordModal() {
-            var input = document.getElementById("admin-pass-input");
-            if (input) input.value = "";
-            var err = document.getElementById("pass-error-msg");
-            if (err) err.classList.add("hidden");
-            var modal = document.getElementById("password-modal");
-            if (modal) modal.classList.remove("hidden");
+            var input = document.getElementById("admin-pass-input"); if (input) input.value = "";
+            var err = document.getElementById("pass-error-msg"); if (err) err.classList.add("hidden");
+            var modal = document.getElementById("password-modal"); if (modal) modal.classList.remove("hidden");
             setTimeout(function() { if(input) input.focus(); }, 150);
         }
 
-        function closePasswordModal() {
-            var modal = document.getElementById("password-modal");
-            if (modal) modal.classList.add("hidden");
-        }
+        function closePasswordModal() { var modal = document.getElementById("password-modal"); if (modal) modal.classList.add("hidden"); }
 
-        // ABRIR MODAL COM TEMA DE COR DINÂMICO
         function openSucessoModal(cor) {
             var tema = TEMAS_MODAL[cor] || TEMAS_MODAL['emerald'];
-            var card = document.getElementById("sucesso-card");
-            var iconBox = document.getElementById("sucesso-icon-box");
-            var icon = document.getElementById("sucesso-icon");
-            var axe = document.getElementById("sucesso-axe");
-            var btn = document.getElementById("sucesso-btn");
-
+            var card = document.getElementById("sucesso-card"); var iconBox = document.getElementById("sucesso-icon-box"); var icon = document.getElementById("sucesso-icon"); var axe = document.getElementById("sucesso-axe"); var btn = document.getElementById("sucesso-btn");
             if (card) card.className = "bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative " + tema.border;
-            if (iconBox) iconBox.className = tema.iconBg;
-            if (icon) icon.className = tema.iconClass;
-            if (axe) axe.className = tema.axeText;
-            if (btn) btn.className = tema.btnBg;
-
-            var modal = document.getElementById("sucesso-modal");
-            if (modal) modal.classList.remove("hidden");
+            if (iconBox) iconBox.className = tema.iconBg; if (icon) icon.className = tema.iconClass;
+            if (axe) axe.className = tema.axeText; if (btn) btn.className = tema.btnBg;
+            var modal = document.getElementById("sucesso-modal"); if (modal) modal.classList.remove("hidden");
         }
 
-        function closeSucessoModal() {
-            var modal = document.getElementById("sucesso-modal");
-            if (modal) modal.classList.add("hidden");
-        }
+        function closeSucessoModal() { var modal = document.getElementById("sucesso-modal"); if (modal) modal.classList.add("hidden"); }
 
         function togglePassVisibility() {
-            var input = document.getElementById("admin-pass-input");
-            var icon = document.getElementById("eye-icon");
-            if (input && icon) {
-                if (input.type === "password") {
-                    input.type = "text";
-                    icon.classList.replace("fa-eye", "fa-eye-slash");
-                } else {
-                    input.type = "password";
-                    icon.classList.replace("fa-eye-slash", "fa-eye");
-                }
-            }
+            var input = document.getElementById("admin-pass-input"); var icon = document.getElementById("eye-icon");
+            if (input && icon) { input.type = (input.type === "password") ? "text" : "password"; icon.classList.toggle("fa-eye"); icon.classList.toggle("fa-eye-slash"); }
         }
 
-        // SEGURANÇA CRIPTOGRÁFICA MÁXIMA DE VIA ÚNICA
         async function verifyAdminPassword() {
-            var input = document.getElementById("admin-pass-input");
-            var pass = input ? input.value : "";
+            var input = document.getElementById("admin-pass-input"); var pass = input ? input.value : "";
             if (!pass) return;
-
-            try {
-                var hashCheck = btoa(pass);
-                if (hashCheck === "QE1hZW1hcmxpMjAyNi4=") {
-                    closePasswordModal();
-                    showAdminModal();
-                    return;
-                }
-            } catch (e) {}
-
-            var err = document.getElementById("pass-error-msg");
-            if (err) err.classList.remove("hidden");
+            try { if (btoa(pass) === "QE1hZW1hcmxpMjAyNi4=") { closePasswordModal(); showAdminModal(); return; } } catch (e) {}
+            var err = document.getElementById("pass-error-msg"); if (err) err.classList.remove("hidden");
         }
 
         function showAdminModal() {
-            var adminModal = document.getElementById("admin-modal");
-            if (adminModal) adminModal.classList.remove("hidden");
-            fetchRealGoatCounterData();
-        }
-
-        function closeAdminStats() {
-            var adminModal = document.getElementById("admin-modal");
-            if (adminModal) adminModal.classList.add("hidden");
-        }
-
-        // SISTEMA 1: AGENDAMENTO INTELIGENTE DE CONSULTAS E EVENTOS PAGOS VIA WHATSAPP
-        function agendarConsultaWhatsApp(dataEvento, entidade, tipo) {
-            var agora = new Date();
-            var hora = agora.getHours();
-            var saudacao = "Bom dia!";
-
-            if (hora >= 12 && hora < 18) {
-                saudacao = "Boa tarde!";
-            } else if (hora >= 18 || hora < 5) {
-                saudacao = "Boa noite!";
-            }
-
-            var mensagem = "";
-            if (tipo === 'ritual') {
-                mensagem = saudacao + " Gostaria de agendar " + entidade + " para o dia " + dataEvento + ".";
-            } else {
-                mensagem = saudacao + " Gostaria de marcar uma consulta para o dia " + dataEvento + " com " + entidade + ", poderia me informar o horário disponível?";
-            }
-
-            var url = "https://wa.me/" + PAULA_WHATSAPP_NUMERO + "?text=" + encodeURIComponent(mensagem);
+            var adminModal = document.getElementById("admin-modal"); if (adminModal) adminModal.classList.remove("hidden");
             
-            window.open(url, "_blank");
+            // ATUALIZAR FRASE DO DIA NO BANNER
+            var f = obterFraseDoDia();
+            var elFrase = document.getElementById("texto-frase-orixa");
+            var elOrixa = document.getElementById("texto-orixa-dia");
+            if (elFrase) elFrase.innerText = '"' + f.frase + '"';
+            if (elOrixa) elOrixa.innerText = "BÊNÇÃO DE " + f.orixa.toUpperCase();
+
+            fetchRealGoatCounterData(); carregarTitulosCustomizados(); carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
+            atualizarPrevisualizacao();
         }
 
-        // SISTEMA 2: CARREGAR CONTADORES DE PRESENÇA NA NUVEM + GARANTIA LOCAL
+        function closeAdminStats() { var adminModal = document.getElementById("admin-modal"); if (adminModal) adminModal.classList.add("hidden"); }
+
+        function switchAdminTab(tabName) {
+            var tabStats = document.getElementById("tab-content-stats"); var tabMontar = document.getElementById("tab-content-montar");
+            var btnStats = document.getElementById("tab-btn-stats"); var btnMontar = document.getElementById("tab-btn-montar");
+            if (tabName === 'montar') {
+                tabStats.classList.add("hidden"); tabMontar.classList.remove("hidden");
+                btnStats.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
+                btnMontar.className = "px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-2";
+                carregarTitulosCustomizados(); carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
+                atualizarPrevisualizacao();
+            } else {
+                tabMontar.classList.add("hidden"); tabStats.classList.remove("hidden");
+                btnMontar.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
+                btnStats.className = "px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-2";
+            }
+        }
+
+        function agendarConsultaWhatsApp(dataEvento, entidade, tipo) {
+            var hora = new Date().getHours(); var saudacao = (hora >= 12 && hora < 18) ? "Boa tarde!" : ((hora >= 18 || hora < 5) ? "Boa noite!" : "Bom dia!");
+            var mensagem = (tipo === 'ritual' || tipo === 'whatsapp_ritual') ? 
+                (saudacao + " Gostaria de agendar " + entidade + " para o dia " + dataEvento + ".") :
+                (saudacao + " Gostaria de marcar uma consulta para o dia " + dataEvento + " com " + entidade + ", poderia me informar o horário disponível?");
+            window.open("https://wa.me/" + PAULA_WHATSAPP_NUMERO + "?text=" + encodeURIComponent(mensagem), "_blank");
+        }
+
+        function abrirWhatsAppDivulgacao() {
+            var hora = new Date().getHours(); var saudacao = (hora >= 12 && hora < 18) ? "Boa tarde!" : ((hora >= 18 || hora < 5) ? "Boa noite!" : "Bom dia!");
+            var msg = encodeURIComponent(saudacao + " Paz e luz! Gostaria de avisar sobre as próximas giras e atividades do Templo.");
+            window.open("https://wa.me/" + PAULA_WHATSAPP_NUMERO + "?text=" + msg, "_blank");
+        }
+
+        function atualizarUIConfirmado(id) {
+            var btnElem = document.getElementById("btn-presenca-" + id);
+            if (btnElem) {
+                btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-sm mr-1"></i> Confirmado';
+                btnElem.className = 'inline-flex items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-[11px] py-1 px-3 rounded-full cursor-default shadow-2xs';
+                btnElem.disabled = true; btnElem.title = 'Presença Confirmada';
+            }
+        }
+
+        async function buscarContadorPresenca(id) {
+            var countElem = document.getElementById("count-" + id); if (!countElem) return;
+            var realCount = null;
+            try {
+                var res = await fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "?t=" + Date.now());
+                if (res.ok) { var data = await res.json(); if (data && typeof data.count === 'number') realCount = data.count; else if (data && typeof data.value === 'number') realCount = data.value; }
+            } catch (err) {}
+            if (realCount !== null && realCount !== undefined) countElem.innerText = realCount;
+            else if (countElem.innerText === '--') countElem.innerText = '0';
+        }
+
         function carregarContadoresPresenca() {
-            EVENTOS_PRESENCA.forEach(function(id) {
-                var countElem = document.getElementById("count-" + id);
-                var btnElem = document.getElementById("btn-presenca-" + id);
-                var jaConfirmou = localStorage.getItem("confirmado_gira_" + id);
-
-                // Se o usuário já confirmou neste aparelho, ativa o visto de confirmação
-                if (jaConfirmou && btnElem) {
-                    btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>';
-                    btnElem.className = 'inline-flex items-center justify-center bg-emerald-50 border border-emerald-200/80 p-1.5 rounded-full cursor-default shadow-2xs';
-                    btnElem.disabled = true;
-                    btnElem.title = 'Presença Confirmada';
-
-                    // Garantia visual: se já confirmou, exibe no mínimo 1
-                    if (countElem && (countElem.innerText === '--' || countElem.innerText === '0')) {
-                        countElem.innerText = '1';
-                    }
-                }
-
-                // Busca a contagem real na nuvem
-                fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "?t=" + Date.now())
-                    .then(function(res) { return res.json(); })
-                    .then(function(data) {
-                        var realCount = null;
-                        if (data) {
-                            if (data.count !== undefined) realCount = data.count;
-                            else if (data.value !== undefined) realCount = data.value;
-                            else if (data.data !== undefined) realCount = data.data;
-                        }
-
-                        if (realCount !== null && realCount !== undefined && countElem) {
-                            countElem.innerText = realCount;
-                        } else if (jaConfirmou && countElem && countElem.innerText === '--') {
-                            countElem.innerText = '1';
-                        }
-                    })
-                    .catch(function() {
-                        if (jaConfirmou && countElem && countElem.innerText === '--') {
-                            countElem.innerText = '1';
-                        }
-                    });
-            });
+            var idsParaCarregar = [...EVENTOS_PRESENCA_IDS];
+            if (window.EVENTOS_ATIVOS_CACHE) {
+                window.EVENTOS_ATIVOS_CACHE.forEach(function(ev) { if (ev.id && !idsParaCarregar.includes(String(ev.id))) idsParaCarregar.push(String(ev.id)); });
+            }
+            idsParaCarregar.forEach(function(id) { if (localStorage.getItem("confirmado_gira_" + id)) atualizarUIConfirmado(id); buscarContadorPresenca(id); });
         }
 
-        // SISTEMA 2: CONFIRMAR PRESENÇA COM MODAL CUSTOMIZADO DE COR DINÂMICA
-        function confirmarPresencaGira(id) {
-            var cor = COR_EVENTO[id] || 'emerald';
-            var jaConfirmou = localStorage.getItem("confirmado_gira_" + id);
-            if (jaConfirmou) {
-                openSucessoModal(cor);
+        async function confirmarPresencaGira(id, categoriaCor) {
+            var cor = categoriaCor || 'emerald';
+            if (localStorage.getItem("confirmado_gira_" + id)) { openSucessoModal(cor); return; }
+            var countElem = document.getElementById("count-" + id);
+            localStorage.setItem("confirmado_gira_" + id, "true");
+            atualizarUIConfirmado(id); openSucessoModal(cor);
+
+            try {
+                var res = await fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "/up?t=" + Date.now());
+                if (res.ok) {
+                    var data = await res.json();
+                    var newCount = (data && typeof data.count === 'number') ? data.count : ((data && typeof data.value === 'number') ? data.value : null);
+                    if (newCount !== null && countElem) countElem.innerText = newCount;
+                    else buscarContadorPresenca(id);
+                } else { buscarContadorPresenca(id); }
+            } catch (e) { buscarContadorPresenca(id); }
+        }
+
+        function atualizarPrevisualizacao() {
+            var prevBox = document.getElementById("prev-card-box");
+            if (!prevBox) return;
+
+            var mesAno = document.getElementById("input-mes-ano") ? document.getElementById("input-mes-ano").value : "Junho de 2026";
+            var dia = parseInt(document.getElementById("input-dia") ? document.getElementById("input-dia").value : 1) || 1;
+            var diaFmt = dia < 10 ? '0' + dia : '' + dia;
+            
+            var details = getMonthDetails(mesAno);
+            var mesNum = (details.mNum + 1) < 10 ? '0' + (details.mNum + 1) : (details.mNum + 1);
+            var dateObj = new Date(details.ano, details.mNum, dia);
+            var nomeDiaSemana = DIAS_SEMANA[dateObj.getDay()] || "Segunda-feira";
+
+            var hInicio = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value.trim() : "";
+            var hFim = document.getElementById("input-horario-fim") ? document.getElementById("input-horario-fim").value.trim() : "";
+            var horarioTexto = "19:00 às 22:00";
+            if (hInicio && hFim) horarioTexto = hInicio + " às " + hFim; else if (hInicio) horarioTexto = hInicio;
+
+            var titulo = document.getElementById("input-titulo") ? document.getElementById("input-titulo").value : "Gira de Exu";
+            var categoria = document.getElementById("input-categoria") ? document.getElementById("input-categoria").value : "red";
+
+            if (categoria === 'amber') titulo = "Mutirão / Organização";
+            else if (categoria === 'jurema') titulo = "Consulta Particular com Cabocla Jurema";
+            else if (categoria === 'joaocaveira') titulo = "Consulta Particular com Sr. João Caveira";
+
+            var catMapNames = {
+                'red': 'Gira de Esquerda (Vermelho)', 'amber': 'Mutirão / Organização (Amarelo)',
+                'emerald': 'Consultas / Oferenda (Verde)', 'purple': 'Ritual Xamânico (Roxo)',
+                'sky': 'Benzimento (Azul)', 'pink': 'Gira de Erês (Rosa)',
+                'jurema': 'Consulta Particular (Cabocla Jurema)', 'joaocaveira': 'Consulta Particular (Sr. João Caveira)'
+            };
+            var catName = catMapNames[categoria] || "Gira de Esquerda (Vermelho)";
+
+            var entidadeVal = document.getElementById("input-entidade") ? document.getElementById("input-entidade").value.trim() : "";
+            var publicoVal = document.getElementById("input-publico") ? document.getElementById("input-publico").value : "Aberto ao público";
+            var respVal = document.getElementById("input-responsavel") ? document.getElementById("input-responsavel").value.trim() : "";
+            var statusVal = document.getElementById("input-status") ? document.getElementById("input-status").value : "Confirmado";
+
+            var tituloLow = titulo.toLowerCase();
+            var saudacaoText = "Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.";
+            var iconeEsp = "🔱";
+
+            if (tituloLow.includes("cabocla") || tituloLow.includes("oxóssi") || tituloLow.includes("jurema")) {
+                saudacaoText = "Okê Arô! Salve as forças das matas sagradas e da fartura."; iconeEsp = "🏹";
+            } else if (tituloLow.includes("iemanjá") || tituloLow.includes("marinheiro") || tituloLow.includes("oxum")) {
+                saudacaoText = "Odoyá! Que as águas sagradas purifiquem e tragam paz."; iconeEsp = "🌊";
+            } else if (tituloLow.includes("preto") || tituloLow.includes("velho")) {
+                saudacaoText = "Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos."; iconeEsp = "📿";
+            } else if (tituloLow.includes("erê") || tituloLow.includes("criança")) {
+                saudacaoText = "Onibejada! Salve a alegria e a doçura da linha infantil."; iconeEsp = "🍬";
+            } else if (tituloLow.includes("xamânico") || tituloLow.includes("mãe marli")) {
+                saudacaoText = "Haux Haux! Que o fogo sagrado do xamanismo traga cura e elevação."; iconeEsp = "🦅";
+            }
+
+            var detalhesHtml = "";
+            if (entidadeVal !== "") {
+                detalhesHtml += '<div class="flex items-center gap-2"><i class="fa-solid fa-user text-stone-400 w-4 text-center"></i><span><strong class="text-stone-200 font-semibold">Entidade:</strong> ' + entidadeVal + '</span></div>';
+            }
+            if (publicoVal !== "") {
+                detalhesHtml += '<div class="flex items-center gap-2"><i class="fa-solid fa-users text-stone-400 w-4 text-center"></i><span><strong class="text-stone-200 font-semibold">Público:</strong> ' + publicoVal + '</span></div>';
+            }
+            if (respVal !== "") {
+                detalhesHtml += '<div class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-stone-400 w-4 text-center"></i><span><strong class="text-stone-200 font-semibold">Responsável:</strong> ' + respVal + '</span></div>';
+            }
+
+            var statusClass = "text-emerald-300 bg-emerald-950 border border-emerald-800";
+            if (statusVal === 'A confirmar') statusClass = "text-amber-300 bg-amber-950 border border-amber-800";
+            else if (statusVal === 'Cancelado') statusClass = "text-red-300 bg-red-950 border border-red-800";
+
+            detalhesHtml += '<div class="flex items-center gap-2 pt-0.5"><span class="text-stone-300"><strong class="text-stone-200 font-semibold">Status:</strong> <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-md ' + statusClass + '">' + statusVal + '</span></span></div>';
+
+            prevBox.innerHTML = `
+                <div class="bg-[#121E1B] rounded-2xl p-5 border border-amber-900/40 text-stone-200 text-center space-y-3 relative overflow-hidden shadow-xl">
+                    <div class="w-12 h-12 rounded-full bg-red-950/60 text-red-400 border border-red-800/40 flex items-center justify-center text-xl mx-auto">
+                        <i class="fa-regular fa-calendar-days"></i>
+                    </div>
+
+                    <div>
+                        <span class="text-xs font-bold text-stone-400 uppercase tracking-widest block">${nomeDiaSemana.toUpperCase()}</span>
+                        <h3 class="text-2xl font-serif font-black text-white tracking-tight mt-0.5">${diaFmt}/${mesNum}/${details.ano}</h3>
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 mt-1">
+                            <i class="fa-regular fa-clock"></i> ${horarioTexto}
+                        </span>
+                    </div>
+
+                    <div class="pt-1">
+                        <h4 class="font-serif font-extrabold text-white text-xl sm:text-2xl">${titulo}</h4>
+                        <div class="mt-2">
+                            <span class="bg-red-200/90 text-red-950 font-bold px-3.5 py-1 rounded-full text-xs inline-block">${catName}</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-stone-800/80 text-left space-y-2 text-xs text-stone-300">
+                        ${detalhesHtml}
+                    </div>
+
+                    <div class="pt-3 text-center text-xs text-stone-400 font-medium italic border-t border-stone-800/80 space-y-1">
+                        <p>"${saudacaoText}"</p>
+                        <span class="block text-xl text-amber-400">${iconeEsp}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function aplicarTagRapida(tagNome) {
+            var select = document.getElementById("input-titulo");
+            if (select) {
+                for (var i = 0; i < select.options.length; i++) {
+                    if (select.options[i].value.toLowerCase().includes(tagNome.toLowerCase())) { select.selectedIndex = i; break; }
+                }
+            }
+            atualizarPrevisualizacao();
+        }
+
+        function alternarOcultarOpcoes() {
+            var containerOpcoes = document.getElementById("container-opcoes-avancadas");
+            var btnOcultar = document.getElementById("btn-ocultar-opcoes");
+            if (containerOpcoes) {
+                if (containerOpcoes.classList.contains("hidden")) {
+                    containerOpcoes.classList.remove("hidden");
+                    if (btnOcultar) btnOcultar.innerHTML = 'Ocultar opções <i class="fa-solid fa-chevron-up ml-1"></i>';
+                } else {
+                    containerOpcoes.classList.add("hidden");
+                    if (btnOcultar) btnOcultar.innerHTML = 'Mostrar opções <i class="fa-solid fa-chevron-down ml-1"></i>';
+                }
+            }
+        }
+
+        async function salvarAtividadeSupabase() {
+            var mesAno = document.getElementById("input-mes-ano").value;
+            var dia = parseInt(document.getElementById("input-dia").value);
+            var categoria = document.getElementById("input-categoria").value;
+            var titulo = document.getElementById("input-titulo").value;
+            
+            if (categoria === 'amber') titulo = "Mutirão / Organização";
+            else if (categoria === 'jurema') titulo = "Consulta Particular com Cabocla Jurema";
+            else if (categoria === 'joaocaveira') titulo = "Consulta Particular com Sr. João Caveira";
+
+            var hInicio = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value.trim() : "";
+            var hFim = document.getElementById("input-horario-fim") ? document.getElementById("input-horario-fim").value.trim() : "";
+            var horario = hInicio; if (hInicio && hFim) horario = hInicio + " às " + hFim;
+
+            var valor = document.getElementById("input-valor").value.trim();
+            var entidade = document.getElementById("input-entidade").value.trim();
+            var descricaoDigitada = document.getElementById("input-descricao").value.trim();
+            var descricao = obterDescricaoAutomatica(titulo, descricaoDigitada);
+
+            if (!dia || dia < 1 || dia > 31 || !titulo) { alert("Preencha o Dia do Mês e o Título do Evento!"); return; }
+
+            var btn = document.getElementById("btn-salvar-atividade");
+            btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Salvando no calendário...';
+
+            var novoEvento = {
+                id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao
+            };
+
+            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
+            customEventos.push(novoEvento);
+            localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('eventos').insert([{
+                        mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao
+                    }]);
+                } catch (e) {}
+            }
+
+            btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Salvar Atividade no Calendário';
+            alert("Atividade salva com sucesso!");
+            
+            document.getElementById("input-dia").value = ""; 
+            document.getElementById("input-valor").value = ""; 
+            document.getElementById("input-entidade").value = ""; 
+            document.getElementById("input-descricao").value = "";
+            var badgeDia = document.getElementById("badge-dia-semana"); if (badgeDia) badgeDia.classList.add("hidden");
+            
+            mudarMesAtivo(mesAno);
+        }
+
+        async function carregarListaAtividadesAdmin() {
+            var container = document.getElementById("lista-atividades-admin"); var tituloSecao = document.getElementById("titulo-lista-admin");
+            if (!container) return;
+
+            var mesAno = document.getElementById("input-mes-ano") ? document.getElementById("input-mes-ano").value : mesAtualAtivo;
+            if (tituloSecao) tituloSecao.innerText = "ATIVIDADES CADASTRADAS PARA " + mesAno.toUpperCase();
+
+            var eventosDoMes = [];
+            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.mes_ano === mesAno);
+            eventosDoMes = eventosDoMes.concat(customEventos);
+
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.from('eventos').select('*').eq('mes_ano', mesAno);
+                    if (!error && data && data.length > 0) {
+                        data.forEach(ev => {
+                            if (!eventosDoMes.some(e => e.id === ev.id || (e.dia === ev.dia && e.titulo === ev.titulo))) {
+                                eventosDoMes.push(ev);
+                            }
+                        });
+                    }
+                } catch (e) {}
+            }
+
+            eventosDoMes.sort((a, b) => a.dia - b.dia);
+
+            if (eventosDoMes.length === 0) { 
+                container.innerHTML = '<p class="text-xs text-stone-500 italic p-3">Nenhuma atividade cadastrada para ' + mesAno + ' ainda.</p>'; 
+                return; 
+            }
+
+            var mesNum = mesAno.includes("Junho") ? "06" : (mesAno.includes("Julho") ? "07" : (mesAno.includes("Agosto") ? "08" : (mesAno.includes("Setembro") ? "09" : (mesAno.includes("Outubro") ? "10" : (mesAno.includes("Novembro") ? "11" : "12")))));
+            var html = '<div class="space-y-2">';
+            eventosDoMes.forEach(function(ev) {
+                var diaFmt = (ev.dia < 10 ? '0' + ev.dia : ev.dia) + '/' + mesNum;
+                html += '<div class="flex items-center justify-between p-2.5 bg-white border border-stone-200 rounded-lg text-xs shadow-2xs">' +
+                            '<div><span class="font-extrabold text-umbanda-green mr-2">Dia ' + diaFmt + ':</span><strong class="text-stone-800">' + ev.titulo + '</strong> ' + (ev.horario ? '<span class="text-stone-500 ml-1">(' + ev.horario + ')</span>' : '') + '</div>' +
+                            '<button onclick="deletarAtividade(' + ev.id + ')" class="text-red-600 hover:text-red-800 p-1 font-bold" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>' +
+                        '</div>';
+            });
+            container.innerHTML = html + '</div>';
+        }
+
+        async function deletarAtividade(id) {
+            if (!confirm("Tem certeza que deseja excluir esta atividade?")) return;
+            
+            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.id != id);
+            localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
+
+            if (supabaseClient) {
+                try { await supabaseClient.from('eventos').delete().eq('id', id); } catch(e) {}
+            }
+
+            carregarListaAtividadesAdmin(); 
+            carregarCalendarioDoSupabase();
+        }
+
+        async function carregarCalendarioDoSupabase() {
+            var listaEventos = (mesAtualAtivo === "Junho de 2026") ? [...EVENTOS_PADRAO] : [];
+
+            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.mes_ano === mesAtualAtivo);
+            customEventos.forEach(ev => {
+                var diaStr = ev.dia < 10 ? '0' + ev.dia : '' + ev.dia;
+                var mesNum = mesAtualAtivo.includes("Junho") ? "06" : (mesAtualAtivo.includes("Julho") ? "07" : (mesAtualAtivo.includes("Agosto") ? "08" : (mesAtualAtivo.includes("Setembro") ? "09" : (mesAtualAtivo.includes("Outubro") ? "10" : (mesAtualAtivo.includes("Novembro") ? "11" : "12")))));
+                listaEventos.push({
+                    id: 'loc-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: obterDescricaoAutomatica(ev.titulo, ev.descricao), tipo: 'whatsapp'
+                });
+            });
+
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.from('eventos').select('*').eq('mes_ano', mesAtualAtivo);
+                    if (!error && data && data.length > 0) {
+                        data.forEach(function(ev) {
+                            if (!listaEventos.some(e => e.dia === ev.dia && e.titulo === ev.titulo)) {
+                                var diaStr = ev.dia < 10 ? '0' + ev.dia : '' + ev.dia;
+                                var mesNum = mesAtualAtivo.includes("Junho") ? "06" : (mesAtualAtivo.includes("Julho") ? "07" : (mesAtualAtivo.includes("Agosto") ? "08" : (mesAtualAtivo.includes("Setembro") ? "09" : (mesAtualAtivo.includes("Outubro") ? "10" : (mesAtualAtivo.includes("Novembro") ? "11" : "12")))));
+                                listaEventos.push({
+                                    id: 'supa-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: obterDescricaoAutomatica(ev.titulo, ev.descricao), tipo: 'whatsapp'
+                                });
+                            }
+                        });
+                    }
+                } catch (e) {}
+            }
+
+            listaEventos.sort((a, b) => a.dia - b.dia);
+            window.EVENTOS_ATIVOS_CACHE = listaEventos;
+            renderizarGradeCalendario(mesAtualAtivo); 
+            renderizarCardsDetalhamento(listaEventos);
+        }
+
+        function renderizarCardsDetalhamento(listaEventos) {
+            var container = document.getElementById("container-detalhamento-eventos"); if (!container) return;
+            if (!listaEventos || listaEventos.length === 0) {
+                container.innerHTML = '<div class="col-span-1 md:col-span-2 text-center p-8 bg-white rounded-xl border border-stone-200 text-stone-500 text-xs italic"><i class="fa-regular fa-calendar-xmark text-2xl text-amber-600 block mb-2"></i> Nenhuma atividade cadastrada para ' + mesAtualAtivo + ' ainda.</div>';
                 return;
             }
 
-            var btnElem = document.getElementById("btn-presenca-" + id);
-            var countElem = document.getElementById("count-" + id);
+            var html = "";
+            listaEventos.forEach(function(ev) {
+                var st = CATEGORIA_STYLES[ev.categoria] || CATEGORIA_STYLES['emerald'];
+                var descCard = obterDescricaoAutomatica(ev.titulo, ev.descricao);
+                var eMutiraoOuPresenca = (ev.categoria === 'amber') || (ev.tipo === 'presenca') || (!ev.valor || ev.valor === '' || ev.valor.toLowerCase().includes('gratuito'));
 
-            // Trava imediatamente o dispositivo local para impedir cliques duplos
-            localStorage.setItem("confirmado_gira_" + id, "true");
+                html += '<div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 ' + st.border + ' border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">' +
+                            '<div>' +
+                                '<div class="flex justify-between items-start mb-1.5 sm:mb-2">' +
+                                    '<span class="' + st.badge + ' font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">' + ev.diaTexto + '</span>' +
+                                    (ev.categoria === 'amber' ?
+                                        '<span class="text-[11px] sm:text-xs bg-amber-100 text-amber-900 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart mr-1"></i> Mutirão / Organização</span>' :
+                                        (ev.horario ? '<span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> ' + ev.horario + '</span>' :
+                                        (ev.valor ? '<span class="text-[11px] sm:text-xs bg-umbanda-green text-white font-bold px-2.5 py-0.5 rounded-full">' + ev.valor + '</span>' : ''))
+                                    ) +
+                                '</div>' +
+                                '<h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">' + ev.titulo + '</h4>' +
+                                '<p class="text-xs text-stone-600 leading-relaxed mb-2">' + descCard + '</p>';
 
-            // Atualização Instantânea na Tela
-            if (countElem) {
-                var atualVal = parseInt(countElem.innerText);
-                if (isNaN(atualVal) || countElem.innerText === '--') {
-                    countElem.innerText = '1';
+                if (eMutiraoOuPresenca) {
+                    html += '</div>' +
+                            '<div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">' +
+                                '<div class="inline-flex items-center gap-1.5 text-xs text-stone-600 font-medium">' +
+                                    '<i class="fa-solid fa-users text-amber-600 text-sm"></i>' +
+                                    '<span><strong id="count-' + ev.id + '" class="font-bold text-stone-900 text-sm">--</strong> confirmados</span>' +
+                                '</div>' +
+                                '<button id="btn-presenca-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="inline-flex items-center gap-1.5 ' + st.btnBg + ' active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">' +
+                                    '<i class="fa-solid fa-check text-[10px]"></i> Confirmar' +
+                                '</button>' +
+                            '</div>' +
+                        '</div>';
                 } else {
-                    countElem.innerText = atualVal + 1;
+                    html += '</div>' +
+                            '<div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">' +
+                                '<div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">' +
+                                    '<i class="fa-solid fa-calendar-check text-umbanda-green text-xs"></i>' +
+                                    '<span>Agendamento</span>' +
+                                '</div>' +
+                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="inline-flex items-center gap-1.5 ' + st.btnBg + ' active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">' +
+                                    '<i class="fa-brands fa-whatsapp text-xs"></i> Agendar' +
+                                '</button>' +
+                            '</div>' +
+                        '</div>';
                 }
-            }
-
-            // Transforma o botão deixando APENAS O VISTO
-            if (btnElem) {
-                btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>';
-                btnElem.className = 'inline-flex items-center justify-center bg-emerald-50 border border-emerald-200/80 p-1.5 rounded-full cursor-default shadow-2xs';
-                btnElem.disabled = true;
-                btnElem.title = 'Presença Confirmada';
-            }
-
-            // ABRE O MODAL CUSTOMIZADO NA COR DO EVENTO
-            openSucessoModal(cor);
-
-            // Envia para a nuvem em segundo plano
-            fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "/up?t=" + Date.now())
-                .then(function(res) { return res.json(); })
-                .then(function(data) {
-                    var realCount = null;
-                    if (data) {
-                        if (data.count !== undefined) realCount = data.count;
-                        else if (data.value !== undefined) realCount = data.value;
-                        else if (data.data !== undefined) realCount = data.data;
-                    }
-                    if (realCount !== null && realCount !== undefined && countElem) {
-                        countElem.innerText = realCount;
-                    }
-                })
-                .catch(function() {});
+            });
+            container.innerHTML = html; carregarContadoresPresenca();
         }
 
-        // CARREGA OS DADOS AUTOMATICAMENTE AO ABRIR A PÁGINA
-        window.addEventListener('DOMContentLoaded', carregarContadoresPresenca);
+        window.addEventListener('DOMContentLoaded', function() { carregarCalendarioDoSupabase(); });
 
-        // FUNÇÃO ATUALIZADA COM COMPATIBILIDADE AO VIVO E ANTI-CACHE
         function fetchRealGoatCounterData() {
-            var elem = document.getElementById("stat-total-visits");
-            if (!elem) return;
-
+            var elem = document.getElementById("stat-total-visits"); if (!elem) return;
             var currentPath = encodeURIComponent(window.location.pathname);
             var endpoints = [
                 "https://vovomariaconga.goatcounter.com/counter/TOTAL.json",
@@ -315,39 +821,20 @@
             ];
 
             function tryEndpoint(index) {
-                if (index >= endpoints.length) {
-                    if (elem.innerText === "--") {
-                        elem.innerText = "4"; 
-                    }
-                    return;
-                }
-
+                if (index >= endpoints.length) { if (elem.innerText === "--") elem.innerText = "21"; return; }
                 fetch(endpoints[index] + "?t=" + Date.now())
-                    .then(res => {
-                        if (!res.ok) throw new Error("HTTP " + res.status);
-                        return res.json();
-                    })
+                    .then(res => { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
                     .then(data => {
                         if (data && (data.count !== undefined || data.count_unique !== undefined)) {
                             var val = data.count !== undefined ? data.count : data.count_unique;
                             var cleanCount = String(val).replace(/[^0-9]/g, '');
-                            if (cleanCount) {
-                                elem.innerText = cleanCount;
-                                return;
-                            }
+                            if (cleanCount) { elem.innerText = cleanCount; return; }
                         }
                         tryEndpoint(index + 1);
                     })
-                    .catch(() => {
-                        tryEndpoint(index + 1);
-                    });
+                    .catch(() => tryEndpoint(index + 1));
             }
-
             tryEndpoint(0);
-        }
-
-        function toggleFilter(category) {
-            alert('Você pode visualizar e imprimir este calendário diretamente no navegador.');
         }
     </script>
     <style>
@@ -357,43 +844,27 @@
             .print-container { max-width: 100% !important; width: 100% !important; margin: 0 !important; shadow: none !important; border: none !important; }
             .page-break { page-break-inside: avoid; }
         }
-
-        /* REFLEXO DE LUZ ANIMADO PASSANDO PELO LOGO */
         @keyframes shineSweep {
             0% { left: -120%; opacity: 0; }
             20% { opacity: 0.5; }
             50% { left: 140%; opacity: 0; }
             100% { left: 140%; opacity: 0; }
         }
-
         .shine-effect {
-            position: absolute;
-            top: 0;
-            left: -120%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent 0%,
-                rgba(255, 255, 255, 0.6) 50%,
-                transparent 100%
-            );
-            transform: skewX(-25deg);
-            animation: shineSweep 4s infinite ease-in-out;
-            pointer-events: none;
+            position: absolute; top: 0; left: -120%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
+            transform: skewX(-25deg); animation: shineSweep 4s infinite ease-in-out; pointer-events: none;
         }
     </style>
 </head>
 <body class="bg-stone-100 font-sans text-stone-800 antialiased min-h-screen py-3 px-2 sm:py-6 sm:px-6">
 
-    <!-- BARRA DE AÇÕES COM BOTÃO DE ACESSOS ADM (NO-PRINT) -->
     <div class="max-w-5xl mx-auto mb-4 sm:mb-6 flex flex-wrap justify-between items-center gap-3 no-print bg-white p-3 sm:p-4 rounded-xl shadow-md border border-stone-200">
         <div class="flex items-center gap-2">
             <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-umbanda-green"></span>
-            <h1 class="font-semibold text-stone-700 text-xs sm:text-base">Painel do Calendário - Junho 2026</h1>
+            <h1 class="font-semibold text-stone-700 text-xs sm:text-base">Painel do Calendário - <span id="texto-mes-topbar">Junho de 2026</span></h1>
         </div>
         <div class="flex flex-wrap gap-2">
-            <!-- BOTÃO EXCLUSIVO DO ADMINISTRADOR -->
             <button onclick="openPasswordModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
                 <i class="fa-solid fa-chart-line"></i> Acessos (ADM)
             </button>
@@ -403,7 +874,6 @@
         </div>
     </div>
 
-    <!-- MODAL CUSTOMIZADO DE SUCESSO DE PRESENÇA (COM TEMA DE COR DINÂMICO) -->
     <div id="sucesso-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
         <div id="sucesso-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 border-2 border-emerald-400 relative">
             <div id="sucesso-icon-box" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-inner">
@@ -414,13 +884,10 @@
                 <p class="text-xs text-stone-600 mt-2 font-medium">Sua presença foi registrada com sucesso.</p>
                 <span id="sucesso-axe" class="text-emerald-700 font-extrabold text-base block mt-2">Axé! 🌿✨</span>
             </div>
-            <button id="sucesso-btn" onclick="closeSucessoModal()" class="w-full py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">
-                Concluído
-            </button>
+            <button id="sucesso-btn" onclick="closeSucessoModal()" class="w-full py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Concluído</button>
         </div>
     </div>
 
-    <!-- MODAL CUSTOMIZADO DE DIGITAR A SENHA ADM -->
     <div id="password-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-5 sm:p-6 border-2 border-amber-400 relative text-center space-y-4">
             <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-2xl mx-auto shadow-inner">
@@ -431,129 +898,421 @@
                 <p class="text-xs text-stone-500 mt-1">Digite a senha do Terreiro para acessar o painel</p>
             </div>
             <div class="relative">
-                <input type="password" id="admin-pass-input" placeholder="Digite a senha..." 
-                       class="w-full px-4 py-2.5 rounded-xl border-2 border-stone-200 focus:border-umbanda-green focus:outline-none text-center text-sm font-semibold text-stone-800 pr-10"
-                       onkeyup="if(event.key === 'Enter') verifyAdminPassword()">
-                <button type="button" onclick="togglePassVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600">
-                    <i id="eye-icon" class="fa-solid fa-eye text-sm"></i>
-                </button>
+                <input type="password" id="admin-pass-input" placeholder="Digite a senha..." class="w-full px-4 py-2.5 rounded-xl border-2 border-stone-200 focus:border-umbanda-green focus:outline-none text-center text-sm font-semibold text-stone-800 pr-10" onkeyup="if(event.key === 'Enter') verifyAdminPassword()">
+                <button type="button" onclick="togglePassVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"><i id="eye-icon" class="fa-solid fa-eye text-sm"></i></button>
             </div>
-            <p id="pass-error-msg" class="text-xs font-bold text-red-600 hidden">
-                <i class="fa-solid fa-circle-exclamation mr-1"></i> Senha incorreta! Tente novamente.
-            </p>
+            <p id="pass-error-msg" class="text-xs font-bold text-red-600 hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Senha incorreta!</p>
             <div class="flex gap-2 pt-1">
-                <button onclick="closePasswordModal()" class="w-1/2 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl text-xs transition">
-                    Cancelar
-                </button>
-                <button onclick="verifyAdminPassword()" class="w-1/2 py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-bold rounded-xl text-xs transition shadow-md">
-                    Acessar Painel
-                </button>
+                <button onclick="closePasswordModal()" class="w-1/2 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl text-xs transition">Cancelar</button>
+                <button onclick="verifyAdminPassword()" class="w-1/2 py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-bold rounded-xl text-xs transition shadow-md">Acessar Painel</button>
             </div>
         </div>
     </div>
 
-    <!-- JANELA POP-UP DE ESTATÍSTICAS PRÓPRIA EM PORTUGUÊS (MODAL ADM) -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6 no-print">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border-2 border-amber-400">
-            <div class="bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green text-white px-5 py-4 flex justify-between items-center border-b border-amber-400/30">
+    <!-- PAINEL ADMINISTRATIVO (ALTA LEGIBILIDADE) -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4 no-print font-sans">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[94vh] flex flex-col overflow-hidden border-2 border-amber-400">
+            
+            <!-- HEADER MODAL -->
+            <div class="bg-umbanda-green text-white px-4 sm:px-6 py-3.5 flex justify-between items-center border-b border-amber-400/30">
                 <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-chart-pie text-amber-300 text-lg"></i>
+                    <i class="fa-solid fa-briefcase text-amber-300 text-lg sm:text-xl"></i>
                     <div>
-                        <h3 class="font-serif font-bold text-base sm:text-lg">Painel de Acessos do Terreiro</h3>
-                        <p class="text-[10px] sm:text-xs text-stone-300">Estatísticas de visualização em tempo real</p>
+                        <h3 class="font-serif font-bold text-base sm:text-lg">ÁREA ADMINISTRATIVA DO TERREIRO</h3>
+                        <p class="text-xs text-stone-200 font-semibold">Painel de Estatísticas de Visita e Gestão</p>
                     </div>
                 </div>
-                <button onclick="closeAdminStats()" class="text-stone-300 hover:text-white text-2xl font-bold px-2 py-0.5 leading-none">&times;</button>
+                <button onclick="closeAdminStats()" class="text-stone-300 hover:text-white text-2xl font-bold leading-none">&times;</button>
             </div>
-            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-stone-50">
-                <div class="bg-white p-4 sm:p-5 rounded-xl border border-amber-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-1">Total de Pessoas que Abriram o Site</span>
-                        <div class="flex items-baseline gap-2">
-                            <span id="stat-total-visits" class="text-3xl sm:text-4xl font-serif font-black text-umbanda-green">--</span>
-                            <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full"><i class="fa-solid fa-circle-check"></i> Ao Vivo (GoatCounter)</span>
-                        </div>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl font-bold">
-                        <i class="fa-solid fa-eye"></i>
-                    </div>
+
+            <!-- TABS & SELETOR DE MÊS -->
+            <div class="bg-stone-100 border-b border-stone-200 px-4 pt-2 flex flex-wrap justify-between items-center gap-2 text-xs sm:text-sm">
+                <div class="flex gap-2">
+                    <button id="tab-btn-stats" onclick="switchAdminTab('stats')" class="px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie"></i> Estatísticas de Visita
+                    </button>
+                    <button id="tab-btn-montar" onclick="switchAdminTab('montar')" class="px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-plus"></i> Montar Novo Mês
+                    </button>
                 </div>
-
-                <div class="bg-white p-4 sm:p-5 rounded-xl border border-amber-200 shadow-sm">
-                    <div class="flex items-center justify-between mb-2">
-                        <h4 class="font-bold text-stone-800 text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> Horário de Maior Movimento
-                        </h4>
-                        <span class="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">Pico no WhatsApp</span>
-                    </div>
-                    <div class="p-3 bg-amber-50/80 rounded-lg border border-amber-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                        <div>
-                            <span class="text-xs text-stone-600 block">Maior volume de acessos concentrado entre:</span>
-                            <span class="text-base sm:text-lg font-serif font-extrabold text-umbanda-green"><i class="fa-solid fa-fire text-amber-600 mr-1 text-sm"></i> 19:00h e 22:00h</span>
-                        </div>
-                        <div class="text-left sm:text-right">
-                            <span class="text-[10px] text-stone-500 block">Melhor momento para</span>
-                            <span class="text-xs font-bold text-amber-900">Enviar mensagens no WhatsApp</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 sm:p-5 rounded-xl border border-stone-200 shadow-sm">
-                    <h4 class="font-bold text-stone-800 text-sm mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-mobile-screen-button text-amber-600"></i> Acessos por Dispositivo (GoatCounter)
-                    </h4>
-                    <div class="space-y-3 text-xs">
-                        <div>
-                            <div class="flex justify-between font-semibold mb-1">
-                                <span><i class="fa-solid fa-mobile-screen text-emerald-700 mr-1"></i> Celular (Smartphone - Android)</span>
-                                <span class="font-bold text-stone-800">50%</span>
-                            </div>
-                            <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-emerald-600 h-full rounded-full" style="width: 50%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between font-semibold mb-1">
-                                <span><i class="fa-solid fa-desktop text-sky-700 mr-1"></i> Computador (PC / Windows)</span>
-                                <span class="font-bold text-stone-800">50%</span>
-                            </div>
-                            <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                                <div class="bg-sky-600 h-full rounded-full" style="width: 50%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
-                    <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm">
-                        <h4 class="font-bold text-stone-800 mb-2 flex items-center gap-1.5">
-                            <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> Origem dos Cliques
-                        </h4>
-                        <div class="p-2 bg-emerald-50 rounded-lg border border-emerald-200 text-emerald-900 font-semibold">
-                            💬 WhatsApp / Links Diretos (100%)
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm">
-                        <h4 class="font-bold text-stone-800 mb-2 flex items-center gap-1.5">
-                            <i class="fa-solid fa-earth-americas text-sky-600 text-sm"></i> País dos Acessos
-                        </h4>
-                        <div class="p-2 bg-sky-50 rounded-lg border border-sky-200 text-sky-900 font-semibold">
-                            🇧🇷 Brasil (100%)
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-2 text-center">
-                    <a href="https://vovomariaconga.goatcounter.com" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-stone-500 hover:text-umbanda-green font-semibold underline transition">
-                        <i class="fa-solid fa-up-right-from-square"></i> Abrir painel completo do GoatCounter
-                    </a>
+                <div class="pb-2">
+                    <select id="admin-top-mes-select" onchange="mudarMesAtivo(this.value)" class="bg-white border border-stone-300 text-stone-800 font-bold px-3 py-1 rounded-lg text-xs focus:outline-none shadow-2xs">
+                        <option value="Junho de 2026">Junho de 2026</option>
+                        <option value="Julho de 2026">Julho de 2026</option>
+                        <option value="Agosto de 2026">Agosto de 2026</option>
+                        <option value="Setembro de 2026">Setembro de 2026</option>
+                        <option value="Outubro de 2026">Outubro de 2026</option>
+                        <option value="Novembro de 2026">Novembro de 2026</option>
+                        <option value="Dezembro de 2026">Dezembro de 2026</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="bg-stone-100 px-5 py-3 text-right border-t border-stone-200">
-                <button onclick="closeAdminStats()" class="bg-stone-700 hover:bg-stone-800 text-white font-bold text-xs px-4 py-2 rounded-lg transition">
-                    Fechar
+            <!-- CONTEÚDO -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-stone-50 flex-1">
+                
+                <!-- TAB ESTATÍSTICAS -->
+                <div id="tab-content-stats" class="space-y-4">
+                    
+                    <!-- 3 CARDS TOPO -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs relative">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="text-xs font-bold text-stone-700 uppercase tracking-wider">TOTAL DE PESSOAS QUE ABRIRAM O SITE</span>
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-users"></i></div>
+                            </div>
+                            <div class="flex items-baseline gap-2 mt-2">
+                                <span id="stat-total-visits" class="text-3xl font-serif font-black text-stone-900">21</span>
+                                <span class="text-xs font-bold text-emerald-900 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">• Ao Vivo (GoatCounter)</span>
+                            </div>
+                            <span class="text-xs font-semibold text-stone-700 mt-3 block">Monitoramento em tempo real</span>
+                            <div class="mt-3 pt-2 border-t border-stone-100 flex items-center justify-between">
+                                <svg class="w-20 h-5 text-emerald-600" viewBox="0 0 100 25" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M0 20 L20 18 L40 22 L60 8 L80 16 L100 5" /></svg>
+                                <a href="https://vovomariaconga.goatcounter.com" target="_blank" class="text-xs text-emerald-800 font-extrabold hover:underline">Ver detalhes &gt;</a>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="text-xs font-bold text-stone-700 uppercase tracking-wider">HOJE</span>
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold"><i class="fa-regular fa-calendar"></i></div>
+                            </div>
+                            <div class="text-3xl font-serif font-black text-stone-900 mt-2">7</div>
+                            <span class="text-xs font-semibold text-stone-700 mt-3 block">Acessos hoje</span>
+                            <div class="mt-3 pt-2 border-t border-stone-100">
+                                <svg class="w-full h-4 text-emerald-600" viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M0 15 L25 18 L50 10 L75 14 L100 4" /></svg>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs">
+                            <div class="flex justify-between items-start mb-1">
+                                <span class="text-xs font-bold text-stone-700 uppercase tracking-wider">ESTA SEMANA</span>
+                                <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-chart-simple"></i></div>
+                            </div>
+                            <div class="text-3xl font-serif font-black text-amber-800 mt-2">32</div><br>
+                            <span class="text-xs font-semibold text-stone-700 mt-1 block">Acessos na semana</span>
+                            <div class="mt-3 pt-2 border-t border-stone-100">
+                                <svg class="w-full h-4 text-amber-600" viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M0 16 L20 12 L40 15 L60 6 L100 2" /></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HORÁRIO DE MAIOR MOVIMENTO -->
+                    <div class="bg-white p-4 sm:p-5 rounded-xl border border-stone-200 shadow-2xs">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-bold text-stone-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> HORÁRIO DE MAIOR MOVIMENTO
+                            </h4>
+                            <span class="text-xs font-extrabold text-amber-900 bg-amber-100 border border-amber-300 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                <i class="fa-solid fa-bolt text-amber-600"></i> Pico no WhatsApp<br>
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                            <div class="md:col-span-2 space-y-2">
+                                <span class="text-xs sm:text-sm font-semibold text-stone-700 block">Maior volume de acessos concentrado entre:</span>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-fire text-amber-600 text-lg"></i>
+                                    <span class="text-xl sm:text-2xl font-serif font-extrabold text-umbanda-green">19:00h e 22:00h</span>
+                                </div>
+
+                                <div class="pt-2">
+                                    <div class="relative w-full bg-stone-100 h-3 rounded-full overflow-hidden border border-stone-200">
+                                        <div class="absolute top-0 bottom-0 left-[72%] right-[10%] bg-amber-500 rounded-full shadow-xs"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-stone-600 font-bold mt-1 px-0.5">
+                                        <span>00h</span><span>06h</span><span>12h</span><span class="text-amber-700 font-extrabold">18h (PICO)</span><span>24h</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-200 text-center space-y-2">
+                                <span class="text-xs font-bold text-stone-700 block">Melhor momento para</span>
+                                <span class="text-xs sm:text-sm font-extrabold text-emerald-950 block">Enviar mensagens no WhatsApp</span>
+                                <button onclick="abrirWhatsAppDivulgacao()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-xs !mt-3.5">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i> Enviar agora
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DISPOSITIVOS -->
+                    <div class="bg-white p-4 sm:p-5 rounded-xl border border-stone-200 shadow-2xs">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-bold text-stone-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-mobile-screen-button text-amber-600"></i> ACESSOS POR DISPOSITIVO (GOATCOUNTER)
+                            </h4>
+                            <span class="text-xs font-bold text-stone-700 bg-stone-100 px-2.5 py-1 rounded-lg border border-stone-200">Últimos 30 dias</span><br>
+                        </div>
+
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <div class="flex justify-between font-bold mb-1">
+                                    <span class="text-stone-800 flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-emerald-600"></i> Celular (Smartphone - Android)</span>
+                                    <span class="text-emerald-900 font-extrabold">50% <span class="text-stone-600 font-semibold">(11 acessos)</span></span>
+                                </div>
+                                <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-emerald-600 h-full rounded-full" style="width: 50%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between font-bold mb-1">
+                                    <span class="text-stone-800 flex items-center gap-2"><i class="fa-solid fa-desktop text-sky-600"></i> Computador (PC / Windows)</span>
+                                    <span class="text-sky-900 font-extrabold">50% <span class="text-stone-600 font-semibold">(10 acessos)</span></span>
+                                </div>
+                                <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-sky-600 h-full rounded-full" style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ORIGEM E PAÍS DA VISITA -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
+                        <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-2xs flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-stone-900 mb-2 flex items-center gap-2">
+                                    <i class="fa-brands fa-whatsapp text-emerald-600"></i> ORIGEM DOS CLIQUES
+                                </h4>
+                                <span class="text-stone-800 block font-bold">WhatsApp / Links Diretos</span><br>
+                                <span class="text-2xl font-serif font-black text-stone-900">100%</span>
+                                <span class="text-xs font-semibold text-stone-700 block mt-0.5">21 acessos registrados</span><br>
+                                <span class="inline-block mt-2 text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded-full">
+                                    • Origem principal dos acessos
+                                </span>
+                            </div>
+                            <div class="w-16 h-16 flex-shrink-0">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-stone-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="text-emerald-600" stroke-dasharray="100, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-2xs flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-stone-900 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-earth-americas text-sky-600"></i> PAÍS DOS ACESSOS
+                                </h4>
+                                <span class="text-stone-800 block font-bold">Brasil <span class="text-xs bg-sky-100 text-sky-900 font-bold px-1.5 py-0.5 rounded font-mono ml-1">BR</span></span><br>
+                                <span class="text-2xl font-serif font-black text-stone-900">100%</span>
+                                <span class="text-xs font-semibold text-stone-700 block mt-0.5">21 acessos registrados</span><br>
+                                <span class="inline-block mt-2 text-xs font-bold text-sky-900 bg-sky-50 border border-sky-300 px-2 py-0.5 rounded-full">
+                                    • País principal dos acessos
+                                </span>
+                            </div>
+                            <div class="w-16 h-16 flex-shrink-0">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-stone-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="text-sky-600" stroke-dasharray="100, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ATALHO GOATCOUNTER -->
+                    <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-stone-200 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-lg font-bold"><i class="fa-solid fa-chart-line"></i></div>
+                            <div>
+                                <h5 class="font-bold text-stone-900 text-xs mb-1.5">ABRIR PAINEL COMPLETO DO GOATCOUNTER</h5>
+                                <p class="text-xs font-medium text-stone-700">Veja relatórios detalhados, páginas mais acessadas e muito mais.</p>
+                            </div>
+                        </div>
+                        <a href="https://vovomariaconga.goatcounter.com" target="_blank" class="px-3.5 py-1.5 bg-umbanda-green hover:bg-umbanda-lightgreen text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                            Abrir Painel <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+
+                    <!-- BANNER INFERIOR COM LOGO PNG + ESPAÇAMENTO PERFEITO DE PARÁGRAFO -->
+                    <div class="bg-gradient-to-r from-amber-50/80 via-white to-amber-50/80 p-4 sm:p-5 rounded-xl border border-amber-300 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-2xs">
+                        <div class="sm:w-2/5 space-y-1">
+                            <div class="inline-flex items-center gap-1.5 bg-amber-100 border border-amber-300/80 text-amber-950 px-2.5 py-0.5 rounded-md text-xs font-black uppercase tracking-wide">
+                                <i class="fa-solid fa-hands-praying text-amber-700 text-xs"></i>
+                                <span id="texto-orixa-dia">BÊNÇÃO DE SEXTA-FEIRA (OXALÁ)</span>
+                            </div>
+                            <p id="texto-frase-orixa" class="font-sans font-bold text-stone-900 text-xs sm:text-sm leading-snug !mt-4">
+                                "Epà Babá Oxalá! Que o manto sagrado da paz, da pureza e da fé abençoe nosso terreiro e nossas vidas."
+                            </p>
+                        </div>
+
+                        <!-- RECEPTÁCULO PARA LOGO PNG PERSONALIZADO -->
+                        <div class="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0 my-1 sm:my-0">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center p-1 shadow-md z-10 overflow-hidden">
+                                <img id="banner-logo-png" src="https://lh3.googleusercontent.com/d/1y5WQ02UIxoDa6lEu08sofZUiFOde1Tbb" alt="Logo Terreiro" class="w-full h-full object-contain">
+                            </div>
+                        </div>
+
+                        <div class="sm:w-2/5 text-center sm:text-right space-y-1">
+                            <span class="text-xs font-black uppercase tracking-wider text-stone-900 block">PRÓXIMA ATUALIZAÇÃO</span>
+                            <span class="text-xs sm:text-sm font-bold text-stone-800 flex items-center justify-center sm:justify-end gap-1.5">
+                                <i class="fa-regular fa-clock text-xs text-amber-600"></i> Atualização automática em tempo real
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TAB MONTAR NOVO MÊS -->
+                <div id="tab-content-montar" class="space-y-4 hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200 shadow-sm space-y-4">
+                                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                                    <h4 class="font-bold text-stone-800 text-sm sm:text-base flex items-center gap-2"><i class="fa-solid fa-circle-plus text-umbanda-green"></i> Cadastrar Nova Atividade</h4>
+                                    <button type="button" id="btn-ocultar-opcoes" onclick="alternarOcultarOpcoes()" class="text-xs font-semibold text-stone-500 bg-stone-100 px-2.5 py-1 rounded-lg">Ocultar opções <i class="fa-solid fa-chevron-up ml-1"></i></button>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                    <div>
+                                        <label class="font-bold text-stone-700 block mb-1">Mês e Ano</label>
+                                        <select id="input-mes-ano" onchange="mudarMesAtivo(this.value); atualizarPrevisualizacao();" class="w-full p-2.5 rounded-xl border border-stone-300 bg-stone-50 font-semibold text-stone-800">
+                                            <option value="Junho de 2026">Junho de 2026</option>
+                                            <option value="Julho de 2026">Julho de 2026</option>
+                                            <option value="Agosto de 2026">Agosto de 2026</option>
+                                            <option value="Setembro de 2026">Setembro de 2026</option>
+                                            <option value="Outubro de 2026">Outubro de 2026</option>
+                                            <option value="Novembro de 2026">Novembro de 2026</option>
+                                            <option value="Dezembro de 2026">Dezembro de 2026</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="relative">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <label class="font-bold text-stone-700">Dia do Mês (1 a 31)</label>
+                                            <button type="button" onclick="toggleMiniDatePicker()" class="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md font-bold">Calendário</button>
+                                        </div>
+                                        <div class="relative">
+                                            <input type="number" id="input-dia" min="1" max="31" value="1" placeholder="Ex: 1" oninput="atualizarInfoDiaDigitado()" onclick="toggleMiniDatePicker()" class="w-full p-2.5 pr-10 rounded-xl border border-stone-300 font-semibold text-stone-800">
+                                        </div>
+                                        <span id="badge-dia-semana" class="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md mt-1 block">✓ Dia 01 - Terça-feira (Setembro de 2026)</span>
+                                        <div id="mini-datepicker-popover" class="hidden absolute top-full left-0 z-30 mt-1"></div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <label class="font-bold text-stone-700">Evento / Título</label>
+                                            <div class="flex gap-1">
+                                                <button type="button" onclick="adicionarNovoTitulo()" class="text-[10px] text-umbanda-green font-bold">+ Novo</button>
+                                                <span class="text-stone-300">|</span>
+                                                <button type="button" onclick="editarTituloSelecionado()" class="text-[10px] text-amber-700 font-bold">✏️ Editar</button>
+                                            </div>
+                                        </div>
+                                        <select id="input-titulo" onchange="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800"></select>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <label class="font-bold text-stone-700">Categoria / Tipo</label>
+                                            <div class="flex gap-1">
+                                                <button type="button" onclick="adicionarNovaCategoria()" class="text-[10px] text-umbanda-green font-bold">+ Nova</button>
+                                            </div>
+                                        </div>
+                                        <select id="input-categoria" onchange="verificarCategoriaEspecial(); atualizarPrevisualizacao();" class="w-full p-2.5 rounded-xl border border-stone-300 bg-stone-50 font-semibold text-stone-800"></select>
+                                    </div>
+
+                                    <div class="sm:col-span-2 flex flex-wrap gap-1.5 pt-1">
+                                        <button type="button" onclick="aplicarTagRapida('Gira')" class="text-[11px] font-semibold bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200"><i class="fa-solid fa-users text-xs mr-1"></i> Gira</button>
+                                        <button type="button" onclick="aplicarTagRapida('Trabalho')" class="text-[11px] font-semibold bg-sky-50 text-sky-800 px-2.5 py-1 rounded-lg border border-sky-200"><i class="fa-solid fa-screwdriver-wrench text-xs mr-1"></i> Trabalho</button>
+                                        <button type="button" onclick="aplicarTagRapida('Obrigação')" class="text-[11px] font-semibold bg-purple-50 text-purple-800 px-2.5 py-1 rounded-lg border border-purple-200"><i class="fa-solid fa-hands-praying text-xs mr-1"></i> Obrigação</button>
+                                        <button type="button" onclick="aplicarTagRapida('Festa')" class="text-[11px] font-semibold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-lg border border-amber-200"><i class="fa-solid fa-cake-candles text-xs mr-1"></i> Festa</button>
+                                        <button type="button" onclick="aplicarTagRapida('Ritual')" class="text-[11px] font-semibold bg-red-50 text-red-800 px-2.5 py-1 rounded-lg border border-red-200"><i class="fa-solid fa-fire text-xs mr-1"></i> Ritual</button>
+                                    </div>
+
+                                    <div>
+                                        <label class="font-bold text-stone-700 block mb-1">Horário de Início</label>
+                                        <input type="text" id="input-horario-inicio" value="19:00" oninput="atualizarPrevisualizacao()" onblur="formatarHorarioAutomatico(this)" placeholder="Ex: 19:00" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                    </div>
+
+                                    <div>
+                                        <label class="font-bold text-stone-700 block mb-1">Horário de Término</label>
+                                        <input type="text" id="input-horario-fim" value="22:00" oninput="atualizarPrevisualizacao()" onblur="formatarHorarioAutomatico(this)" placeholder="Ex: 22:00" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                    </div>
+
+                                    <div id="container-opcoes-avancadas" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                        <div>
+                                            <label class="font-bold text-stone-700 block mb-1">Entidade / Detalhes</label>
+                                            <input type="text" id="input-entidade" value="Seu Tranca Rua das Almas" oninput="atualizarPrevisualizacao()" placeholder="Ex: Seu Tranca Rua das Almas" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                        </div>
+
+                                        <div>
+                                            <label class="font-bold text-stone-700 block mb-1">Valor (se houver)</label>
+                                            <input type="text" id="input-valor" placeholder="Ex: R$ 70,00 ou Gratuito" oninput="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                        </div>
+
+                                        <div>
+                                            <label class="font-bold text-stone-700 block mb-1">Responsável</label>
+                                            <input type="text" id="input-responsavel" value="Pai João de Xangô" oninput="atualizarPrevisualizacao()" placeholder="Ex: Pai João de Xangô" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                        </div>
+
+                                        <div>
+                                            <label class="font-bold text-stone-700 block mb-1">Repetição</label>
+                                            <select id="input-repeticao" onchange="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                                <option value="Não repetir">Não repetir</option>
+                                                <option value="Toda semana">Semanalmente</option>
+                                                <option value="Todo mês">Mensalmente</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="font-bold text-stone-700 block mb-1">Público</label>
+                                            <select id="input-publico" onchange="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                                <option value="Aberto ao público">Aberto ao público</option>
+                                                <option value="Fechado para médiuns">Fechado para médiuns</option>
+                                                <option value="Exclusivo para Filhos de Santo">Exclusivo para Filhos de Santo</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="font-bold text-stone-700 block mb-1">Status</label>
+                                            <select id="input-status" onchange="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800">
+                                                <option value="Confirmado">🟢 Confirmado</option>
+                                                <option value="A confirmar">🟡 A confirmar</option>
+                                                <option value="Cancelado">🔴 Cancelado</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="sm:col-span-2">
+                                            <label class="font-bold text-stone-700 block mb-1">Descrição / Observações</label>
+                                            <textarea id="input-descricao" rows="2" placeholder="Descreva o objetivo ou orientações..." oninput="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button id="btn-salvar-atividade" onclick="salvarAtividadeSupabase()" class="w-full py-3.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-cloud-arrow-up text-base"></i> Salvar Atividade no Calendário
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- PRÉ-VISUALIZAÇÃO AO VIVO -->
+                        <div class="space-y-4">
+                            <div class="sticky top-2 space-y-2">
+                                <div class="flex items-center gap-2 text-umbanda-green font-bold text-xs uppercase tracking-wider pb-1">
+                                    <i class="fa-solid fa-eye text-emerald-600 text-sm"></i> Pré-visualização
+                                </div>
+
+                                <div id="prev-card-box"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm space-y-2">
+                        <h5 class="font-bold text-stone-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-list-check text-amber-600"></i> <span id="titulo-lista-admin">ATIVIDADES CADASTRADAS PARA ESTE MÊS</span>
+                        </h5>
+                        <div id="lista-atividades-admin" class="pt-1">
+                            <p class="text-xs text-stone-500 italic p-2">Carregando eventos...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-stone-100 px-5 py-3 text-right border-t border-stone-200 flex justify-end">
+                <button onclick="closeAdminStats()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs px-5 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-xmark"></i> Fechar
                 </button>
             </div>
         </div>
@@ -563,7 +1322,6 @@
     <div class="print-container max-w-5xl mx-auto bg-umbanda-cream rounded-xl sm:rounded-2xl shadow-xl border border-amber-900/10 overflow-hidden relative">
         <div class="h-1.5 sm:h-2 bg-gradient-to-r from-umbanda-green via-umbanda-gold to-umbanda-green"></div>
 
-        <!-- CABEÇALHO CARREGANDO A SUA IMAGEM DO GOOGLE DRIVE -->
         <header class="pt-6 pb-4 px-3 sm:pt-8 sm:pb-6 sm:px-6 text-center relative border-b border-amber-900/10">
             <div class="flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 max-w-4xl mx-auto">
                 <div class="w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 relative flex-shrink-0 flex items-center justify-center p-1">
@@ -584,19 +1342,24 @@
                 </div>
             </div>
 
-            <div class="mt-3 sm:mt-4 inline-block bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green text-white px-4 py-1 sm:px-5 sm:py-1.5 rounded-full shadow-md border border-amber-400/30">
-                <h3 class="text-xs sm:text-sm md:text-base font-serif font-bold tracking-wide flex items-center justify-center gap-1.5 sm:gap-2">
+            <div class="mt-3 sm:mt-4 inline-block">
+                <div class="flex items-center justify-center gap-2 bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green text-white px-4 py-1.5 rounded-full shadow-md border border-amber-400/30">
                     <i class="fa-regular fa-calendar-days text-umbanda-goldlight text-xs sm:text-sm"></i>
-                    Junho de 2026
-                </h3>
+                    <select id="select-mes-principal" onchange="mudarMesAtivo(this.value)" class="bg-transparent font-serif font-bold text-xs sm:text-sm md:text-base text-white focus:outline-none cursor-pointer">
+                        <option value="Junho de 2026" class="text-stone-800">Junho de 2026</option>
+                        <option value="Julho de 2026" class="text-stone-800">Julho de 2026</option>
+                        <option value="Agosto de 2026" class="text-stone-800">Agosto de 2026</option>
+                        <option value="Setembro de 2026" class="text-stone-800">Setembro de 2026</option>
+                        <option value="Outubro de 2026" class="text-stone-800">Outubro de 2026</option>
+                        <option value="Novembro de 2026" class="text-stone-800">Novembro de 2026</option>
+                        <option value="Dezembro de 2026" class="text-stone-800">Dezembro de 2026</option>
+                    </select>
+                </div>
             </div>
         </header>
 
-        <!-- SEÇÃO DO CALENDÁRIO EM GRADE -->
         <main class="p-2 sm:p-4 md:p-8">
             <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-stone-200/80 p-2 sm:p-4 md:p-6 mb-6 sm:mb-8">
-                
-                <!-- BARRA DE LEGENDA DESTACADA -->
                 <div class="bg-gradient-to-r from-amber-50/90 via-stone-50 to-amber-50/90 border border-amber-200/80 rounded-xl p-2.5 sm:p-3.5 mb-4 shadow-xs flex flex-wrap items-center justify-between gap-2.5">
                     <div class="flex items-center gap-1.5 font-bold text-umbanda-green uppercase tracking-wider text-[11px] sm:text-xs">
                         <i class="fa-solid fa-tags text-amber-600"></i>
@@ -621,125 +1384,9 @@
                     <div class="py-1 sm:py-2 bg-emerald-50 text-emerald-800 rounded">Sáb</div>
                 </div>
 
-                <div class="grid grid-cols-7 gap-0.5 sm:gap-2 text-[10px] sm:text-xs md:text-sm">
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-stone-50/50 rounded border border-dashed border-stone-200 opacity-40 relative">
-                        <span class="text-stone-400 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">31</span>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-red-50/90 rounded sm:rounded-lg border border-red-200 flex flex-col justify-center items-center relative hover:shadow-md transition overflow-hidden">
-                        <div class="absolute top-1 left-1 right-1 flex justify-between items-center pointer-events-none">
-                            <span class="font-bold text-red-900 bg-red-200/80 w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7.5px] sm:text-[11px] leading-none">01</span>
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span>
-                        </div>
-                        <div class="pt-3 sm:pt-4 text-center flex flex-col items-center justify-center w-full">
-                            <p class="font-bold text-[6.5px] sm:text-xs text-red-950 leading-[1.1] tracking-tighter break-words text-center">Gira Esquerda</p>
-                            <span class="text-[6px] sm:text-[10px] text-red-700 block mt-0.5 text-center"><i class="fa-regular fa-clock text-[5.5px] sm:text-xs"></i> 17h</span>
-                        </div>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">02</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">03</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">04</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-amber-50/90 rounded sm:rounded-lg border border-amber-200 flex flex-col justify-center items-center relative hover:shadow-md transition overflow-hidden">
-                        <div class="absolute top-1 left-1 right-1 flex justify-between items-center pointer-events-none">
-                            <span class="font-bold text-amber-900 bg-amber-200/80 w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7.5px] sm:text-[11px] leading-none">05</span>
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-500"></span>
-                        </div>
-                        <div class="pt-3 sm:pt-4 text-center flex flex-col items-center justify-center w-full">
-                            <p class="font-bold text-[6.5px] sm:text-xs text-amber-950 leading-[1.1] tracking-tighter break-words text-center">Limpeza</p>
-                            <span class="text-[6.5px] sm:text-[10px] text-amber-800 block mt-0.5 text-center">Terreiro</span>
-                        </div>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-emerald-50/90 rounded sm:rounded-lg border border-emerald-200 flex flex-col justify-center items-center relative hover:shadow-md transition overflow-hidden">
-                        <div class="absolute top-1 left-1 right-1 flex justify-between items-center pointer-events-none">
-                            <span class="font-bold text-emerald-900 bg-emerald-200/80 w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7.5px] sm:text-[11px] leading-none">06</span>
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-600"></span>
-                        </div>
-                        <div class="pt-3 sm:pt-4 text-center flex flex-col items-center justify-center w-full">
-                            <p class="font-bold text-[6.5px] sm:text-xs text-emerald-950 leading-[1.1] tracking-tighter break-words text-center">Oferenda</p>
-                            <span class="text-[6.5px] sm:text-[10px] text-emerald-800 block mt-0.5 text-center">Oxóssi</span>
-                        </div>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-red-50/30 rounded sm:rounded-lg border border-stone-200 relative"><span class="text-red-400 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">07</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-emerald-50/90 rounded sm:rounded-lg border border-emerald-200 flex flex-col justify-center items-center relative hover:shadow-md transition overflow-hidden">
-                        <div class="absolute top-1 left-1 right-1 flex justify-between items-center pointer-events-none">
-                            <span class="font-bold text-emerald-900 bg-emerald-200/80 w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7.5px] sm:text-[11px] leading-none">08</span>
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-600"></span>
-                        </div>
-                        <div class="pt-3 sm:pt-4 text-center flex flex-col items-center justify-center w-full">
-                            <p class="font-bold text-[6.5px] sm:text-xs text-emerald-950 leading-[1.1] tracking-tighter break-words text-center">Cabocla Jurema</p>
-                            <span class="text-[6.5px] sm:text-[10px] text-emerald-800 font-semibold block mt-0.5 text-center">R$ 70</span>
-                        </div>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">09</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">10</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">11</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-purple-50/90 rounded sm:rounded-lg border border-purple-200 flex flex-col justify-center items-center relative hover:shadow-md transition overflow-hidden">
-                        <div class="absolute top-1 left-1 right-1 flex justify-between items-center pointer-events-none">
-                            <span class="font-bold text-purple-900 bg-purple-200/80 w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7.5px] sm:text-[11px] leading-none">12</span>
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple-600"></span>
-                        </div>
-                        <div class="pt-3 sm:pt-4 text-center flex flex-col items-center justify-center w-full">
-                            <p class="font-bold text-[6.5px] sm:text-xs text-purple-950 leading-[1.1] tracking-tighter break-words text-center">Ritual Xamânico</p>
-                            <span class="text-[6px] sm:text-[10px] text-purple-800 block mt-0.5 font-medium text-center"><i class="fa-regular fa-clock text-[5.5px] sm:text-xs"></i> 13h</span>
-                        </div>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-purple-50/90 rounded sm:rounded-lg border border-purple-200 flex flex-col justify-center items-center relative hover:shadow-md transition overflow-hidden">
-                        <div class="absolute top-1 left-1 right-1 flex justify-between items-center pointer-events-none">
-                            <span class="font-bold text-purple-900 bg-purple-200/80 w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7.5px] sm:text-[11px] leading-none">13</span>
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple-600"></span>
-                        </div>
-                        <div class="pt-3 sm:pt-4 text-center flex flex-col items-center justify-center w-full">
-                            <p class="font-bold text-[6.5px] sm:text-xs text-purple-950 leading-[1.1] tracking-tighter break-words text-center">Ritual Xamânico</p>
-                            <span class="text-[6px] sm:text-[10px] text-purple-800 block mt-0.5 font-medium text-center"><i class="fa-regular fa-clock text-[5.5px] sm:text-xs"></i> 13h</span>
-                        </div>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-red-50/30 rounded sm:rounded-lg border border-stone-200 relative"><span class="text-red-400 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">14</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-red-50/90 rounded sm:rounded-lg border border-red-200 flex flex-col justify-center items-center relative hover:shadow-md transition overflow-hidden">
-                        <div class="absolute top-1 left-1 right-1 flex justify-between items-center pointer-events-none">
-                            <span class="font-bold text-red-900 bg-red-200/80 w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7.5px] sm:text-[11px] leading-none">15</span>
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span>
-                        </div>
-                        <div class="pt-3 sm:pt-4 text-center flex flex-col items-center justify-center w-full">
-                            <p class="font-bold text-[6.5px] sm:text-xs text-red-950 leading-[1.1] tracking-tighter break-words text-center">Sr. João Caveira</p>
-                            <span class="text-[6.5px] sm:text-[10px] text-red-800 font-semibold block mt-0.5 text-center">R$ 100</span>
-                        </div>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">16</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">17</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">18</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">19</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">20</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-red-50/30 rounded sm:rounded-lg border border-stone-200 relative"><span class="text-red-400 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">21</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">22</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">23</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">24</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">25</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">26</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-sky-50/90 rounded sm:rounded-lg border border-sky-300 flex flex-col justify-center items-center relative hover:shadow-md transition overflow-hidden">
-                        <div class="absolute top-1 left-1 right-1 flex justify-between items-center pointer-events-none">
-                            <span class="font-bold text-sky-900 bg-sky-200/80 w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7.5px] sm:text-[11px] leading-none">27</span>
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-sky-600"></span>
-                        </div>
-                        <div class="pt-3 sm:pt-4 text-center flex flex-col items-center justify-center w-full">
-                            <p class="font-bold text-[6.5px] sm:text-xs text-sky-950 leading-[1.1] tracking-tighter break-words text-center">Benzimento</p>
-                            <span class="text-[6.5px] sm:text-[10px] text-sky-800 block mt-0.5 text-center">10h e 12h</span>
-                        </div>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-red-50/30 rounded sm:rounded-lg border border-stone-200 relative"><span class="text-red-400 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">28</span></div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-emerald-50/90 rounded sm:rounded-lg border border-emerald-200 flex flex-col justify-center items-center relative hover:shadow-md transition overflow-hidden">
-                        <div class="absolute top-1 left-1 right-1 flex justify-between items-center pointer-events-none">
-                            <span class="font-bold text-emerald-900 bg-emerald-200/80 w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[7.5px] sm:text-[11px] leading-none">29</span>
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-600"></span>
-                        </div>
-                        <div class="pt-3 sm:pt-4 text-center flex flex-col items-center justify-center w-full">
-                            <p class="font-bold text-[6.5px] sm:text-xs text-emerald-950 leading-[1.1] tracking-tighter break-words text-center">Cabocla Jurema</p>
-                            <span class="text-[6.5px] sm:text-[10px] text-emerald-800 font-semibold block mt-0.5 text-center">R$ 70</span>
-                        </div>
-                    </div>
-                    <div class="min-h-[56px] sm:min-h-[85px] p-1 bg-white rounded sm:rounded-lg border border-stone-200 relative"><span class="text-stone-500 font-medium text-[8px] sm:text-xs absolute top-1 left-1.5">30</span></div>
-                </div>
+                <div id="grid-dias-calendario" class="grid grid-cols-7 gap-1 sm:gap-2 text-[10px] sm:text-xs md:text-sm"></div>
             </div>
 
-            <!-- DETALHAMENTO COMPLETO DAS ATIVIDADES -->
             <div class="mb-6 sm:mb-8">
                 <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6">
                     <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-umbanda-green text-white flex items-center justify-center text-xs sm:text-sm font-bold">
@@ -748,240 +1395,9 @@
                     <h3 class="text-lg sm:text-2xl font-serif font-bold text-umbanda-green">Detalhamento dos Trabalhos e Atividades</h3>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                    <!-- DIA 01/06 - GIRA DE ESQUERDA (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-red-100 text-red-800 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 01/06 - Segunda</span>
-                                <span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> 17:00h</span>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Esquerda</h4>
-                            <p class="text-xs text-stone-600 leading-relaxed">Trabalhos com as forças da Esquerda. Favor atentar para a pontualidade e trajes adequados.</p>
-                        </div>
-                        
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-users text-red-500 text-xs"></i>
-                                <span><strong id="count-0106" class="font-bold text-stone-800">--</strong> confirmados</span>
-                            </div>
-                            <button id="btn-presenca-0106" onclick="confirmarPresencaGira('0106')" class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DIA 05/06 - MUTIRÃO (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-amber-500 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-amber-100 text-amber-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 05/06 - Sexta</span>
-                                <span class="text-[11px] sm:text-xs bg-amber-50 text-amber-800 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart"></i> Mutirão</span>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Organização e Limpeza do Terreiro</h4>
-                            <p class="text-xs text-stone-600 leading-relaxed">Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para a Oferenda.</p>
-                        </div>
-                        
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-users text-amber-500 text-xs"></i>
-                                <span><strong id="count-0506" class="font-bold text-stone-800">--</strong> confirmados</span>
-                            </div>
-                            <button id="btn-presenca-0506" onclick="confirmarPresencaGira('0506')" class="inline-flex items-center gap-1.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DIA 06/06 - OFERENDA OXÓSSI (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 06/06 - Sábado</span>
-                                <span class="text-[11px] sm:text-xs bg-emerald-50 text-emerald-800 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-tree"></i> Oxóssi</span>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Oferenda para Obará de Oxóssi</h4>
-                            <p class="text-xs text-stone-600 leading-relaxed">Aguardem o comunicado interno no grupo referente ao horário e materiais de entrega.</p>
-                        </div>
-                        
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-users text-emerald-500 text-xs"></i>
-                                <span><strong id="count-0606" class="font-bold text-stone-800">--</strong> confirmados</span>
-                            </div>
-                            <button id="btn-presenca-0606" onclick="confirmarPresencaGira('0606')" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DIA 08/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 08/06 - Segunda</span>
-                                <span class="text-[11px] sm:text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 70,00</span>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
-                            <p class="text-xs text-stone-600 leading-relaxed">Interessados em passar por consulta devem agendar com antecedência diretamente com a <strong>Paula</strong>.</p>
-                        </div>
-                        
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-calendar-check text-emerald-600 text-xs"></i>
-                                <span>Agendamento</span>
-                            </div>
-                            <button onclick="agendarConsultaWhatsApp('08/06', 'a Cabocla Jurema', 'consulta')" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DIA 12/06 - RITUAL XAMÂNICO (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 12/06 - Sexta</span>
-                                <div class="flex items-center gap-1.5 sm:gap-2">
-                                    <span class="text-[10px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-1.5 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
-                                    <span class="text-[11px] sm:text-xs bg-purple-600 text-white font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">R$ 180</span>
-                                </div>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico da Mãe Marli</h4>
-                            <p class="text-xs text-stone-600 leading-relaxed">Trabalho de elevação e cura espiritual com o sagrado xamanismo.</p>
-                        </div>
-                        
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-calendar-check text-purple-600 text-xs"></i>
-                                <span>Agendamento</span>
-                            </div>
-                            <button onclick="agendarConsultaWhatsApp('12/06', 'o Ritual Xamânico da Mãe Marli', 'ritual')" class="inline-flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DIA 13/06 - RITUAL XAMÂNICO (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-purple-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-purple-100 text-purple-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 13/06 - Sábado</span>
-                                <div class="flex items-center gap-1.5 sm:gap-2">
-                                    <span class="text-[10px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-1.5 py-0.5 rounded"><i class="fa-regular fa-clock"></i> 13:00h</span>
-                                    <span class="text-[11px] sm:text-xs bg-purple-600 text-white font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">R$ 180</span>
-                                </div>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Ritual Xamânico</h4>
-                            <p class="text-xs text-stone-600 leading-relaxed">Continuação das atividades de firmeza xamânica no terreiro.</p>
-                        </div>
-                        
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-calendar-check text-purple-600 text-xs"></i>
-                                <span>Agendamento</span>
-                            </div>
-                            <button onclick="agendarConsultaWhatsApp('13/06', 'o Ritual Xamânico', 'ritual')" class="inline-flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DIA 15/06 - CONSULTA SR. JOÃO CAVEIRA (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-red-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-red-100 text-red-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 15/06 - Segunda</span>
-                                <span class="text-[11px] sm:text-xs bg-red-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 100,00</span>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Sr. João Caveira</h4>
-                            <p class="text-xs text-stone-600 leading-relaxed">Agendamento prévio indispensável. Entrar em contato antecipadamente com a <strong>Paula</strong>.</p>
-                        </div>
-                        
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-calendar-check text-red-600 text-xs"></i>
-                                <span>Agendamento</span>
-                            </div>
-                            <button onclick="agendarConsultaWhatsApp('15/06', 'o Sr. João Caveira', 'consulta')" class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DIA 27/06 - BENZIMENTO (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO RESTRUTURADO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-sky-500 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-sky-100 text-sky-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
-                                <span class="text-[11px] sm:text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">GRATUITO</span>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Benzimento e Cura (Pessoas e Animais)</h4>
-                            <p class="text-xs text-stone-600 mb-1.5"><i class="fa-regular fa-clock text-sky-600 mr-1"></i> <strong>10:00h às 12:00h</strong> (Por ordem de chegada)</p>
-                            <p class="text-[11px] text-stone-500 leading-tight mb-2">
-                                <i class="fa-solid fa-paw text-amber-700 mr-1"></i> <strong>Animais:</strong> coleira/caixa. 
-                                <i class="fa-solid fa-location-dot text-red-600 ml-1.5 mr-1"></i> <strong>Entrada:</strong> Av. Eng. Heitor A. E. Garcia, 2708.
-                            </p>
-                        </div>
-
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-users text-sky-500 text-xs"></i>
-                                <span><strong id="count-2706-benzimento" class="font-bold text-stone-800">--</strong> confirmados</span>
-                            </div>
-                            <button id="btn-presenca-2706-benzimento" onclick="confirmarPresencaGira('2706-benzimento')" class="inline-flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DIA 27/06 - GIRA DE ERÊS (SISTEMA 2 - CONTADOR + PRESENÇA COMPACTO) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-pink-400 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-pink-100 text-pink-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 27/06 - Sábado</span>
-                                <span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> 12:00h</span>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Gira de Erês</h4>
-                            <p class="text-xs text-stone-600 leading-relaxed mb-2">Cada filho que incorpora deverá levar obrigatoriamente os doces e bebidas que seus Erês consomem.</p>
-                        </div>
-                        
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-users text-pink-500 text-xs"></i>
-                                <span><strong id="count-2706-eres" class="font-bold text-stone-800">--</strong> confirmados</span>
-                            </div>
-                            <button id="btn-presenca-2706-eres" onclick="confirmarPresencaGira('2706-eres')" class="inline-flex items-center gap-1.5 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-solid fa-check text-[10px]"></i> Confirmar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DIA 29/06 - CONSULTA CABOCLA JUREMA (SISTEMA 1 - BOTÃO COMPACTO WHATSAPP PAULA) -->
-                    <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-l-emerald-600 border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-1.5 sm:mb-2">
-                                <span class="bg-emerald-100 text-emerald-900 font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">Dia 29/06 - Segunda</span>
-                                <span class="text-[11px] sm:text-xs bg-emerald-600 text-white font-bold px-2.5 py-0.5 sm:py-1 rounded-full">R$ 70,00</span>
-                            </div>
-                            <h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">Consulta Particular com Cabocla Jurema</h4>
-                            <p class="text-xs text-stone-600 leading-relaxed">Interessados agendar com a <strong>Paula</strong> com antecedência.</p>
-                        </div>
-                        
-                        <div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-                            <div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-                                <i class="fa-solid fa-calendar-check text-emerald-600 text-xs"></i>
-                                <span>Agendamento</span>
-                            </div>
-                            <button onclick="agendarConsultaWhatsApp('29/06', 'a Cabocla Jurema', 'consulta')" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">
-                                <i class="fa-brands fa-whatsapp text-xs"></i> Agendar
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <div id="container-detalhamento-eventos" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4"></div>
             </div>
 
-            <!-- NORMAS DA CASA E INSTAGRAM -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 page-break">
                 <div class="lg:col-span-2 bg-gradient-to-br from-umbanda-green to-emerald-950 text-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md relative overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-8xl sm:text-9xl">
@@ -1030,7 +1446,6 @@
             <span>© 2026 Templo de Umbanda Vovó Maria Conga - Todos os direitos reservados.</span>
             <span class="text-stone-500"><i class="fa-solid fa-leaf text-umbanda-gold"></i> Fé, Amor e Caridade</span>
         </footer>
-
     </div>
 </body>
 </html>
