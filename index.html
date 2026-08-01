@@ -268,7 +268,14 @@
 
             var horarioTexto = ev.horario ? ev.horario : "Horário Regular";
             var descCard = obterDescricaoAutomatica(ev.titulo, ev.descricao);
-            var eMutiraoOuPresenca = (ev.categoria === 'amber') || (ev.tipo === 'presenca') || (!ev.valor && !ev.horario);
+            
+            var tituloLow = (ev.titulo || "").toLowerCase();
+            var eAgendamentoWhatsApp = tituloLow.includes("consulta") || 
+                                       ev.categoria === 'jurema' || 
+                                       ev.categoria === 'joaocaveira' || 
+                                       ev.tipo === 'whatsapp_ritual';
+
+            var eMutiraoOuPresenca = !eAgendamentoWhatsApp;
 
             var catMapNamesPublic = {
                 'red': 'Gira de Esquerda', 'amber': 'Mutirão',
@@ -278,7 +285,6 @@
             };
             var catName = catMapNamesPublic[ev.categoria] || "Atividade do Templo";
 
-            var tituloLow = ev.titulo.toLowerCase();
             var saudacaoText = "Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.";
             var iconeEsp = "🔱";
 
@@ -477,12 +483,6 @@
             }
         }
 
-        function openPasswordModal() {
-            showAdminModal();
-        }
-
-        function closePasswordModal() { var modal = document.getElementById("password-modal"); if (modal) modal.classList.add("hidden"); }
-
         function openSucessoModal(cor) {
             var tema = TEMAS_MODAL[cor] || TEMAS_MODAL['emerald'];
             var card = document.getElementById("sucesso-card"); var iconBox = document.getElementById("sucesso-icon-box"); var icon = document.getElementById("sucesso-icon"); var axe = document.getElementById("sucesso-axe"); var btn = document.getElementById("sucesso-btn");
@@ -494,17 +494,6 @@
 
         function closeSucessoModal() { var modal = document.getElementById("sucesso-modal"); if (modal) modal.classList.add("hidden"); }
 
-        function togglePassVisibility() {
-            var input = document.getElementById("admin-pass-input"); var icon = document.getElementById("eye-icon");
-            if (input && icon) { input.type = (input.type === "password") ? "text" : "password"; icon.classList.toggle("fa-eye"); icon.classList.toggle("fa-eye-slash"); }
-        }
-
-        async function verifyAdminPassword() {
-            var input = document.getElementById("admin-pass-input"); var pass = input ? input.value : "";
-            if (!pass) return;
-            try { if (btoa(pass) === "QE1hZW1hcmxpMjAyNi4=") { closePasswordModal(); showAdminModal(); return; } } catch (e) {}
-            var err = document.getElementById("pass-error-msg"); if (err) err.classList.remove("hidden");
-        }
         function abrirFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.remove("hidden"); }
         function fecharFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.add("hidden"); }
 
@@ -621,13 +610,17 @@
                         .from('presencas')
                         .insert([{ evento_id: String(id) }]);
 
-                    if (!error) {
-                        localStorage.setItem("confirmado_gira_" + id, "true");
-                        atualizarUIConfirmado(id); 
-                        await buscarContadorPresenca(id);
+                    if (error) {
+                        console.error("Erro ao registrar presença no Supabase:", error);
+                        alert("Erro ao gravar presença online.");
+                        return;
                     }
-                } catch (e) {
+
+                    localStorage.setItem("confirmado_gira_" + id, "true");
+                    atualizarUIConfirmado(id); 
                     await buscarContadorPresenca(id);
+                } catch (e) {
+                    console.error("Erro ao conectar com Supabase:", e);
                 }
             }
             
@@ -785,35 +778,64 @@
             var descricaoDigitada = document.getElementById("input-descricao").value.trim();
             var descricao = obterDescricaoAutomatica(titulo, descricaoDigitada);
 
-            if (!dia || dia < 1 || dia > 31 || !titulo) { alert("Preencha o Dia do Mês e o Título do Evento!"); return; }
+            if (!dia || dia < 1 || dia > 31 || !titulo) { 
+                alert("Preencha o Dia do Mês e o Título do Evento!"); 
+                return; 
+            }
 
             var btn = document.getElementById("btn-salvar-atividade");
-            btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Salvando no calendário...';
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Salvando no calendário...';
 
-            var novoEvento = {
-                id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao, tipo: 'whatsapp'
-            };
-
-            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
-            customEventos.push(novoEvento);
-            localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
+            var salvouNoBanco = false;
 
             if (supabaseClient) {
                 try {
-                    await supabaseClient.from('eventos').insert([{
-                        mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao
-                    }]);
-                } catch (e) {}
+                    const { data, error } = await supabaseClient
+                        .from('eventos')
+                        .insert([{
+                            mes_ano: mesAno, 
+                            dia: dia, 
+                            titulo: titulo, 
+                            categoria: categoria, 
+                            horario: horario, 
+                            valor: valor, 
+                            entidade: entidade, 
+                            descricao: descricao
+                        }])
+                        .select();
+
+                    if (error) {
+                        console.error("Erro Supabase:", error);
+                        alert("Atenção: Não foi possível salvar no banco de dados online.");
+                    } else {
+                        salvouNoBanco = true;
+                    }
+                } catch (e) {
+                    console.error("Erro de conexão Supabase:", e);
+                }
             }
 
-            btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Salvar Atividade no Calendário';
+            if (!salvouNoBanco) {
+                var novoEventoLocal = {
+                    id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao, tipo: 'whatsapp'
+                };
+                var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
+                customEventos.push(novoEventoLocal);
+                localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
+            }
+
+            btn.disabled = false; 
+            btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Salvar Atividade no Calendário';
+            
             alert("Atividade salva com sucesso!");
             
             document.getElementById("input-dia").value = ""; 
             document.getElementById("input-valor").value = ""; 
             document.getElementById("input-entidade").value = ""; 
             document.getElementById("input-descricao").value = "";
-            var badgeDia = document.getElementById("badge-dia-semana"); if (badgeDia) badgeDia.classList.add("hidden");
+            var badgeDia = document.getElementById("badge-dia-semana"); 
+            if (badgeDia) badgeDia.classList.add("hidden");
             
             mudarMesAtivo(mesAno);
         }
@@ -827,15 +849,15 @@
 
             var eventosDoMes = [];
             var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.mes_ano === mesAno);
-            eventosDoMes = eventosDoMes.concat(customEventos);
+            customEventos.forEach(e => eventosDoMes.push({ ...e, id: 'loc-' + e.id }));
 
             if (supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient.from('eventos').select('*').eq('mes_ano', mesAno);
                     if (!error && data && data.length > 0) {
                         data.forEach(ev => {
-                            if (!eventosDoMes.some(e => e.id === ev.id || (e.dia === ev.dia && e.titulo === ev.titulo))) {
-                                eventosDoMes.push(ev);
+                            if (!eventosDoMes.some(e => String(e.id) === 'supa-' + ev.id || (e.dia === ev.dia && e.titulo === ev.titulo))) {
+                                eventosDoMes.push({ ...ev, id: 'supa-' + ev.id });
                             }
                         });
                     }
@@ -855,7 +877,7 @@
                 var diaFmt = (ev.dia < 10 ? '0' + ev.dia : ev.dia) + '/' + mesNum;
                 html += '<div class="flex items-center justify-between p-2.5 bg-white border border-stone-200 rounded-lg text-xs shadow-2xs">' +
                             '<div><span class="font-extrabold text-umbanda-green mr-2">Dia ' + diaFmt + ':</span><strong class="text-stone-800">' + ev.titulo + '</strong> ' + (ev.valor ? '<span class="text-emerald-700 font-bold ml-1">(' + ev.valor + ')</span>' : (ev.horario ? '<span class="text-stone-500 ml-1">(' + ev.horario + ')</span>' : '')) + '</div>' +
-                            '<button onclick="deletarAtividade(' + ev.id + ')" class="text-red-600 hover:text-red-800 p-1 font-bold" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>' +
+                            '<button onclick="deletarAtividade(\'' + ev.id + '\')" class="text-red-600 hover:text-red-800 p-1 font-bold" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>' +
                         '</div>';
             });
             container.innerHTML = html + '</div>';
@@ -864,11 +886,25 @@
         async function deletarAtividade(id) {
             if (!confirm("Tem certeza que deseja excluir esta atividade?")) return;
             
-            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.id != id);
-            localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
-
-            if (supabaseClient) {
-                try { await supabaseClient.from('eventos').delete().eq('id', id); } catch(e) {}
+            var idStr = String(id);
+            
+            if (idStr.startsWith('loc-')) {
+                var realLocalId = idStr.replace('loc-', '');
+                var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => String(e.id) !== realLocalId);
+                localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
+            } 
+            else if (supabaseClient) {
+                var realSupaId = idStr.replace('supa-', '');
+                try { 
+                    const { error } = await supabaseClient
+                        .from('eventos')
+                        .delete()
+                        .eq('id', realSupaId); 
+                        
+                    if (error) console.error("Erro ao excluir do Supabase:", error);
+                } catch(e) {
+                    console.error("Erro na requisição de exclusão:", e);
+                }
             }
 
             carregarListaAtividadesAdmin(); 
@@ -921,7 +957,12 @@
             listaEventos.forEach(function(ev) {
                 var st = CATEGORIA_STYLES[ev.categoria] || CATEGORIA_STYLES['emerald'];
                 var descCard = obterDescricaoAutomatica(ev.titulo, ev.descricao);
-                var eMutiraoOuPresenca = (ev.categoria === 'amber') || (ev.tipo === 'presenca') || (!ev.valor && !ev.horario);
+                
+                var tituloLow = (ev.titulo || "").toLowerCase();
+                var eAgendamentoWhatsApp = tituloLow.includes("consulta") || 
+                                           ev.categoria === 'jurema' || 
+                                           ev.categoria === 'joaocaveira' || 
+                                           ev.tipo === 'whatsapp_ritual';
 
                 html += '<div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 ' + st.border + ' border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">' +
                             '<div>' +
@@ -937,19 +978,7 @@
                                 '<h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">' + ev.titulo + '</h4>' +
                                 '<p class="text-xs text-stone-600 leading-relaxed mb-2">' + descCard + '</p>';
 
-                if (eMutiraoOuPresenca) {
-                    html += '</div>' +
-                            '<div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">' +
-                                '<div class="inline-flex items-center gap-1.5 text-xs text-stone-600 font-medium">' +
-                                    '<i class="fa-solid fa-users text-amber-600 text-sm"></i>' +
-                                    '<span><strong id="count-' + ev.id + '" class="font-bold text-stone-900 text-sm">--</strong> confirmados</span>' +
-                                '</div>' +
-                                '<button id="btn-presenca-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="inline-flex items-center gap-1.5 ' + st.btnBg + ' active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">' +
-                                    '<i class="fa-solid fa-check text-[10px]"></i> Confirmar' +
-                                '</button>' +
-                            '</div>' +
-                        '</div>';
-                } else {
+                if (eAgendamentoWhatsApp) {
                     html += '</div>' +
                             '<div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">' +
                                 '<div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">' +
@@ -958,6 +987,18 @@
                                 '</div>' +
                                 '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="inline-flex items-center gap-1.5 ' + st.btnBg + ' active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">' +
                                     '<i class="fa-brands fa-whatsapp text-xs"></i> Agendar' +
+                                '</button>' +
+                            '</div>' +
+                        '</div>';
+                } else {
+                    html += '</div>' +
+                            '<div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">' +
+                                '<div class="inline-flex items-center gap-1.5 text-xs text-stone-600 font-medium">' +
+                                    '<i class="fa-solid fa-users text-amber-600 text-sm"></i>' +
+                                    '<span><strong id="count-' + ev.id + '" class="font-bold text-stone-900 text-sm">--</strong> confirmados</span>' +
+                                '</div>' +
+                                '<button id="btn-presenca-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="inline-flex items-center gap-1.5 ' + st.btnBg + ' active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">' +
+                                    '<i class="fa-solid fa-check text-[10px]"></i> Confirmar' +
                                 '</button>' +
                             '</div>' +
                         '</div>';
@@ -1028,7 +1069,7 @@
             <h1 class="font-semibold text-stone-700 text-xs sm:text-base">Painel do Calendário - <span id="texto-mes-topbar">Junho de 2026</span></h1>
         </div>
         <div class="flex flex-wrap gap-2">
-            <button onclick="openPasswordModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
+            <button onclick="showAdminModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
                 <i class="fa-solid fa-chart-line"></i> Acessos (ADM)
             </button>
             <button onclick="window.print()" class="bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
@@ -1037,7 +1078,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE DETALHES DO EVENTO (AO CLICAR NO DIA DO CALENDÁRIO) -->
+    <!-- MODAL DE DETALHES DO EVENTO -->
     <div id="evento-detalhe-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] hidden flex items-center justify-center p-3 sm:p-4 no-print" onclick="fecharModalDetalhesEvento()">
         <div class="max-w-md w-full" onclick="event.stopPropagation()">
             <div id="evento-detalhe-modal-content"></div>
@@ -1055,27 +1096,6 @@
                 <span id="sucesso-axe" class="text-emerald-700 font-extrabold text-base block mt-2">Axé! 🌿✨</span>
             </div>
             <button id="sucesso-btn" onclick="closeSucessoModal()" class="w-full py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Concluído</button>
-        </div>
-    </div>
-
-    <div id="password-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-5 sm:p-6 border-2 border-amber-400 relative text-center space-y-4">
-            <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-2xl mx-auto shadow-inner">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <div>
-                <h3 class="font-serif font-bold text-lg sm:text-xl text-umbanda-green">Área do Administrador</h3>
-                <p class="text-xs text-stone-500 mt-1">Digite a senha do Terreiro para acessar o painel</p>
-            </div>
-            <div class="relative">
-                <input type="password" id="admin-pass-input" placeholder="Digite a senha..." class="w-full px-4 py-2.5 rounded-xl border-2 border-stone-200 focus:border-umbanda-green focus:outline-none text-center text-sm font-semibold text-stone-800 pr-10" onkeyup="if(event.key === 'Enter') verifyAdminPassword()">
-                <button type="button" onclick="togglePassVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"><i id="eye-icon" class="fa-solid fa-eye text-sm"></i></button>
-            </div>
-            <p id="pass-error-msg" class="text-xs font-bold text-red-600 hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Senha incorreta!</p>
-            <div class="flex gap-2 pt-1">
-                <button onclick="closePasswordModal()" class="w-1/2 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl text-xs transition">Cancelar</button>
-                <button onclick="verifyAdminPassword()" class="w-1/2 py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-bold rounded-xl text-xs transition shadow-md">Acessar Painel</button>
-            </div>
         </div>
     </div>
 
@@ -1501,7 +1521,7 @@
                 </div>
             </div>
 
-            <!-- RODAPÉ FIXO COMPACTO -->
+            <!-- RODAPÉ FIXO -->
             <div class="bg-stone-100 px-4 py-2 text-right border-t border-stone-200 flex justify-end flex-shrink-0 z-20">
                 <button onclick="closeAdminStats()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs px-5 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5">
                     <i class="fa-solid fa-xmark"></i> Fechar
