@@ -29,7 +29,7 @@
         var DESCRICOES_PADRAO = {
             'Consulta Particular com Cabocla Jurema': 'Interessados em passar por consulta devem agendar com antecedência diretamente com a Paula.',
             'Consulta Particular com Sr. João Caveira': 'Agendamento prévio indispensável. Entrar em contato antecipadamente com a Paula.',
-            'Organização e Limpeza do Terreiro': 'Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para os trabalhos.',
+            'Organização / Limpeza do Terreiro': 'Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para os trabalhos.',
             'Mutirão / Organização': 'Precisamos da ajuda dos filhos para limpar e organizar a casa em preparação para os trabalhos.',
             'Gira de Exu': 'Trabalhos de descarrego, quebra de demandas, proteção e abertura de caminhos.',
             'Gira de Pombagira': 'Trabalhos de descarrego, limpeza espiritual e harmonização.',
@@ -161,7 +161,7 @@
             var valorInput = document.getElementById("input-valor"); var entidadeInput = document.getElementById("input-entidade"); var descInput = document.getElementById("input-descricao");
             if (!catSelect || !tituloSelect) return;
             var val = catSelect.value;
-            if (val === 'amber') { setTituloDesativado("Mutirão / Organização"); } 
+            if (val === 'amber') { setTituloDesativado("Organização / Limpeza do Terreiro"); } 
             else if (val === 'jurema') {
                 setTituloDesativado("Consulta Particular com Cabocla Jurema");
                 if (valorInput && !valorInput.value) valorInput.value = "R$ 70,00";
@@ -208,7 +208,7 @@
 
         var EVENTOS_PADRAO = [
             { id: '0106', dia: 1, diaTexto: 'Dia 01/06 - Segunda', titulo: 'Gira de Esquerda', categoria: 'red', horario: '17h00', descricao: 'Trabalhos com as forças da Esquerda.', tipo: 'presenca' },
-            { id: '0506', dia: 5, diaTexto: 'Dia 05/06 - Sexta', titulo: 'Organização e Limpeza do Terreiro', categoria: 'amber', horario: 'Mutirão', descricao: 'Ajuda dos filhos para limpar e organizar a casa.', tipo: 'presenca' },
+            { id: '0506', dia: 5, diaTexto: 'Dia 05/06 - Sexta', titulo: 'Organização / Limpeza do Terreiro', categoria: 'amber', horario: 'Mutirão', descricao: 'Ajuda dos filhos para limpar e organizar a casa.', tipo: 'presenca' },
             { id: '0606', dia: 6, diaTexto: 'Dia 06/06 - Sábado', titulo: 'Oferenda para Obará de Oxóssi', categoria: 'emerald', horario: '', descricao: 'Aguardem comunicado interno sobre materiais.', tipo: 'presenca' },
             { id: '0806', dia: 8, diaTexto: 'Dia 08/06 - Segunda', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp' },
             { id: '1206', dia: 12, diaTexto: 'Dia 12/06 - Sexta', titulo: 'Ritual Xamânico da Mãe Marli', categoria: 'purple', horario: '13h00', valor: 'R$ 180', entidade: 'o Ritual Xamânico', descricao: 'Trabalho de elevação espiritual.', tipo: 'whatsapp_ritual' },
@@ -251,6 +251,7 @@
             if (t.includes("Cabocla Jurema")) return "Cabocla Jurema";
             if (t.includes("João Caveira")) return "Sr. João Caveira";
             if (t === "Gira de Esquerda") return "Gira Esquerda";
+            if (t.includes("Organização") || t.includes("Limpeza")) return "Organização e Limpeza";
             return t;
         }
 
@@ -270,7 +271,7 @@
             var eMutiraoOuPresenca = (ev.categoria === 'amber') || (ev.tipo === 'presenca') || (!ev.valor && !ev.horario);
 
             var catMapNamesPublic = {
-                'red': 'Gira de Esquerda', 'amber': 'Mutirão / Organização',
+                'red': 'Gira de Esquerda', 'amber': 'Mutirão',
                 'emerald': 'Consultas / Oferenda', 'purple': 'Ritual Xamânico',
                 'sky': 'Benzimento', 'pink': 'Gira de Erês',
                 'jurema': 'Consulta Particular', 'joaocaveira': 'Consulta Particular'
@@ -434,7 +435,7 @@
             var customCats = JSON.parse(localStorage.getItem("custom_categorias") || "[]");
             select.innerHTML = `
                 <option value="red">🔴 Gira de Esquerda (Vermelho)</option>
-                <option value="amber">🟡 Mutirão / Organização (Amarelo)</option>
+                <option value="amber">🟡 Mutirão (Amarelo)</option>
                 <option value="emerald">🟢 Consultas / Oferenda (Verde)</option>
                 <option value="purple">🟣 Ritual Xamânico (Roxo)</option>
                 <option value="sky">🔵 Benzimento (Azul)</option>
@@ -621,12 +622,12 @@
             var titulo = document.getElementById("input-titulo") ? document.getElementById("input-titulo").value : "Gira de Exu";
             var categoria = document.getElementById("input-categoria") ? document.getElementById("input-categoria").value : "red";
 
-            if (categoria === 'amber') titulo = "Mutirão / Organização";
+            if (categoria === 'amber') titulo = "Organização / Limpeza do Terreiro";
             else if (categoria === 'jurema') titulo = "Consulta Particular com Cabocla Jurema";
             else if (categoria === 'joaocaveira') titulo = "Consulta Particular com Sr. João Caveira";
 
             var catMapNames = {
-                'red': 'Gira de Esquerda (Vermelho)', 'amber': 'Mutirão / Organização (Amarelo)',
+                'red': 'Gira de Esquerda (Vermelho)', 'amber': 'Mutirão (Amarelo)',
                 'emerald': 'Consultas / Oferenda (Verde)', 'purple': 'Ritual Xamânico (Roxo)',
                 'sky': 'Benzimento (Azul)', 'pink': 'Gira de Erês (Rosa)',
                 'jurema': 'Consulta Particular (Cabocla Jurema)', 'joaocaveira': 'Consulta Particular (Sr. João Caveira)'
@@ -737,7 +738,7 @@
             var categoria = document.getElementById("input-categoria").value;
             var titulo = document.getElementById("input-titulo").value;
             
-            if (categoria === 'amber') titulo = "Mutirão / Organização";
+            if (categoria === 'amber') titulo = "Organização / Limpeza do Terreiro";
             else if (categoria === 'jurema') titulo = "Consulta Particular com Cabocla Jurema";
             else if (categoria === 'joaocaveira') titulo = "Consulta Particular com Sr. João Caveira";
 
@@ -893,7 +894,7 @@
                                 '<div class="flex justify-between items-start mb-1.5 sm:mb-2">' +
                                     '<span class="' + st.badge + ' font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">' + ev.diaTexto + '</span>' +
                                     (ev.categoria === 'amber' ?
-                                        '<span class="text-[11px] sm:text-xs bg-amber-100 text-amber-900 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart mr-1"></i> Mutirão / Organização</span>' :
+                                        '<span class="text-[11px] sm:text-xs bg-amber-100 text-amber-900 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart mr-1"></i> Mutirão</span>' :
                                         (ev.valor && ev.valor.trim() !== '' ? '<span class="text-[11px] sm:text-xs bg-umbanda-green text-white font-bold px-3 py-1 rounded-full shadow-2xs">' + ev.valor + '</span>' :
                                         (ev.horario ? '<span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> ' + ev.horario + '</span>' : ''))
                                     ) +
