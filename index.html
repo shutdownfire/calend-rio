@@ -283,11 +283,12 @@
                     var ehHorarioValido = ev.horario && (/\d/.test(ev.horario) || ev.horario.toLowerCase().includes('mutirão'));
 
                     var rodapeHtml = "";
-                    if (ehHorarioValido) {
-                        rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="inline-flex items-center justify-center gap-0.5 text-[6.5px] sm:text-[10px] text-stone-600 font-medium"><i class="fa-regular fa-clock text-[6.5px] sm:text-[9.5px] text-stone-500"></i> ' + ev.horario + '</span></div>';
-                    } else if (ev.valor && ev.valor.trim() !== '') {
+                    // PRIORIDADE: Se tiver valor cadastrado, exibe o Valor no rodapé da célula (igual Anexo 3)
+                    if (ev.valor && ev.valor.trim() !== '') {
                         var valorLimpo = ev.valor.replace(',00', '').trim();
                         rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="text-[7.5px] sm:text-[11px] ' + valColor + ' font-extrabold tracking-tight">' + valorLimpo + '</span></div>';
+                    } else if (ehHorarioValido) {
+                        rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="inline-flex items-center justify-center gap-0.5 text-[6.5px] sm:text-[10px] text-stone-600 font-medium"><i class="fa-regular fa-clock text-[6.5px] sm:text-[9.5px] text-stone-500"></i> ' + ev.horario + '</span></div>';
                     }
 
                     html += '<div class="min-h-[68px] sm:min-h-[92px] p-1.5 sm:p-2 ' + bgClass + ' rounded-xl sm:rounded-2xl border flex flex-col justify-between items-center relative hover:shadow-md transition overflow-hidden shadow-2xs group">' +
@@ -359,10 +360,7 @@
         }
 
         function openPasswordModal() {
-            var input = document.getElementById("admin-pass-input"); if (input) input.value = "";
-            var err = document.getElementById("pass-error-msg"); if (err) err.classList.add("hidden");
-            var modal = document.getElementById("password-modal"); if (modal) modal.classList.remove("hidden");
-            setTimeout(function() { if(input) input.focus(); }, 150);
+            showAdminModal();
         }
 
         function closePasswordModal() { var modal = document.getElementById("password-modal"); if (modal) modal.classList.add("hidden"); }
@@ -389,11 +387,13 @@
             try { if (btoa(pass) === "QE1hZW1hcmxpMjAyNi4=") { closePasswordModal(); showAdminModal(); return; } } catch (e) {}
             var err = document.getElementById("pass-error-msg"); if (err) err.classList.remove("hidden");
         }
+        function abrirFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.remove("hidden"); }
+        function fecharFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.add("hidden"); }
 
         function showAdminModal() {
             var adminModal = document.getElementById("admin-modal"); if (adminModal) adminModal.classList.remove("hidden");
+            document.body.classList.add("overflow-hidden");
             
-            // ATUALIZAR FRASE DO DIA NO BANNER
             var f = obterFraseDoDia();
             var elFrase = document.getElementById("texto-frase-orixa");
             var elOrixa = document.getElementById("texto-orixa-dia");
@@ -404,8 +404,10 @@
             atualizarPrevisualizacao();
         }
 
-        function closeAdminStats() { var adminModal = document.getElementById("admin-modal"); if (adminModal) adminModal.classList.add("hidden"); }
-
+        function closeAdminStats() { 
+            var adminModal = document.getElementById("admin-modal"); if (adminModal) adminModal.classList.add("hidden"); 
+            document.body.classList.remove("overflow-hidden");
+        }
         function switchAdminTab(tabName) {
             var tabStats = document.getElementById("tab-content-stats"); var tabMontar = document.getElementById("tab-content-montar");
             var btnStats = document.getElementById("tab-btn-stats"); var btnMontar = document.getElementById("tab-btn-montar");
@@ -418,7 +420,7 @@
             } else {
                 tabMontar.classList.add("hidden"); tabStats.classList.remove("hidden");
                 btnMontar.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
-                btnStats.className = "px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-2";
+                btnStats.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
             }
         }
 
@@ -634,8 +636,9 @@
             var btn = document.getElementById("btn-salvar-atividade");
             btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Salvando no calendário...';
 
+            // Garante o salvamento do campo valor
             var novoEvento = {
-                id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao
+                id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao, tipo: 'whatsapp'
             };
 
             var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
@@ -698,7 +701,7 @@
             eventosDoMes.forEach(function(ev) {
                 var diaFmt = (ev.dia < 10 ? '0' + ev.dia : ev.dia) + '/' + mesNum;
                 html += '<div class="flex items-center justify-between p-2.5 bg-white border border-stone-200 rounded-lg text-xs shadow-2xs">' +
-                            '<div><span class="font-extrabold text-umbanda-green mr-2">Dia ' + diaFmt + ':</span><strong class="text-stone-800">' + ev.titulo + '</strong> ' + (ev.horario ? '<span class="text-stone-500 ml-1">(' + ev.horario + ')</span>' : '') + '</div>' +
+                            '<div><span class="font-extrabold text-umbanda-green mr-2">Dia ' + diaFmt + ':</span><strong class="text-stone-800">' + ev.titulo + '</strong> ' + (ev.valor ? '<span class="text-emerald-700 font-bold ml-1">(' + ev.valor + ')</span>' : (ev.horario ? '<span class="text-stone-500 ml-1">(' + ev.horario + ')</span>' : '')) + '</div>' +
                             '<button onclick="deletarAtividade(' + ev.id + ')" class="text-red-600 hover:text-red-800 p-1 font-bold" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>' +
                         '</div>';
             });
@@ -727,7 +730,7 @@
                 var diaStr = ev.dia < 10 ? '0' + ev.dia : '' + ev.dia;
                 var mesNum = mesAtualAtivo.includes("Junho") ? "06" : (mesAtualAtivo.includes("Julho") ? "07" : (mesAtualAtivo.includes("Agosto") ? "08" : (mesAtualAtivo.includes("Setembro") ? "09" : (mesAtualAtivo.includes("Outubro") ? "10" : (mesAtualAtivo.includes("Novembro") ? "11" : "12")))));
                 listaEventos.push({
-                    id: 'loc-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: obterDescricaoAutomatica(ev.titulo, ev.descricao), tipo: 'whatsapp'
+                    id: 'loc-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: obterDescricaoAutomatica(ev.titulo, ev.descricao), tipo: ev.tipo || 'whatsapp'
                 });
             });
 
@@ -765,7 +768,7 @@
             listaEventos.forEach(function(ev) {
                 var st = CATEGORIA_STYLES[ev.categoria] || CATEGORIA_STYLES['emerald'];
                 var descCard = obterDescricaoAutomatica(ev.titulo, ev.descricao);
-                var eMutiraoOuPresenca = (ev.categoria === 'amber') || (ev.tipo === 'presenca') || (!ev.valor || ev.valor === '' || ev.valor.toLowerCase().includes('gratuito'));
+                var eMutiraoOuPresenca = (ev.categoria === 'amber') || (ev.tipo === 'presenca') || (!ev.valor && !ev.horario);
 
                 html += '<div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 ' + st.border + ' border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">' +
                             '<div>' +
@@ -773,8 +776,8 @@
                                     '<span class="' + st.badge + ' font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">' + ev.diaTexto + '</span>' +
                                     (ev.categoria === 'amber' ?
                                         '<span class="text-[11px] sm:text-xs bg-amber-100 text-amber-900 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart mr-1"></i> Mutirão / Organização</span>' :
-                                        (ev.horario ? '<span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> ' + ev.horario + '</span>' :
-                                        (ev.valor ? '<span class="text-[11px] sm:text-xs bg-umbanda-green text-white font-bold px-2.5 py-0.5 rounded-full">' + ev.valor + '</span>' : ''))
+                                        (ev.valor && ev.valor.trim() !== '' ? '<span class="text-[11px] sm:text-xs bg-umbanda-green text-white font-bold px-3 py-1 rounded-full shadow-2xs">' + ev.valor + '</span>' :
+                                        (ev.horario ? '<span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> ' + ev.horario + '</span>' : ''))
                                     ) +
                                 '</div>' +
                                 '<h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">' + ev.titulo + '</h4>' +
@@ -909,14 +912,37 @@
         </div>
     </div>
 
-    <!-- PAINEL ADMINISTRATIVO (ALTA LEGIBILIDADE) -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4 no-print font-sans">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[94vh] flex flex-col overflow-hidden border-2 border-amber-400">
+    <!-- MODAL EXPANDIR FOTO SR. JOÃO CAVEIRA -->
+    <div id="foto-joao-caveira-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex flex-col items-center justify-center p-4 no-print" onclick="fecharFotoJoaoCaveira()">
+        <div class="relative max-w-md w-full bg-stone-900 border-2 border-amber-400 rounded-2xl p-4 text-center shadow-2xl space-y-3" onclick="event.stopPropagation()">
+            <button type="button" onclick="fecharFotoJoaoCaveira()" class="absolute top-3 right-3 text-stone-400 hover:text-white text-xl font-bold leading-none w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center transition">&times;</button>
+            <h4 class="font-serif font-bold text-amber-400 text-lg">Sr. João Caveira</h4>
+            <div class="w-full max-h-[65vh] rounded-xl overflow-hidden border border-amber-400/30 flex items-center justify-center bg-black">
+                <img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" 
+                     alt="Foto Sr. João Caveira" 
+                     class="max-w-full max-h-[60vh] object-contain rounded-lg"
+                     onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH&sz=w1000';">
+            </div>
+            <button type="button" onclick="fecharFotoJoaoCaveira()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-xmark"></i> Fechar Foto
+            </button>
+        </div>
+    </div>
+
+    <!-- PAINEL ADMINISTRATIVO -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4 no-print font-sans overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-2 border-amber-400 my-auto">
             
             <!-- HEADER MODAL -->
-            <div class="bg-umbanda-green text-white px-4 sm:px-6 py-3.5 flex justify-between items-center border-b border-amber-400/30">
-                <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-briefcase text-amber-300 text-lg sm:text-xl"></i>
+            <div class="bg-umbanda-green text-white px-4 sm:px-6 py-3.5 flex justify-between items-center border-b border-amber-400/30 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div onclick="abrirFotoJoaoCaveira()" title="Clique para expandir a foto do Sr. João Caveira" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-amber-400 bg-stone-900 flex items-center justify-center overflow-hidden shadow-md flex-shrink-0 cursor-pointer hover:scale-105 transition">
+                        <img id="admin-logo-joao-caveira" 
+                             src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" 
+                             alt="Logo Sr. João Caveira" 
+                             class="w-full h-full object-cover"
+                             onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH&sz=w1000';">
+                    </div>
                     <div>
                         <h3 class="font-serif font-bold text-base sm:text-lg">ÁREA ADMINISTRATIVA DO TERREIRO</h3>
                         <p class="text-xs text-stone-200 font-semibold">Painel de Estatísticas de Visita e Gestão</p>
@@ -926,7 +952,7 @@
             </div>
 
             <!-- TABS & SELETOR DE MÊS -->
-            <div class="bg-stone-100 border-b border-stone-200 px-4 pt-2 flex flex-wrap justify-between items-center gap-2 text-xs sm:text-sm">
+            <div class="bg-stone-100 border-b border-stone-200 px-4 pt-2 flex flex-wrap justify-between items-center gap-2 text-xs sm:text-sm flex-shrink-0">
                 <div class="flex gap-2">
                     <button id="tab-btn-stats" onclick="switchAdminTab('stats')" class="px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-2">
                         <i class="fa-solid fa-chart-pie"></i> Estatísticas de Visita
@@ -948,13 +974,11 @@
                 </div>
             </div>
 
-            <!-- CONTEÚDO -->
-            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-stone-50 flex-1">
+            <!-- CONTEÚDO COM ROLAGEM DENTRO DO MODAL -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 bg-stone-50 flex-1 min-h-0">
                 
                 <!-- TAB ESTATÍSTICAS -->
                 <div id="tab-content-stats" class="space-y-4">
-                    
-                    <!-- 3 CARDS TOPO -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs relative">
                             <div class="flex justify-between items-start mb-1">
@@ -1125,29 +1149,29 @@
                         </a>
                     </div>
 
-                    <!-- BANNER INFERIOR COM LOGO PNG + ESPAÇAMENTO PERFEITO DE PARÁGRAFO -->
-                    <div class="bg-gradient-to-r from-amber-50/80 via-white to-amber-50/80 p-4 sm:p-5 rounded-xl border border-amber-300 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-2xs">
-                        <div class="sm:w-2/5 space-y-1">
-                            <div class="inline-flex items-center gap-1.5 bg-amber-100 border border-amber-300/80 text-amber-950 px-2.5 py-0.5 rounded-md text-xs font-black uppercase tracking-wide">
-                                <i class="fa-solid fa-hands-praying text-amber-700 text-xs"></i>
-                                <span id="texto-orixa-dia">BÊNÇÃO DE SEXTA-FEIRA (OXALÁ)</span>
+                    <!-- BANNER INFERIOR -->
+                    <div class="bg-gradient-to-r from-stone-900 via-emerald-950 to-stone-900 text-white p-4 sm:p-5 rounded-2xl border border-amber-500/30 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl relative overflow-hidden">
+                        <div class="absolute -left-10 -top-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                        <div class="flex-1 text-center md:text-left z-10">
+                            <div class="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-400/30 text-amber-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-3.5 sm:mb-4">
+                                <i class="fa-solid fa-hands-praying text-amber-400 text-xs"></i>
+                                <span id="texto-orixa-dia" class="tracking-widest">BÊNÇÃO DO DIA</span>
                             </div>
-                            <p id="texto-frase-orixa" class="font-sans font-bold text-stone-900 text-xs sm:text-sm leading-snug !mt-4">
-                                "Epà Babá Oxalá! Que o manto sagrado da paz, da pureza e da fé abençoe nosso terreiro e nossas vidas."
+                            <p id="texto-frase-orixa" class="font-sans font-medium text-stone-200 text-xs sm:text-sm md:text-base leading-relaxed tracking-tight block">
+                                "Que a luz da espiritualidade e a bênção dos orixás iluminem sua semana com fé, gratidão e paz."
                             </p>
                         </div>
 
-                        <!-- RECEPTÁCULO PARA LOGO PNG PERSONALIZADO -->
-                        <div class="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center flex-shrink-0 my-1 sm:my-0">
-                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center p-1 shadow-md z-10 overflow-hidden">
-                                <img id="banner-logo-png" src="https://lh3.googleusercontent.com/d/1y5WQ02UIxoDa6lEu08sofZUiFOde1Tbb" alt="Logo Terreiro" class="w-full h-full object-contain">
-                            </div>
-                        </div>
-
-                        <div class="sm:w-2/5 text-center sm:text-right space-y-1">
-                            <span class="text-xs font-black uppercase tracking-wider text-stone-900 block">PRÓXIMA ATUALIZAÇÃO</span>
-                            <span class="text-xs sm:text-sm font-bold text-stone-800 flex items-center justify-center sm:justify-end gap-1.5">
-                                <i class="fa-regular fa-clock text-xs text-amber-600"></i> Atualização automática em tempo real
+                        <div class="flex-shrink-0 bg-stone-800/80 backdrop-blur-md border border-stone-700/80 rounded-xl p-3 px-4 text-center md:text-right shadow-inner z-10 space-y-1">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400 block">SISTEMA CONECTADO</span>
+                            <span class="text-xs font-semibold text-emerald-400 flex items-center justify-center md:justify-end gap-2">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                                Sincronização em Tempo Real
                             </span>
                         </div>
                     </div>
@@ -1233,7 +1257,7 @@
                                     <div id="container-opcoes-avancadas" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                         <div>
                                             <label class="font-bold text-stone-700 block mb-1">Entidade / Detalhes</label>
-                                            <input type="text" id="input-entidade" value="Seu Tranca Rua das Almas" oninput="atualizarPrevisualizacao()" placeholder="Ex: Seu Tranca Rua das Almas" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                            <input type="text" id="input-entidade" value="" oninput="atualizarPrevisualizacao()" placeholder="Ex: Sr. Tranca Rua das Almas" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
                                         </div>
 
                                         <div>
@@ -1243,7 +1267,7 @@
 
                                         <div>
                                             <label class="font-bold text-stone-700 block mb-1">Responsável</label>
-                                            <input type="text" id="input-responsavel" value="Pai João de Xangô" oninput="atualizarPrevisualizacao()" placeholder="Ex: Pai João de Xangô" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                            <input type="text" id="input-responsavel" value="" oninput="atualizarPrevisualizacao()" placeholder="Ex: Pai João de Xangô" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
                                         </div>
 
                                         <div>
@@ -1280,7 +1304,7 @@
                                     </div>
                                 </div>
 
-                                <button id="btn-salvar-atividade" onclick="salvarAtividadeSupabase()" class="w-full py-3.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2">
+                                <button id="btn-salvar-atividade" onclick="salvarAtividadeSupabase()" class="w-full py-3.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 my-2">
                                     <i class="fa-solid fa-cloud-arrow-up text-base"></i> Salvar Atividade no Calendário
                                 </button>
                             </div>
@@ -1310,7 +1334,8 @@
                 </div>
             </div>
 
-            <div class="bg-stone-100 px-5 py-3 text-right border-t border-stone-200 flex justify-end">
+            <!-- RODAPÉ FIXO DO MODAL DENTRO DA CAIXA -->
+            <div class="bg-stone-100 px-5 py-3 text-right border-t border-stone-200 flex justify-end flex-shrink-0">
                 <button onclick="closeAdminStats()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs px-5 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5">
                     <i class="fa-solid fa-xmark"></i> Fechar
                 </button>
