@@ -564,41 +564,72 @@
             }
         }
 
+        // --- SISTEMA DE CONTADOR 100% REAL COM SUPABASE ---
         async function buscarContadorPresenca(id) {
-            var countElem = document.getElementById("count-" + id); if (!countElem) return;
-            var realCount = null;
-            try {
-                var res = await fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "?t=" + Date.now());
-                if (res.ok) { var data = await res.json(); if (data && typeof data.count === 'number') realCount = data.count; else if (data && typeof data.value === 'number') realCount = data.value; }
-            } catch (err) {}
-            if (realCount !== null && realCount !== undefined) countElem.innerText = realCount;
-            else if (countElem.innerText === '--') countElem.innerText = '0';
+            var countElem = document.getElementById("count-" + id); 
+            if (!countElem) return;
+
+            if (supabaseClient) {
+                try {
+                    const { count, error } = await supabaseClient
+                        .from('presencas')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('evento_id', String(id));
+
+                    if (!error && count !== null) {
+                        countElem.innerText = count;
+                        return;
+                    }
+                } catch (err) {}
+            }
+            if (countElem.innerText === '--') countElem.innerText = '0';
         }
 
         function carregarContadoresPresenca() {
             var idsParaCarregar = [...EVENTOS_PRESENCA_IDS];
             if (window.EVENTOS_ATIVOS_CACHE) {
-                window.EVENTOS_ATIVOS_CACHE.forEach(function(ev) { if (ev.id && !idsParaCarregar.includes(String(ev.id))) idsParaCarregar.push(String(ev.id)); });
+                window.EVENTOS_ATIVOS_CACHE.forEach(function(ev) { 
+                    if (ev.id && !idsParaCarregar.includes(String(ev.id))) idsParaCarregar.push(String(ev.id)); 
+                });
             }
-            idsParaCarregar.forEach(function(id) { if (localStorage.getItem("confirmado_gira_" + id)) atualizarUIConfirmado(id); buscarContadorPresenca(id); });
+            idsParaCarregar.forEach(function(id) { 
+                if (localStorage.getItem("confirmado_gira_" + id)) atualizarUIConfirmado(id); 
+                buscarContadorPresenca(id); 
+            });
         }
 
         async function confirmarPresencaGira(id, categoriaCor) {
             var cor = categoriaCor || 'emerald';
-            if (localStorage.getItem("confirmado_gira_" + id)) { fecharModalDetalhesEvento(); openSucessoModal(cor); return; }
             var countElem = document.getElementById("count-" + id);
-            localStorage.setItem("confirmado_gira_" + id, "true");
-            atualizarUIConfirmado(id); fecharModalDetalhesEvento(); openSucessoModal(cor);
 
-            try {
-                var res = await fetch("https://api.counterapi.dev/v1/vovomariaconga/gira-" + id + "/up?t=" + Date.now());
-                if (res.ok) {
-                    var data = await res.json();
-                    var newCount = (data && typeof data.count === 'number') ? data.count : ((data && typeof data.value === 'number') ? data.value : null);
-                    if (newCount !== null && countElem) countElem.innerText = newCount;
-                    else buscarContadorPresenca(id);
-                } else { buscarContadorPresenca(id); }
-            } catch (e) { buscarContadorPresenca(id); }
+            if (localStorage.getItem("confirmado_gira_" + id)) { 
+                fecharModalDetalhesEvento(); 
+                openSucessoModal(cor); 
+                return; 
+            }
+
+            // Marca localmente no navegador do usuário para ele não votar duas vezes
+            localStorage.setItem("confirmado_gira_" + id, "true");
+            atualizarUIConfirmado(id); 
+            fecharModalDetalhesEvento(); 
+            openSucessoModal(cor);
+
+            // Grava no banco de dados central (Supabase)
+            if (supabaseClient) {
+                try {
+                    const { error } = await supabaseClient
+                        .from('presencas')
+                        .insert([{ evento_id: String(id) }]);
+
+                    if (!error) {
+                        buscarContadorPresenca(id);
+                    }
+                } catch (e) {
+                    buscarContadorPresenca(id);
+                }
+            } else {
+                buscarContadorPresenca(id);
+            }
         }
 
         function atualizarPrevisualizacao() {
