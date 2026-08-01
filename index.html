@@ -298,9 +298,16 @@
 
             var acaoBtnHtml = "";
             if (eMutiraoOuPresenca) {
-                acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-3 ' + st.btnBg + ' active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2">' +
-                                    '<i class="fa-solid fa-check text-sm"></i> Confirmar Presença' +
-                               '</button>';
+                var estaConfirmadoModal = localStorage.getItem("confirmado_gira_" + ev.id);
+                if (estaConfirmadoModal) {
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-3 bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold rounded-xl text-xs sm:text-sm cursor-default">' +
+                                        '<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Presença Confirmada' +
+                                   '</button>';
+                } else {
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-3 ' + st.btnBg + ' active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2">' +
+                                        '<i class="fa-solid fa-check text-sm"></i> Confirmar Presença' +
+                                   '</button>';
+                }
             } else {
                 acaoBtnHtml = '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="w-full py-3 ' + st.btnBg + ' active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2">' +
                                     '<i class="fa-brands fa-whatsapp text-base"></i> Agendar pelo WhatsApp' +
@@ -564,7 +571,6 @@
             }
         }
 
-        // --- SISTEMA DE CONTADOR 100% REAL COM SUPABASE ---
         async function buscarContadorPresenca(id) {
             var countElem = document.getElementById("count-" + id); 
             if (!countElem) return;
@@ -593,14 +599,15 @@
                 });
             }
             idsParaCarregar.forEach(function(id) { 
-                if (localStorage.getItem("confirmado_gira_" + id)) atualizarUIConfirmado(id); 
                 buscarContadorPresenca(id); 
+                if (localStorage.getItem("confirmado_gira_" + id)) {
+                    atualizarUIConfirmado(id); 
+                }
             });
         }
 
         async function confirmarPresencaGira(id, categoriaCor) {
             var cor = categoriaCor || 'emerald';
-            var countElem = document.getElementById("count-" + id);
 
             if (localStorage.getItem("confirmado_gira_" + id)) { 
                 fecharModalDetalhesEvento(); 
@@ -608,13 +615,6 @@
                 return; 
             }
 
-            // Marca localmente no navegador do usuário para ele não votar duas vezes
-            localStorage.setItem("confirmado_gira_" + id, "true");
-            atualizarUIConfirmado(id); 
-            fecharModalDetalhesEvento(); 
-            openSucessoModal(cor);
-
-            // Grava no banco de dados central (Supabase)
             if (supabaseClient) {
                 try {
                     const { error } = await supabaseClient
@@ -622,14 +622,17 @@
                         .insert([{ evento_id: String(id) }]);
 
                     if (!error) {
-                        buscarContadorPresenca(id);
+                        localStorage.setItem("confirmado_gira_" + id, "true");
+                        atualizarUIConfirmado(id); 
+                        await buscarContadorPresenca(id);
                     }
                 } catch (e) {
-                    buscarContadorPresenca(id);
+                    await buscarContadorPresenca(id);
                 }
-            } else {
-                buscarContadorPresenca(id);
             }
+            
+            fecharModalDetalhesEvento(); 
+            openSucessoModal(cor);
         }
 
         function atualizarPrevisualizacao() {
