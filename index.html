@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Calendário de Atividades - Templo de Umbanda Vovó Maria Conga</title>
 
-    <script data-goatcounter="https://vovomariaconga.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <script data-goatcounter="https://vovomariaconga.goatcounter.com/counter" async src="//gc.zgo.at/count.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,6 +31,9 @@
 
         var DIAS_SEMANA = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
         var EVENTOS_PRESENCA_IDS = ['0106', '0506', '0606', '2706-benzimento', '2706-eres'];
+
+        // VARIÁVEL DE CONTROLE DE EDIÇÃO
+        var eventoSendoEditadoId = null;
 
         var DESCRICOES_PADRAO = {
             'Consulta Particular com Cabocla Jurema': 'Interessados em passar por consulta devem agendar com antecedência diretamente com a Paula.',
@@ -76,79 +79,167 @@
             return tTrim + " - Trabalhos de atendimento espiritual, passes e fortalecimento espiritual.";
         }
 
-        function carregarTitulosCustomizados() {
-            var select = document.getElementById("input-titulo"); if (!select) return;
+        function obterListaTitulosCompleta() {
             var customTitulos = JSON.parse(localStorage.getItem("custom_titulos") || "[]");
-            var valAtual = select.value; select.innerHTML = "";
-            TITULOS_PADRAO.forEach(function(t) { var opt = document.createElement("option"); opt.value = t; opt.text = t; select.appendChild(opt); });
-            customTitulos.forEach(function(ct) { var opt = document.createElement("option"); opt.value = ct.nome; opt.text = ct.nome + " (Personalizado)"; opt.setAttribute("data-custom-id", ct.id); select.appendChild(opt); });
-            if (valAtual) select.value = valAtual;
+            var lista = [];
+            TITULOS_PADRAO.forEach(function(t) { lista.push({ nome: t, custom: false }); });
+            customTitulos.forEach(function(ct) { lista.push({ id: ct.id, nome: ct.nome, custom: true }); });
+            return lista;
         }
 
-        function adicionarNovoTitulo() {
-            var nome = prompt("Nome do novo Título:"); if (!nome || !nome.trim()) return;
+        // LÓGICA DO MODAL DE SELEÇÃO DE DIA
+        function abrirModalSeletorDia() {
+            renderizarCalendarioModalDia();
+            var modal = document.getElementById("seletor-dia-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalSeletorDia() {
+            var modal = document.getElementById("seletor-dia-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        function renderizarCalendarioModalDia() {
+            var container = document.getElementById("seletor-dia-grid"); if (!container) return;
+            var mesAno = document.getElementById("input-mes-ano") ? document.getElementById("input-mes-ano").value : mesAtualAtivo;
+            var details = getMonthDetails(mesAno);
+            var diaSel = parseInt(document.getElementById("input-dia").value) || 0;
+
+            var titleElem = document.getElementById("modal-dia-mes-titulo");
+            if (titleElem) titleElem.innerText = mesAno;
+
+            var html = '<div class="grid grid-cols-7 gap-1 text-center font-bold text-stone-400 text-xs mb-2">' +
+                            '<div class="text-red-500">Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div class="text-emerald-500">Sáb</div>' +
+                        '</div><div class="grid grid-cols-7 gap-1.5 text-center text-sm font-semibold">';
+            
+            var prevTotal = new Date(details.ano, details.mNum, 0).getDate();
+            for (var i = details.firstDay - 1; i >= 0; i--) {
+                html += '<div class="p-2.5 text-stone-700 pointer-events-none rounded-xl">' + (prevTotal - i) + '</div>';
+            }
+
+            for (var d = 1; d <= details.totalDays; d++) {
+                var dayNum = new Date(details.ano, details.mNum, d).getDay(); 
+                var nome = DIAS_SEMANA[dayNum];
+                var isSelected = (d === diaSel);
+                
+                var bg = isSelected 
+                    ? "bg-amber-500 text-stone-950 font-black shadow-lg scale-105" 
+                    : ((dayNum === 0) ? "bg-stone-800/80 text-red-400 hover:bg-stone-700" : ((dayNum === 6) ? "bg-stone-800/80 text-emerald-400 hover:bg-stone-700" : "bg-stone-800/80 text-white hover:bg-stone-700"));
+                
+                html += '<button type="button" onclick="confirmarDiaModal(' + d + ', \'' + nome + '\')" class="p-2.5 sm:p-3 rounded-xl transition active:scale-95 border border-stone-700/50 ' + bg + '">' + d + '</button>';
+            }
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function confirmarDiaModal(dia, nomeDia) {
+            var inputDia = document.getElementById("input-dia");
+            if (inputDia) inputDia.value = dia;
+            atualizarInfoDiaDigitado();
+            fecharModalSeletorDia();
+        }
+
+        // LÓGICA DO MODAL DE SELEÇÃO DE TÍTULO COM BUSCA
+        function abrirModalTitulo() {
+            renderizarListaTitulosModal("");
+            var inputBusca = document.getElementById("modal-titulo-busca");
+            if (inputBusca) inputBusca.value = "";
+            var modal = document.getElementById("seletor-titulo-modal");
+            if (modal) modal.classList.remove("hidden");
+            setTimeout(function() { if (inputBusca) inputBusca.focus(); }, 150);
+        }
+
+        function fecharModalTitulo() {
+            var modal = document.getElementById("seletor-titulo-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        function renderizarListaTitulosModal(termoBusca) {
+            var container = document.getElementById("modal-titulo-lista"); if (!container) return;
+            var termo = (termoBusca || "").toLowerCase().trim();
+            var todos = obterListaTitulosCompleta();
+            var tituloAtual = document.getElementById("input-titulo") ? document.getElementById("input-titulo").value : "";
+
+            var filtrados = todos.filter(function(item) {
+                return item.nome.toLowerCase().includes(termo);
+            });
+
+            if (filtrados.length === 0) {
+                container.innerHTML = '<div class="p-6 text-center text-stone-400 text-xs italic space-y-2">' +
+                                          '<i class="fa-solid fa-magnifying-glass text-amber-400 text-2xl block mb-1"></i>' +
+                                          'Nenhum evento encontrado com "' + termoBusca + '".' +
+                                          '<br><button type="button" onclick="adicionarNovoTituloComNome(\'' + termoBusca + '\')" class="mt-2 px-3 py-1.5 bg-amber-600 text-white font-bold rounded-lg text-xs">+ Criar "' + termoBusca + '"</button>' +
+                                      '</div>';
+                return;
+            }
+
+            var html = "";
+            filtrados.forEach(function(item) {
+                var isSelected = (item.nome === tituloAtual);
+                var bgClass = isSelected ? "bg-amber-500/20 border-amber-400 text-amber-300 font-bold" : "bg-stone-800/60 border-stone-700/60 text-stone-200 hover:bg-stone-700/80";
+                var tagCustom = item.custom ? '<span class="text-[9px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-mono ml-2 border border-amber-400/30">Personalizado</span>' : '';
+                
+                var btnAcoes = item.custom ? 
+                    '<div class="flex gap-1" onclick="event.stopPropagation()">' +
+                        '<button type="button" onclick="editarTituloCustomModal(' + item.id + ', \'' + item.nome + '\')" class="p-1.5 text-stone-400 hover:text-amber-400 text-xs"><i class="fa-solid fa-pen"></i></button>' +
+                        '<button type="button" onclick="excluirTituloCustomModal(' + item.id + ')" class="p-1.5 text-stone-400 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>' +
+                    '</div>' : '';
+
+                html += '<div onclick="selecionarTituloModal(\'' + item.nome.replace(/'/g, "\\'") + '\')" class="p-3 rounded-xl border flex items-center justify-between transition cursor-pointer active:scale-98 ' + bgClass + '">' +
+                            '<div class="flex items-center gap-2.5">' +
+                                '<i class="fa-solid fa-feather text-amber-400 text-sm"></i>' +
+                                '<span class="text-xs sm:text-sm">' + item.nome + '</span>' + tagCustom +
+                            '</div>' +
+                            btnAcoes +
+                        '</div>';
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selecionarTituloModal(nome) {
+            var inputTituloHidden = document.getElementById("input-titulo");
+            var inputTituloDisplay = document.getElementById("input-titulo-display");
+            
+            if (inputTituloHidden) inputTituloHidden.value = nome;
+            if (inputTituloDisplay) inputTituloDisplay.value = nome;
+
+            fecharModalTitulo();
+            atualizarPrevisualizacao();
+        }
+
+        function adicionarNovoTituloComNome(nomeSugestao) {
+            var nome = prompt("Nome do novo Título:", nomeSugestao || ""); if (!nome || !nome.trim()) return;
             var custom = JSON.parse(localStorage.getItem("custom_titulos") || "[]");
             custom.push({ id: Date.now(), nome: nome.trim() });
             localStorage.setItem("custom_titulos", JSON.stringify(custom));
-            carregarTitulosCustomizados(); var select = document.getElementById("input-titulo"); if (select) select.value = nome.trim();
-            atualizarPrevisualizacao();
+            selecionarTituloModal(nome.trim());
         }
 
-        function editarTituloSelecionado() {
-            var select = document.getElementById("input-titulo"); if (!select) return;
-            var selectedOpt = select.options[select.selectedIndex];
-            var customId = selectedOpt.getAttribute("data-custom-id");
-            if (!customId) { alert("Apenas títulos personalizados podem ser editados."); return; }
-            var novoNome = prompt("Novo nome:", selectedOpt.value.replace(" (Personalizado)", ""));
-            if (!novoNome || !novoNome.trim()) return;
+        function editarTituloCustomModal(id, nomeAtual) {
+            var novoNome = prompt("Novo nome:", nomeAtual); if (!novoNome || !novoNome.trim()) return;
             var custom = JSON.parse(localStorage.getItem("custom_titulos") || "[]");
-            var item = custom.find(t => t.id == customId);
-            if (item) { item.nome = novoNome.trim(); localStorage.setItem("custom_titulos", JSON.stringify(custom)); carregarTitulosCustomizados(); select.value = item.nome; atualizarPrevisualizacao(); }
-        }
-
-        function excluirTituloSelecionado() {
-            var select = document.getElementById("input-titulo"); if (!select) return;
-            var selectedOpt = select.options[select.selectedIndex]; var customId = selectedOpt.getAttribute("data-custom-id");
-            if (!customId) { alert("Apenas títulos personalizados podem ser excluídos."); return; }
-            if (confirm("Excluir '" + selectedOpt.text + "'?")) {
-                var custom = JSON.parse(localStorage.getItem("custom_categorias") || "[]").filter(t => t.id != customId);
-                localStorage.setItem("custom_titulos", JSON.stringify(custom)); carregarTitulosCustomizados(); atualizarPrevisualizacao();
+            var item = custom.find(t => t.id == id);
+            if (item) {
+                item.nome = novoNome.trim();
+                localStorage.setItem("custom_titulos", JSON.stringify(custom));
+                renderizarListaTitulosModal(document.getElementById("modal-titulo-busca") ? document.getElementById("modal-titulo-busca").value : "");
             }
         }
 
-        function toggleMiniDatePicker() {
-            var pop = document.getElementById("mini-datepicker-popover"); if (!pop) return;
-            pop.classList.contains("hidden") ? (renderizarMiniDatePicker(), pop.classList.remove("hidden")) : pop.classList.add("hidden");
-        }
-
-        function renderizarMiniDatePicker() {
-            var pop = document.getElementById("mini-datepicker-popover"); if (!pop) return;
-            var mesAno = document.getElementById("input-mes-ano").value; var details = getMonthDetails(mesAno);
-            var diaSel = parseInt(document.getElementById("input-dia").value) || 0;
-            var html = '<div class="p-3 bg-white border-2 border-umbanda-green rounded-xl shadow-2xl w-64 text-xs font-sans space-y-2 relative z-50">' +
-                            '<div class="flex justify-between items-center border-b border-stone-200 pb-1.5 font-bold text-umbanda-green">' +
-                                '<span><i class="fa-regular fa-calendar-days mr-1"></i> ' + mesAno + '</span>' +
-                                '<button type="button" onclick="toggleMiniDatePicker()" class="text-stone-400 font-bold">&times;</button>' +
-                            '</div>' +
-                            '<div class="grid grid-cols-7 gap-1 text-center font-bold text-stone-500 text-[10px]">' +
-                                '<div class="text-red-600">Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div class="text-emerald-700">Sáb</div>' +
-                            '</div><div class="grid grid-cols-7 gap-1 text-center text-xs">';
-            var prevTotal = new Date(details.ano, details.mNum, 0).getDate();
-            for (var i = details.firstDay - 1; i >= 0; i--) html += '<div class="p-1 text-stone-300 pointer-events-none">' + (prevTotal - i) + '</div>';
-            for (var d = 1; d <= details.totalDays; d++) {
-                var dayNum = new Date(details.ano, details.mNum, d).getDay(); var nome = DIAS_SEMANA[dayNum];
-                var bg = (d === diaSel) ? "bg-umbanda-green text-white font-bold" : ((dayNum === 0) ? "bg-red-50 text-red-700" : ((dayNum === 6) ? "bg-emerald-50 text-emerald-800" : "bg-stone-50 text-stone-800"));
-                html += '<button type="button" onclick="selecionarDiaMiniPicker(' + d + ', \'' + nome + '\')" class="p-1.5 rounded-lg transition ' + bg + '">' + d + '</button>';
+        function excluirTituloCustomModal(id) {
+            if (confirm("Deseja realmente excluir este título personalizado?")) {
+                var custom = JSON.parse(localStorage.getItem("custom_titulos") || "[]").filter(t => t.id != id);
+                localStorage.setItem("custom_titulos", JSON.stringify(custom));
+                renderizarListaTitulosModal(document.getElementById("modal-titulo-busca") ? document.getElementById("modal-titulo-busca").value : "");
             }
-            html += '</div></div>'; pop.innerHTML = html;
         }
 
-        function selecionarDiaMiniPicker(dia, nomeDia) {
-            var inputDia = document.getElementById("input-dia"); if (inputDia) inputDia.value = dia;
-            var badge = document.getElementById("badge-dia-semana"); var mesAno = document.getElementById("input-mes-ano").value;
-            if (badge) { badge.innerText = "✓ Dia " + (dia < 10 ? '0' + dia : dia) + " - " + nomeDia + " (" + mesAno + ")"; badge.classList.remove("hidden"); }
-            var pop = document.getElementById("mini-datepicker-popover"); if (pop) pop.classList.add("hidden");
-            atualizarPrevisualizacao();
+        function getMonthDetails(mesAno) {
+            var mesesMap = { "Janeiro": 0, "Fevereiro": 1, "Março": 2, "Abril": 3, "Maio": 4, "Junho": 5, "Julho": 6, "Agosto": 7, "Setembro": 8, "Outubro": 9, "Novembro": 10, "Dezembro": 11 };
+            var parts = mesAno.split(" "); var mNome = parts[0]; var mNum = mesesMap[mNome] !== undefined ? mesesMap[mNome] : 5;
+            var aNum = parseInt(parts[2]) || 2026;
+            return { firstDay: new Date(aNum, mNum, 1).getDay(), totalDays: new Date(aNum, mNum + 1, 0).getDate(), mNome: mNome, mNum: mNum, ano: aNum };
         }
 
         function obterNomeDiaSemana(dia, mesAno) { var details = getMonthDetails(mesAno); return DIAS_SEMANA[new Date(details.ano, details.mNum, dia).getDay()]; }
@@ -162,7 +253,7 @@
             atualizarPrevisualizacao();
         }
 
-        // LÓGICA DO MODAL DE HORÁRIO UNIFICADO (INÍCIO E TÉRMINO)
+        // HORÁRIOS UNIFICADOS
         function abrirModalHorario() {
             var modal = document.getElementById("seletor-horario-modal");
             var inputInicioModal = document.getElementById("modal-horario-inicio");
@@ -231,7 +322,7 @@
             atualizarPrevisualizacao();
         }
 
-        // LÓGICA DO MODAL DE VALOR (GRATUITO OU VALOR PERSONALIZADO)
+        // VALOR MODAL
         function abrirModalValor() {
             var modal = document.getElementById("seletor-valor-modal");
             var inputValorModal = document.getElementById("modal-valor-custom");
@@ -274,9 +365,11 @@
         }
 
         function verificarCategoriaEspecial() {
-            var catSelect = document.getElementById("input-categoria"); var tituloSelect = document.getElementById("input-titulo");
-            var valorInput = document.getElementById("input-valor"); var entidadeInput = document.getElementById("input-entidade"); var descInput = document.getElementById("input-descricao");
-            if (!catSelect || !tituloSelect) return;
+            var catSelect = document.getElementById("input-categoria"); 
+            var valorInput = document.getElementById("input-valor"); 
+            var entidadeInput = document.getElementById("input-entidade"); 
+            var descInput = document.getElementById("input-descricao");
+            if (!catSelect) return;
             var val = catSelect.value;
             if (val === 'amber') { setTituloDesativado("Organização / Limpeza do Terreiro"); } 
             else if (val === 'jurema') {
@@ -290,17 +383,17 @@
                 if (entidadeInput && !entidadeInput.value) entidadeInput.value = "o Sr. João Caveira";
                 if (descInput && !descInput.value) descInput.value = "Agendamento prévio indispensável. Contato com a Paula.";
             } else {
-                tituloSelect.disabled = false; tituloSelect.classList.remove("bg-stone-100", "cursor-not-allowed");
-                var tempOpt = document.getElementById("opt-titulo-temp"); if (tempOpt) tempOpt.remove();
+                var inputDisplay = document.getElementById("input-titulo-display");
+                if (inputDisplay) inputDisplay.disabled = false;
             }
             atualizarPrevisualizacao();
         }
 
         function setTituloDesativado(textoTitulo) {
-            var select = document.getElementById("input-titulo"); var tempOpt = document.getElementById("opt-titulo-temp");
-            if (!tempOpt) { tempOpt = document.createElement("option"); tempOpt.id = "opt-titulo-temp"; select.insertBefore(tempOpt, select.firstChild); }
-            tempOpt.value = textoTitulo; tempOpt.text = textoTitulo; select.value = textoTitulo; select.disabled = true;
-            select.classList.add("bg-stone-100", "cursor-not-allowed");
+            var hidden = document.getElementById("input-titulo");
+            var display = document.getElementById("input-titulo-display");
+            if (hidden) hidden.value = textoTitulo;
+            if (display) { display.value = textoTitulo; display.disabled = true; }
         }
 
         var CATEGORIA_STYLES = {
@@ -388,13 +481,6 @@
             var m = document.getElementById("seletor-mes-modal");
             if (m) m.classList.add("hidden");
             document.body.classList.remove("overflow-hidden");
-        }
-
-        function getMonthDetails(mesAno) {
-            var mesesMap = { "Janeiro": 0, "Fevereiro": 1, "Março": 2, "Abril": 3, "Maio": 4, "Junho": 5, "Julho": 6, "Agosto": 7, "Setembro": 8, "Outubro": 9, "Novembro": 10, "Dezembro": 11 };
-            var parts = mesAno.split(" "); var mNome = parts[0]; var mNum = mesesMap[mNome] !== undefined ? mesesMap[mNome] : 5;
-            var aNum = parseInt(parts[2]) || 2026;
-            return { firstDay: new Date(aNum, mNum, 1).getDay(), totalDays: new Date(aNum, mNum + 1, 0).getDate(), mNome: mNome, mNum: mNum, ano: aNum };
         }
 
         function obterTituloCurtoGrid(titulo) {
@@ -654,7 +740,7 @@
             if (elFrase) elFrase.innerText = '"' + f.frase + '"';
             if (elOrixa) elOrixa.innerText = "BÊNÇÃO DE " + f.orixa.toUpperCase();
 
-            fetchRealGoatCounterData(); carregarTitulosCustomizados(); carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
+            fetchRealGoatCounterData(); carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
             atualizarPrevisualizacao();
         }
 
@@ -670,7 +756,7 @@
                 tabStats.classList.add("hidden"); tabMontar.classList.remove("hidden");
                 btnStats.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
                 btnMontar.className = "px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-2";
-                carregarTitulosCustomizados(); carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
+                carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
                 atualizarPrevisualizacao();
             } else {
                 tabMontar.classList.add("hidden"); tabStats.classList.remove("hidden");
@@ -909,13 +995,7 @@
         }
 
         function aplicarTagRapida(tagNome) {
-            var select = document.getElementById("input-titulo");
-            if (select) {
-                for (var i = 0; i < select.options.length; i++) {
-                    if (select.options[i].value.toLowerCase().includes(tagNome.toLowerCase())) { select.selectedIndex = i; break; }
-                }
-            }
-            atualizarPrevisualizacao();
+            selecionarTituloModal(tagNome);
         }
 
         function alternarOcultarOpcoes() {
@@ -930,6 +1010,80 @@
                     if (btnOcultar) btnOcultar.innerHTML = 'Mostrar opções <i class="fa-solid fa-chevron-down ml-1"></i>';
                 }
             }
+        }
+
+        function cancelarEdicaoAtividade() {
+            eventoSendoEditadoId = null;
+            document.getElementById("input-dia").value = "1"; 
+            document.getElementById("input-horario-inicio").value = "";
+            document.getElementById("input-horario-fim").value = "";
+            document.getElementById("input-valor").value = ""; 
+            document.getElementById("input-entidade").value = ""; 
+            document.getElementById("input-descricao").value = "";
+            
+            var btn = document.getElementById("btn-salvar-atividade");
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-base"></i> Salvar Atividade no Calendário';
+            
+            var btnCancel = document.getElementById("btn-cancelar-edicao");
+            if (btnCancel) btnCancel.classList.add("hidden");
+
+            var formTitle = document.getElementById("form-cadastro-titulo");
+            if (formTitle) formTitle.innerHTML = '<i class="fa-solid fa-circle-plus text-umbanda-green"></i> Cadastrar Nova Atividade';
+
+            atualizarPrevisualizacao();
+        }
+
+        async function carregarParaEditarAtividade(idStr) {
+            var eventoEncontrado = null;
+            if (window.EVENTOS_ATIVOS_CACHE) {
+                eventoEncontrado = window.EVENTOS_ATIVOS_CACHE.find(e => String(e.id) === String(idStr));
+            }
+
+            if (!eventoEncontrado) return;
+
+            eventoSendoEditadoId = String(idStr);
+
+            // Preenche os campos do formulário
+            document.getElementById("input-dia").value = eventoEncontrado.dia || 1;
+            
+            var inputHidden = document.getElementById("input-titulo");
+            var inputDisplay = document.getElementById("input-titulo-display");
+            if (inputHidden) inputHidden.value = eventoEncontrado.titulo;
+            if (inputDisplay) inputDisplay.value = eventoEncontrado.titulo;
+
+            var catSelect = document.getElementById("input-categoria");
+            if (catSelect) catSelect.value = eventoEncontrado.categoria || "red";
+
+            // Processa horários (ex: "19:00 às 22:00" ou "19:00")
+            var hor = eventoEncontrado.horario || "";
+            if (hor.includes("às")) {
+                var partesH = hor.split("às");
+                document.getElementById("input-horario-inicio").value = partesH[0].trim();
+                document.getElementById("input-horario-fim").value = partesH[1].trim();
+            } else {
+                document.getElementById("input-horario-inicio").value = hor.trim();
+                document.getElementById("input-horario-fim").value = "";
+            }
+
+            document.getElementById("input-valor").value = eventoEncontrado.valor || "";
+            document.getElementById("input-entidade").value = eventoEncontrado.entidade || "";
+            document.getElementById("input-descricao").value = eventoEncontrado.descricao || "";
+
+            // Ajusta o visual do botão para MODO EDIÇÃO
+            var btn = document.getElementById("btn-salvar-atividade");
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-pen-to-square text-base"></i> Atualizar Atividade no Calendário';
+
+            var btnCancel = document.getElementById("btn-cancelar-edicao");
+            if (btnCancel) btnCancel.classList.remove("hidden");
+
+            var formTitle = document.getElementById("form-cadastro-titulo");
+            if (formTitle) formTitle.innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-600"></i> Editando Atividade (Dia ' + eventoEncontrado.dia + ')';
+
+            // Rola suavemente até o formulário
+            var formContainer = document.getElementById("form-cadastro-container");
+            if (formContainer) formContainer.scrollIntoView({ behavior: 'smooth' });
+
+            atualizarPrevisualizacao();
         }
 
         async function salvarAtividadeSupabase() {
@@ -962,57 +1116,60 @@
 
             var salvouNoBanco = false;
 
-            if (supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('eventos')
-                        .insert([{
-                            mes_ano: mesAno, 
-                            dia: dia, 
-                            titulo: titulo, 
-                            categoria: categoria, 
-                            horario: horario, 
-                            valor: valor, 
-                            entidade: entidade, 
-                            descricao: descricao
-                        }])
-                        .select();
+            // MODO ATUALIZAÇÃO (EDITAR EXISTENTE)
+            if (eventoSendoEditadoId) {
+                var idStr = eventoSendoEditadoId;
+                if (idStr.startsWith('supa-') && supabaseClient) {
+                    var realSupaId = idStr.replace('supa-', '');
+                    try {
+                        const { error } = await supabaseClient
+                            .from('eventos')
+                            .update({
+                                mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao
+                            })
+                            .eq('id', realSupaId);
 
-                    if (error) {
-                        console.error("Erro Supabase:", error);
-                        alert("Atenção: Não foi possível salvar no banco de dados online.");
-                    } else {
+                        if (!error) salvouNoBanco = true;
+                    } catch (e) {}
+                } else if (idStr.startsWith('loc-')) {
+                    var realLocId = idStr.replace('loc-', '');
+                    var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
+                    var idx = customEventos.findIndex(e => String(e.id) === String(realLocId));
+                    if (idx !== -1) {
+                        customEventos[idx] = { id: realLocId, mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao, tipo: 'whatsapp' };
+                        localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
                         salvouNoBanco = true;
                     }
-                } catch (e) {
-                    console.error("Erro de conexão Supabase:", e);
+                }
+            } else {
+                // MODO INSERIR NOVO
+                if (supabaseClient) {
+                    try {
+                        const { data, error } = await supabaseClient
+                            .from('eventos')
+                            .insert([{
+                                mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao
+                            }])
+                            .select();
+
+                        if (!error) salvouNoBanco = true;
+                    } catch (e) {}
+                }
+
+                if (!salvouNoBanco) {
+                    var novoEventoLocal = {
+                        id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao, tipo: 'whatsapp'
+                    };
+                    var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
+                    customEventos.push(novoEventoLocal);
+                    localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
                 }
             }
 
-            if (!salvouNoBanco) {
-                var novoEventoLocal = {
-                    id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao, tipo: 'whatsapp'
-                };
-                var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
-                customEventos.push(novoEventoLocal);
-                localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
-            }
-
             btn.disabled = false; 
-            btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Salvar Atividade no Calendário';
+            cancelarEdicaoAtividade();
             
             alert("Atividade salva com sucesso!");
-            
-            document.getElementById("input-dia").value = ""; 
-            document.getElementById("input-horario-inicio").value = "";
-            document.getElementById("input-horario-fim").value = "";
-            document.getElementById("input-valor").value = ""; 
-            document.getElementById("input-entidade").value = ""; 
-            document.getElementById("input-descricao").value = "";
-            
-            var badgeDia = document.getElementById("badge-dia-semana"); 
-            if (badgeDia) badgeDia.classList.add("hidden");
-            
             mudarMesAtivo(mesAno);
         }
 
@@ -1053,7 +1210,10 @@
                 var diaFmt = (ev.dia < 10 ? '0' + ev.dia : ev.dia) + '/' + mesNum;
                 html += '<div class="flex items-center justify-between p-2.5 bg-white border border-stone-200 rounded-lg text-xs shadow-2xs">' +
                             '<div><span class="font-extrabold text-umbanda-green mr-2">Dia ' + diaFmt + ':</span><strong class="text-stone-800">' + ev.titulo + '</strong> ' + (ev.valor ? '<span class="text-emerald-700 font-bold ml-1">(' + ev.valor + ')</span>' : (ev.horario ? '<span class="text-stone-500 ml-1">(' + ev.horario + ')</span>' : '')) + '</div>' +
-                            '<button onclick="deletarAtividade(\'' + ev.id + '\')" class="text-red-600 hover:text-red-800 p-1 font-bold" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>' +
+                            '<div class="flex items-center gap-1">' +
+                                '<button onclick="carregarParaEditarAtividade(\'' + ev.id + '\')" class="text-amber-600 hover:text-amber-800 p-1 font-bold text-sm" title="Editar Atividade"><i class="fa-solid fa-pen-to-square"></i></button>' +
+                                '<button onclick="deletarAtividade(\'' + ev.id + '\')" class="text-red-600 hover:text-red-800 p-1 font-bold text-sm" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>' +
+                            '</div>' +
                         '</div>';
             });
             container.innerHTML = html + '</div>';
@@ -1265,8 +1425,8 @@
     </div>
 
     <!-- MODAL PREMIUM DE SELEÇÃO DE MÊS -->
-    <div id="seletor-mes-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[80] hidden flex items-start pt-2 sm:items-center sm:pt-0 justify-center p-2 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorMes()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
+    <div id="seletor-mes-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[80] hidden flex items-start pt-6 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorMes()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm sm:text-base">
@@ -1288,69 +1448,129 @@
         </div>
     </div>
 
-    <!-- MODAL PREMIUM UNIFICADO PARA HORÁRIO DE INÍCIO E TÉRMINO (RESPONSIVO COM TECLADO FIXO) -->
-    <div id="seletor-horario-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[85] hidden flex items-start pt-2 sm:items-center sm:pt-0 justify-center p-2 sm:p-4 overflow-y-auto no-print" onclick="fecharModalHorario()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-3 sm:p-5 space-y-2.5 shadow-2xl relative text-stone-100 max-h-[48vh] sm:max-h-none overflow-y-auto" onclick="event.stopPropagation()">
-            
-            <div class="flex items-center justify-between border-b border-stone-800 pb-1.5">
-                <div class="flex items-center gap-2">
-                    <i class="fa-regular fa-clock text-amber-400 text-sm sm:text-lg"></i>
-                    <h3 class="font-serif font-bold text-xs sm:text-base text-white">Selecionar Horários</h3>
+    <!-- MODAL PARA SELEÇÃO DE DIA -->
+    <div id="seletor-dia-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[88] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorDia()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
+                        <i class="fa-regular fa-calendar-days"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-sm sm:text-base text-white">Escolha o Dia do Mês</h3>
+                        <p id="modal-dia-mes-titulo" class="text-[11px] text-amber-400 font-semibold">Agosto de 2026</p>
+                    </div>
                 </div>
-                <button type="button" onclick="fecharModalHorario()" class="text-stone-400 hover:text-white text-base font-bold w-6 h-6 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalSeletorDia()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
             </div>
 
-            <div class="grid grid-cols-2 gap-2 pt-0.5">
+            <div id="seletor-dia-grid" class="pt-1"></div>
+
+            <button type="button" onclick="fecharModalSeletorDia()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
+                <i class="fa-solid fa-xmark mr-1"></i> Fechar
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL PARA SELEÇÃO DE EVENTO / TÍTULO COM BUSCA -->
+    <div id="seletor-titulo-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[89] hidden flex items-start pt-6 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalTitulo()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-md w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-feather"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-sm sm:text-base text-white">Selecionar Título do Evento</h3>
+                        <p class="text-[11px] text-stone-400 font-medium">Busque ou escolha um evento da lista</p>
+                    </div>
+                </div>
+                <button type="button" onclick="fecharModalTitulo()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+            </div>
+
+            <!-- CAMPO DE BUSCA -->
+            <div class="relative pt-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></i>
+                <input type="text" id="modal-titulo-busca" placeholder="Digite para buscar evento (ex: Exu, Caboclo, Pombagira)..." oninput="renderizarListaTitulosModal(this.value)" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white text-xs sm:text-sm pl-9 pr-3 py-2.5 rounded-xl outline-none transition placeholder-stone-500 font-medium">
+            </div>
+
+            <div class="flex justify-between items-center text-xs pt-1">
+                <span class="text-stone-400 font-bold uppercase tracking-wider text-[10px]">Opções Disponíveis</span>
+                <button type="button" onclick="adicionarNovoTituloComNome()" class="text-amber-400 font-bold hover:underline text-[11px] flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i> Novo Personalizado
+                </button>
+            </div>
+
+            <!-- LISTA COM ROLAGEM -->
+            <div id="modal-titulo-lista" class="space-y-1.5 max-h-[42vh] overflow-y-auto pr-1"></div>
+
+            <button type="button" onclick="fecharModalTitulo()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
+                <i class="fa-solid fa-xmark mr-1"></i> Cancelar
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL PREMIUM UNIFICADO PARA HORÁRIO -->
+    <div id="seletor-horario-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[85] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalHorario()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+                <div class="flex items-center gap-2">
+                    <i class="fa-regular fa-clock text-amber-400 text-base sm:text-lg"></i>
+                    <h3 class="font-serif font-bold text-sm sm:text-base text-white">Selecionar Horários</h3>
+                </div>
+                <button type="button" onclick="fecharModalHorario()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5 pt-1">
                 <div>
-                    <label for="modal-horario-inicio" class="text-[9px] sm:text-xs font-bold text-stone-400 block mb-0.5 uppercase tracking-wider">Horário de Início</label>
-                    <input type="text" id="modal-horario-inicio" inputmode="numeric" placeholder="Ex: 19:00" maxlength="5" oninput="formatarMascaraHorario(this)" onkeydown="tratarKeydownHorarioInicio(event)" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-sm sm:text-lg p-1.5 sm:p-2.5 rounded-xl outline-none transition placeholder-stone-600">
+                    <label for="modal-horario-inicio" class="text-[10px] sm:text-xs font-bold text-stone-400 block mb-1 uppercase tracking-wider">Horário de Início</label>
+                    <input type="text" id="modal-horario-inicio" inputmode="numeric" placeholder="Ex: 19:00" maxlength="5" oninput="formatarMascaraHorario(this)" onkeydown="tratarKeydownHorarioInicio(event)" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-base sm:text-lg p-2.5 rounded-xl outline-none transition placeholder-stone-600">
                 </div>
 
                 <div>
-                    <label for="modal-horario-fim" class="text-[9px] sm:text-xs font-bold text-stone-400 block mb-0.5 uppercase tracking-wider">Horário de Término</label>
-                    <input type="text" id="modal-horario-fim" inputmode="numeric" placeholder="Ex: 22:00" maxlength="5" oninput="formatarMascaraHorario(this)" onkeydown="if(event.key==='Enter') confirmarHorariosModal()" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-sm sm:text-lg p-1.5 sm:p-2.5 rounded-xl outline-none transition placeholder-stone-600">
+                    <label for="modal-horario-fim" class="text-[10px] sm:text-xs font-bold text-stone-400 block mb-1 uppercase tracking-wider">Horário de Término</label>
+                    <input type="text" id="modal-horario-fim" inputmode="numeric" placeholder="Ex: 22:00" maxlength="5" oninput="formatarMascaraHorario(this)" onkeydown="if(event.key==='Enter') confirmarHorariosModal()" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-base sm:text-lg p-2.5 rounded-xl outline-none transition placeholder-stone-600">
                 </div>
             </div>
 
             <div class="pt-1 flex gap-2">
-                <button type="button" onclick="confirmarHorariosModal()" class="w-full py-2 sm:py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-1.5">
+                <button type="button" onclick="confirmarHorariosModal()" class="w-full py-3 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-check"></i> Confirmar
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL PREMIUM PARA SELEÇÃO / DEFINIÇÃO DE VALOR (RESPONSIVO COM TECLADO FIXO) -->
-    <div id="seletor-valor-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[86] hidden flex items-start pt-2 sm:items-center sm:pt-0 justify-center p-2 sm:p-4 overflow-y-auto no-print" onclick="fecharModalValor()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-3 sm:p-5 space-y-2.5 shadow-2xl relative text-stone-100 max-h-[48vh] sm:max-h-none overflow-y-auto" onclick="event.stopPropagation()">
-            
-            <div class="flex items-center justify-between border-b border-stone-800 pb-1.5">
+    <!-- MODAL PREMIUM PARA VALOR -->
+    <div id="seletor-valor-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[86] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalValor()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2">
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-tag text-amber-400 text-sm sm:text-lg"></i>
-                    <h3 class="font-serif font-bold text-xs sm:text-base text-white">Selecionar Valor</h3>
+                    <i class="fa-solid fa-tag text-amber-400 text-base sm:text-lg"></i>
+                    <h3 class="font-serif font-bold text-sm sm:text-base text-white">Selecionar Valor</h3>
                 </div>
-                <button type="button" onclick="fecharModalValor()" class="text-stone-400 hover:text-white text-base font-bold w-6 h-6 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalValor()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
             </div>
 
-            <div class="space-y-2 pt-0.5">
-                <button type="button" onclick="selecionarGratuitoModal()" class="w-full py-2 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2">
+            <div class="space-y-2.5 pt-1">
+                <button type="button" onclick="selecionarGratuitoModal()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
                     <i class="fa-solid fa-gift"></i> GRATUITO
                 </button>
 
                 <div class="relative flex py-0.5 items-center">
                     <div class="flex-grow border-t border-stone-700"></div>
-                    <span class="flex-shrink mx-2 text-stone-400 text-[9px] sm:text-xs font-bold uppercase">Ou digite o valor</span>
+                    <span class="flex-shrink mx-3 text-stone-400 text-[10px] sm:text-xs font-bold uppercase">Ou digite o valor</span>
                     <div class="flex-grow border-t border-stone-700"></div>
                 </div>
 
                 <div>
-                    <label for="modal-valor-custom" class="text-[9px] sm:text-xs font-bold text-stone-400 block mb-0.5 uppercase tracking-wider">Valor Personalizado</label>
-                    <input type="text" id="modal-valor-custom" inputmode="numeric" placeholder="Ex: R$ 70,00" oninput="formatarValorMoeda(this)" onkeydown="if(event.key==='Enter') confirmarValorModal()" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-sm sm:text-lg p-1.5 sm:p-2.5 rounded-xl outline-none transition placeholder-stone-600">
+                    <label for="modal-valor-custom" class="text-[10px] sm:text-xs font-bold text-stone-400 block mb-1 uppercase tracking-wider">Valor Personalizado</label>
+                    <input type="text" id="modal-valor-custom" inputmode="numeric" placeholder="Ex: R$ 70,00" oninput="formatarValorMoeda(this)" onkeydown="if(event.key==='Enter') confirmarValorModal()" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-base sm:text-lg p-2.5 rounded-xl outline-none transition placeholder-stone-600">
                 </div>
             </div>
 
             <div class="pt-1 flex gap-2">
-                <button type="button" onclick="confirmarValorModal()" class="w-full py-2 sm:py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-1.5">
+                <button type="button" onclick="confirmarValorModal()" class="w-full py-3 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-check"></i> Confirmar
                 </button>
             </div>
@@ -1648,9 +1868,9 @@
                 <div id="tab-content-montar" class="space-y-4 hidden pb-4">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
                         <div class="lg:col-span-2 space-y-4">
-                            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200 shadow-sm space-y-4">
+                            <div id="form-cadastro-container" class="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200 shadow-sm space-y-4">
                                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-                                    <h4 class="font-bold text-stone-800 text-sm sm:text-base flex items-center gap-2"><i class="fa-solid fa-circle-plus text-umbanda-green"></i> Cadastrar Nova Atividade</h4>
+                                    <h4 id="form-cadastro-titulo" class="font-bold text-stone-800 text-sm sm:text-base flex items-center gap-2"><i class="fa-solid fa-circle-plus text-umbanda-green"></i> Cadastrar Nova Atividade</h4>
                                     <button type="button" id="btn-ocultar-opcoes" onclick="alternarOcultarOpcoes()" class="text-xs font-semibold text-stone-500 bg-stone-100 px-2.5 py-1 rounded-lg">Ocultar opções <i class="fa-solid fa-chevron-up ml-1"></i></button>
                                 </div>
 
@@ -1668,28 +1888,18 @@
                                         </select>
                                     </div>
 
+                                    <!-- DIA DO MÊS -->
                                     <div class="relative">
-                                        <div class="flex justify-between items-center mb-1">
-                                            <label class="font-bold text-stone-700">Dia do Mês (1 a 31)</label>
-                                            <button type="button" onclick="toggleMiniDatePicker()" class="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md font-bold">Calendário</button>
-                                        </div>
-                                        <div class="relative">
-                                            <input type="number" id="input-dia" min="1" max="31" value="1" placeholder="Ex: 1" oninput="atualizarInfoDiaDigitado()" onclick="toggleMiniDatePicker()" class="w-full p-2.5 pr-10 rounded-xl border border-stone-300 font-semibold text-stone-800">
-                                        </div>
+                                        <label class="font-bold text-stone-700 block mb-1">Dia do Mês (1 a 31)</label>
+                                        <input type="text" id="input-dia" value="1" readonly onclick="abrirModalSeletorDia()" class="w-full p-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
                                         <span id="badge-dia-semana" class="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md mt-1 block">✓ Dia 01 - Terça-feira (Setembro de 2026)</span>
-                                        <div id="mini-datepicker-popover" class="hidden absolute top-full left-0 z-30 mt-1"></div>
                                     </div>
 
+                                    <!-- EVENTO / TÍTULO -->
                                     <div>
-                                        <div class="flex justify-between items-center mb-1">
-                                            <label class="font-bold text-stone-700">Evento / Título</label>
-                                            <div class="flex gap-1">
-                                                <button type="button" onclick="adicionarNovoTitulo()" class="text-[10px] text-umbanda-green font-bold">+ Novo</button>
-                                                <span class="text-stone-300">|</span>
-                                                <button type="button" onclick="editarTituloSelecionado()" class="text-[10px] text-amber-700 font-bold">✏️ Editar</button>
-                                            </div>
-                                        </div>
-                                        <select id="input-titulo" onchange="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800"></select>
+                                        <label class="font-bold text-stone-700 block mb-1">Evento / Título</label>
+                                        <input type="hidden" id="input-titulo" value="Gira de Exu">
+                                        <input type="text" id="input-titulo-display" readonly value="Gira de Exu" onclick="abrirModalTitulo()" placeholder="Clique para selecionar evento..." class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
                                     </div>
 
                                     <div>
@@ -1703,11 +1913,11 @@
                                     </div>
 
                                     <div class="sm:col-span-2 flex flex-wrap gap-1.5 pt-1">
-                                        <button type="button" onclick="aplicarTagRapida('Gira')" class="text-[11px] font-semibold bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200"><i class="fa-solid fa-users text-xs mr-1"></i> Gira</button>
-                                        <button type="button" onclick="aplicarTagRapida('Trabalho')" class="text-[11px] font-semibold bg-sky-50 text-sky-800 px-2.5 py-1 rounded-lg border border-sky-200"><i class="fa-solid fa-screwdriver-wrench text-xs mr-1"></i> Trabalho</button>
-                                        <button type="button" onclick="aplicarTagRapida('Obrigação')" class="text-[11px] font-semibold bg-purple-50 text-purple-800 px-2.5 py-1 rounded-lg border border-purple-200"><i class="fa-solid fa-hands-praying text-xs mr-1"></i> Obrigação</button>
-                                        <button type="button" onclick="aplicarTagRapida('Festa')" class="text-[11px] font-semibold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-lg border border-amber-200"><i class="fa-solid fa-cake-candles text-xs mr-1"></i> Festa</button>
-                                        <button type="button" onclick="aplicarTagRapida('Ritual')" class="text-[11px] font-semibold bg-red-50 text-red-800 px-2.5 py-1 rounded-lg border border-red-200"><i class="fa-solid fa-fire text-xs mr-1"></i> Ritual</button>
+                                        <button type="button" onclick="aplicarTagRapida('Gira de Exu')" class="text-[11px] font-semibold bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200"><i class="fa-solid fa-fire text-xs mr-1"></i> Gira Exu</button>
+                                        <button type="button" onclick="aplicarTagRapida('Gira de Pombagira')" class="text-[11px] font-semibold bg-pink-50 text-pink-800 px-2.5 py-1 rounded-lg border border-pink-200"><i class="fa-solid fa-wine-glass text-xs mr-1"></i> Pombagira</button>
+                                        <button type="button" onclick="aplicarTagRapida('Gira de Caboclos')" class="text-[11px] font-semibold bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200"><i class="fa-solid fa-leaf text-xs mr-1"></i> Caboclos</button>
+                                        <button type="button" onclick="aplicarTagRapida('Gira de Pretos-Velhos')" class="text-[11px] font-semibold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-lg border border-amber-200"><i class="fa-solid fa-hands-praying text-xs mr-1"></i> Pretos-Velhos</button>
+                                        <button type="button" onclick="aplicarTagRapida('Gira de Erês (Crianças)')" class="text-[11px] font-semibold bg-purple-50 text-purple-800 px-2.5 py-1 rounded-lg border border-purple-200"><i class="fa-solid fa-candy-cane text-xs mr-1"></i> Erês</button>
                                     </div>
 
                                     <div>
@@ -1770,9 +1980,14 @@
                                     </div>
                                 </div>
 
-                                <button id="btn-salvar-atividade" onclick="salvarAtividadeSupabase()" class="w-full py-3.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 my-2">
-                                    <i class="fa-solid fa-cloud-arrow-up text-base"></i> Salvar Atividade no Calendário
-                                </button>
+                                <div class="flex flex-col sm:flex-row gap-2 my-2">
+                                    <button id="btn-salvar-atividade" onclick="salvarAtividadeSupabase()" class="w-full py-3.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-cloud-arrow-up text-base"></i> Salvar Atividade no Calendário
+                                    </button>
+                                    <button id="btn-cancelar-edicao" onclick="cancelarEdicaoAtividade()" class="hidden w-full sm:w-auto px-5 py-3.5 bg-stone-500 hover:bg-stone-600 active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-xmark"></i> Cancelar
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
