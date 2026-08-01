@@ -419,7 +419,7 @@
             } else {
                 tabMontar.classList.add("hidden"); tabStats.classList.remove("hidden");
                 btnMontar.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
-                btnStats.className = "px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-2";
+                btnStats.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
             }
         }
 
@@ -857,16 +857,17 @@
             transform: skewX(-25deg); animation: shineSweep 4s infinite ease-in-out; pointer-events: none;
         }
 
-        /* AJUSTE RESPONSIVO MOBILE DYNAMIC VIEWPORT POR CAUSA DAS BARRAS DE NAVEGAÇÃO */
+        /* AJUSTE RESPONSIVO MOBILE DYNAMIC VIEWPORT - OTIMIZADO */
         .admin-modal-card {
-            max-height: 85vh;
-            max-height: 85dvh;
+            height: 96vh;
+            height: 96dvh;
+            max-height: 96dvh;
         }
     </style>
 </head>
-<body class="bg-stone-100 font-sans text-stone-800 antialiased min-h-screen py-3 px-2 sm:py-6 sm:px-6">
+<body class="bg-stone-100 font-sans text-stone-800 antialiased min-h-screen py-2 px-1.5 sm:py-6 sm:px-6">
 
-    <div class="max-w-5xl mx-auto mb-4 sm:mb-6 flex flex-wrap justify-between items-center gap-3 no-print bg-white p-3 sm:p-4 rounded-xl shadow-md border border-stone-200">
+    <div class="max-w-5xl mx-auto mb-3 sm:mb-6 flex flex-wrap justify-between items-center gap-3 no-print bg-white p-3 sm:p-4 rounded-xl shadow-md border border-stone-200">
         <div class="flex items-center gap-2">
             <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-umbanda-green"></span>
             <h1 class="font-semibold text-stone-700 text-xs sm:text-base">Painel do Calendário - <span id="texto-mes-topbar">Junho de 2026</span></h1>
@@ -933,14 +934,14 @@
         </div>
     </div>
 
-    <!-- PAINEL ADMINISTRATIVO COM CORREÇÃO MOBILE DYNAMIC VIEWPORT -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4 no-print font-sans overflow-hidden">
-        <div class="admin-modal-card bg-white rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col overflow-hidden border-2 border-amber-400 my-auto">
+    <!-- PAINEL ADMINISTRATIVO COM APROVEITAMENTO TOTAL DA TELA MOBILE -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-1 sm:p-4 no-print font-sans overflow-hidden">
+        <div class="admin-modal-card bg-white rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col overflow-hidden border-2 border-amber-400">
             
             <!-- HEADER MODAL -->
-            <div class="bg-umbanda-green text-white px-4 sm:px-6 py-3 sm:py-3.5 flex justify-between items-center border-b border-amber-400/30 flex-shrink-0">
-                <div class="flex items-center gap-3">
-                    <div onclick="abrirFotoJoaoCaveira()" title="Clique para expandir a foto do Sr. João Caveira" class="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 border-amber-400 bg-stone-900 flex items-center justify-center overflow-hidden shadow-md flex-shrink-0 cursor-pointer hover:scale-105 transition">
+            <div class="bg-umbanda-green text-white px-3 sm:px-6 py-2.5 sm:py-3.5 flex justify-between items-center border-b border-amber-400/30 flex-shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div onclick="abrirFotoJoaoCaveira()" title="Clique para expandir a foto do Sr. João Caveira" class="w-8 h-8 sm:w-12 sm:h-12 rounded-full border-2 border-amber-400 bg-stone-900 flex items-center justify-center overflow-hidden shadow-md flex-shrink-0 cursor-pointer hover:scale-105 transition">
                         <img id="admin-logo-joao-caveira" 
                              src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" 
                              alt="Logo Sr. João Caveira" 
@@ -948,11 +949,11 @@
                              onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH&sz=w1000';">
                     </div>
                     <div>
-                        <h3 class="font-serif font-bold text-xs sm:text-lg">ÁREA ADMINISTRATIVA DO TERREIRO</h3>
-                        <p class="text-[10px] sm:text-xs text-stone-200 font-semibold">Painel de Estatísticas de Visita e Gestão</p>
+                        <h3 class="font-serif font-bold text-xs sm:text-lg leading-tight">ÁREA ADMINISTRATIVA DO TERREIRO</h3>
+                        <p class="text-[9.5px] sm:text-xs text-stone-200 font-semibold leading-tight">Painel de Estatísticas de Visita e Gestão</p>
                     </div>
                 </div>
-                <button onclick="closeAdminStats()" class="text-stone-300 hover:text-white text-2xl font-bold leading-none">&times;</button>
+                <button onclick="closeAdminStats()" class="text-stone-300 hover:text-white text-2xl font-bold leading-none p-1">&times;</button>
             </div>
 
             <!-- TABS & SELETOR DE MÊS -->
@@ -1183,7 +1184,7 @@
                 </div>
 
                 <!-- TAB MONTAR NOVO MÊS -->
-                <div id="tab-content-montar" class="space-y-4 hidden pb-6">
+                <div id="tab-content-montar" class="space-y-4 hidden pb-4">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
                         <div class="lg:col-span-2 space-y-4">
                             <div class="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200 shadow-sm space-y-4">
@@ -1338,8 +1339,8 @@
                 </div>
             </div>
 
-            <!-- RODAPÉ FIXO COMPACTO COM BORDAS INTERNAS SEGURAS -->
-            <div class="bg-stone-100 px-4 py-2.5 text-right border-t border-stone-200 flex justify-end flex-shrink-0 z-20">
+            <!-- RODAPÉ FIXO COMPACTO -->
+            <div class="bg-stone-100 px-4 py-2 text-right border-t border-stone-200 flex justify-end flex-shrink-0 z-20">
                 <button onclick="closeAdminStats()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs px-5 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5">
                     <i class="fa-solid fa-xmark"></i> Fechar
                 </button>
