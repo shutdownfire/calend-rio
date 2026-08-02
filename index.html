@@ -1174,10 +1174,10 @@
         }
 
         function carregarContadoresPresenca() {
-            var idsParaCarregar = [...EVENTOS_PRESENCA_IDS];
+            var idsParaCarregar = [];
             if (window.EVENTOS_ATIVOS_CACHE) {
                 window.EVENTOS_ATIVOS_CACHE.forEach(function(ev) { 
-                    if (ev.id && !idsParaCarregar.includes(String(ev.id))) idsParaCarregar.push(String(ev.id)); 
+                    if (ev.id) idsParaCarregar.push(String(ev.id)); 
                 });
             }
             idsParaCarregar.forEach(function(id) { 
@@ -1191,8 +1191,9 @@
 
         function escutarPresencasEmTempoReal() {
             if (!supabaseClient) return;
+            
             supabaseClient
-                .channel('mudancas_presencas_global_v2')
+                .channel('public_presencas_realtime')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'presencas' }, function(payload) {
                     if (payload.new && payload.new.evento_id) {
                         buscarContadorPresenca(payload.new.evento_id);
@@ -1205,8 +1206,9 @@
 
         function escutarEventosEmTempoReal() {
             if (!supabaseClient) return;
+            
             supabaseClient
-                .channel('mudancas_eventos_global_v2')
+                .channel('public_eventos_realtime')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, function(payload) {
                     carregarCalendarioDoSupabase();
                     if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
@@ -1234,7 +1236,7 @@
                         }]);
 
                     if (error) {
-                        console.warn("Erro ao gravar presenca no Supabase:", error);
+                        console.warn("Erro RLS ou Supabase ao gravar presenca:", error);
                     }
                 } catch (e) {
                     console.warn("Erro ao comunicar com Supabase:", e);
@@ -1243,9 +1245,6 @@
 
             localStorage.setItem("confirmado_gira_" + idNorm, "true");
             localStorage.setItem("confirmado_gira_" + id, "true");
-            
-            var localCount = parseInt(localStorage.getItem("count_presenca_" + idNorm) || "0") + 1;
-            localStorage.setItem("count_presenca_" + idNorm, localCount.toString());
 
             atualizarUIConfirmado(id); 
             await buscarContadorPresenca(idNorm);
@@ -1440,53 +1439,25 @@
             btn.disabled = true; 
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Salvando no calendário...';
 
-            var salvouNoBanco = false;
-
-            if (eventoSendoEditadoId) {
-                var idStr = eventoSendoEditadoId;
-                if (idStr.startsWith('supa-') && supabaseClient) {
-                    var realSupaId = idStr.replace('supa-', '');
-                    try {
-                        const { error } = await supabaseClient
+            if (supabaseClient) {
+                try {
+                    if (eventoSendoEditadoId) {
+                        var realSupaId = normalizarEventoId(eventoSendoEditadoId);
+                        await supabaseClient
                             .from('eventos')
                             .update({
                                 mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel
                             })
                             .eq('id', realSupaId);
-
-                        if (!error) salvouNoBanco = true;
-                    } catch (e) {}
-                } else if (idStr.startsWith('loc-')) {
-                    var realLocId = idStr.replace('loc-', '');
-                    var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
-                    var idx = customEventos.findIndex(e => String(e.id) === String(realLocId));
-                    if (idx !== -1) {
-                        customEventos[idx] = { id: realLocId, mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel, tipo: 'whatsapp' };
-                        localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
-                        salvouNoBanco = true;
-                    }
-                }
-            } else {
-                if (supabaseClient) {
-                    try {
-                        const { data, error } = await supabaseClient
+                    } else {
+                        await supabaseClient
                             .from('eventos')
                             .insert([{
                                 mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel
-                            }])
-                            .select();
-
-                        if (!error) salvouNoBanco = true;
-                    } catch (e) {}
-                }
-
-                if (!salvouNoBanco) {
-                    var novoEventoLocal = {
-                        id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel, tipo: 'whatsapp'
-                    };
-                    var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
-                    customEventos.push(novoEventoLocal);
-                    localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
+                            }]);
+                    }
+                } catch (e) {
+                    console.error("Erro no Supabase ao salvar evento:", e);
                 }
             }
 
@@ -1506,17 +1477,13 @@
             if (tituloSecao) tituloSecao.innerText = "ATIVIDADES CADASTRADAS PARA " + mesExibicao.toUpperCase();
 
             var eventosDoMes = [];
-            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.mes_ano === mesExibicao);
-            customEventos.forEach(e => eventosDoMes.push({ ...e, id: 'loc-' + e.id }));
 
             if (supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient.from('eventos').select('*').eq('mes_ano', mesExibicao);
                     if (!error && data && data.length > 0) {
                         data.forEach(ev => {
-                            if (!eventosDoMes.some(e => String(e.id) === 'supa-' + ev.id || (e.dia === ev.dia && e.titulo === ev.titulo))) {
-                                eventosDoMes.push({ ...ev, id: 'supa-' + ev.id });
-                            }
+                            eventosDoMes.push({ ...ev, id: 'supa-' + ev.id });
                         });
                     }
                 } catch (e) {}
@@ -1547,15 +1514,8 @@
         async function deletarAtividade(id) {
             if (!confirm("Tem certeza que deseja excluir esta atividade?")) return;
             
-            var idStr = String(id);
-            
-            if (idStr.startsWith('loc-')) {
-                var realLocalId = idStr.replace('loc-', '');
-                var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => String(e.id) !== realLocalId);
-                localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
-            } 
-            else if (supabaseClient) {
-                var realSupaId = idStr.replace('supa-', '');
+            var realSupaId = normalizarEventoId(id);
+            if (supabaseClient) {
                 try { 
                     const { error } = await supabaseClient
                         .from('eventos')
@@ -1574,15 +1534,6 @@
 
         async function carregarCalendarioDoSupabase() {
             var listaEventos = (mesAtualAtivo === "Agosto de 2026") ? [...EVENTOS_PADRAO] : [];
-
-            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.mes_ano === mesAtualAtivo);
-            customEventos.forEach(ev => {
-                var diaStr = ev.dia < 10 ? '0' + ev.dia : '' + ev.dia;
-                var mesNum = mesAtualAtivo.includes("Junho") ? "06" : (mesAtualAtivo.includes("Julho") ? "07" : (mesAtualAtivo.includes("Agosto") ? "08" : (mesAtualAtivo.includes("Setembro") ? "09" : (mesAtualAtivo.includes("Outubro") ? "10" : (mesAtualAtivo.includes("Novembro") ? "11" : "12")))));
-                listaEventos.push({
-                    id: 'loc-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: ev.descricao || '', publico: ev.publico || '', status: ev.status || '', responsavel: ev.responsavel || '', tipo: ev.tipo || 'whatsapp'
-                });
-            });
 
             if (supabaseClient) {
                 try {
@@ -1680,6 +1631,10 @@
             carregarCalendarioDoSupabase(); 
             escutarPresencasEmTempoReal();
             escutarEventosEmTempoReal();
+
+            setInterval(function() {
+                carregarContadoresPresenca();
+            }, 4000);
         });
 
         function fetchRealGoatCounterData() {
