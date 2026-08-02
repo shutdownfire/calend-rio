@@ -10,12 +10,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
         var SUPABASE_URL = "https://ndkooiyqhafsinxawzxe.supabase.co";
-        var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI62100945730f.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
+        var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI6MjEwMDk0NTczMH0.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
         var supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
         if (!localStorage.getItem("user_device_id")) {
@@ -44,7 +44,8 @@
             'Gira de Caboclos': 'Trabalhos de passe, cura e limpeza fluídica na vibração da Mata.',
             'Gira de Pretos-Velhos': 'Trabalhos de aconselhamento, fé e harmonização espiritual.',
             'Gira de Erês (Crianças)': 'Trabalhos de purificação, alegria e renovação das energias.',
-            'Gira de Baianos': 'Trabalhos com as forças da Esquerda.'
+            'Gira de Baianos': 'Trabalhos com as forças da Esquerda.',
+            'Gira de Marinheiros': 'Trabalhos de purificação emocional, limpeza nas forças do mar e renovação.'
         };
 
         var TITULOS_PADRAO = [
@@ -72,10 +73,10 @@
 
         function obterDescricaoAutomatica(titulo, descExistente) {
             if (descExistente && typeof descExistente === 'string' && descExistente.trim() !== "") return descExistente.trim();
-            if (!titulo || typeof titulo !== 'string') return "Trabalhos de atendimento espiritual, passes e descarrego.";
+            if (!titulo || typeof titulo !== 'string') return "";
             var tTrim = titulo.trim();
             if (DESCRICOES_PADRAO[tTrim]) return DESCRICOES_PADRAO[tTrim];
-            return tTrim + " - Trabalhos de atendimento espiritual, passes e fortalecimento espiritual.";
+            return "";
         }
 
         function obterListaTitulosCompleta() {
@@ -86,7 +87,6 @@
             return lista;
         }
 
-        // MODAL DE SELEÇÃO DE DIA
         function abrirModalSeletorDia() {
             renderizarCalendarioModalDia();
             var modal = document.getElementById("seletor-dia-modal");
@@ -138,7 +138,6 @@
             fecharModalSeletorDia();
         }
 
-        // MODAL DE SELEÇÃO DE TÍTULO COM OTIMIZAÇÃO PARA TECLADO MOBILE
         function abrirModalTitulo() {
             renderizarListaTitulosModal("");
             var inputBusca = document.getElementById("modal-titulo-busca");
@@ -239,7 +238,6 @@
             }
         }
 
-        // MODAL PREMIUM DE REPETIÇÃO
         function abrirModalRepeticao() {
             var modal = document.getElementById("seletor-repeticao-modal");
             if (modal) modal.classList.remove("hidden");
@@ -261,7 +259,6 @@
             atualizarPrevisualizacao();
         }
 
-        // MODAL PREMIUM DE STATUS
         function abrirModalStatus() {
             var modal = document.getElementById("seletor-status-modal");
             if (modal) modal.classList.remove("hidden");
@@ -277,13 +274,12 @@
             var displayStatus = document.getElementById("input-status-display");
             
             if (targetStatus) targetStatus.value = valor;
-            if (displayStatus) displayStatus.value = labelComIcone;
+            if (displayStatus) displayStatus.value = labelComIcone || valor;
 
             fecharModalStatus();
             atualizarPrevisualizacao();
         }
 
-        // MODAL PREMIUM DE PÚBLICO
         function abrirModalPublico() {
             var modal = document.getElementById("seletor-publico-modal");
             if (modal) modal.classList.remove("hidden");
@@ -318,19 +314,27 @@
             var inputDia = document.getElementById("input-dia"); var badge = document.getElementById("badge-dia-semana");
             if (!inputDia || !badge) return;
             var dia = parseInt(inputDia.value); var mesAno = document.getElementById("input-mes-ano").value; var details = getMonthDetails(mesAno);
-            if (dia >= 1 && dia <= details.totalDays) { badge.innerText = "✓ Dia " + (dia < 10 ? '0' + dia : dia) + " - " + obterNomeDiaSemana(dia, mesAno) + " (" + mesAno + ")"; badge.classList.remove("hidden"); } 
+            if (dia >= 1 && dia <= details.totalDays) { badge.innerHTML = '<i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i> Dia ' + (dia < 10 ? '0' + dia : dia) + " – " + obterNomeDiaSemana(dia, mesAno) + " (" + mesAno + ")"; badge.classList.remove("hidden"); } 
             else { badge.classList.add("hidden"); }
             atualizarPrevisualizacao();
         }
 
-        // HORÁRIOS UNIFICADOS
         function abrirModalHorario() {
             var modal = document.getElementById("seletor-horario-modal");
             var inputInicioModal = document.getElementById("modal-horario-inicio");
             var inputFimModal = document.getElementById("modal-horario-fim");
 
-            var valInicioAtual = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value : "";
-            var valFimAtual = document.getElementById("input-horario-fim") ? document.getElementById("input-horario-fim").value : "";
+            var horariosStr = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value : "";
+            var valInicioAtual = "";
+            var valFimAtual = "";
+
+            if (horariosStr.includes("às")) {
+                var partes = horariosStr.split("às");
+                valInicioAtual = partes[0].trim();
+                valFimAtual = partes[1].trim();
+            } else {
+                valInicioAtual = horariosStr.trim();
+            }
 
             if (inputInicioModal) inputInicioModal.value = valInicioAtual;
             if (inputFimModal) inputFimModal.value = valFimAtual;
@@ -383,16 +387,21 @@
             var valFim = inputFimModal ? ajustarFormatacaoFinal(inputFimModal.value) : "";
 
             var targetInicio = document.getElementById("input-horario-inicio");
-            var targetFim = document.getElementById("input-horario-fim");
 
-            if (targetInicio) targetInicio.value = valInicio;
-            if (targetFim) targetFim.value = valFim;
+            if (targetInicio) {
+                if (valInicio && valFim) {
+                    targetInicio.value = valInicio + " às " + valFim;
+                } else if (valInicio) {
+                    targetInicio.value = valInicio;
+                } else {
+                    targetInicio.value = "";
+                }
+            }
 
             fecharModalHorario();
             atualizarPrevisualizacao();
         }
 
-        // VALOR MODAL
         function abrirModalValor() {
             var modal = document.getElementById("seletor-valor-modal");
             var inputValorModal = document.getElementById("modal-valor-custom");
@@ -437,7 +446,6 @@
         function verificarCategoriaEspecial() {
             var catSelect = document.getElementById("input-categoria"); 
             var valorInput = document.getElementById("input-valor"); 
-            var entidadeInput = document.getElementById("input-entidade"); 
             var descInput = document.getElementById("input-descricao");
             if (!catSelect) return;
             var val = catSelect.value;
@@ -445,12 +453,10 @@
             else if (val === 'jurema') {
                 setTituloDesativado("Consulta Particular com Cabocla Jurema");
                 if (valorInput && !valorInput.value) valorInput.value = "R$ 70,00";
-                if (entidadeInput && !entidadeInput.value) entidadeInput.value = "a Cabocla Jurema";
                 if (descInput && !descInput.value) descInput.value = "Interessados em passar por consulta agendar antecipadamente com a Paula.";
             } else if (val === 'joaocaveira') {
                 setTituloDesativado("Consulta Particular com Sr. João Caveira");
                 if (valorInput && !valorInput.value) valorInput.value = "R$ 100,00";
-                if (entidadeInput && !entidadeInput.value) entidadeInput.value = "o Sr. João Caveira";
                 if (descInput && !descInput.value) descInput.value = "Agendamento prévio indispensável. Contato com a Paula.";
             } else {
                 var inputDisplay = document.getElementById("input-titulo-display");
@@ -487,23 +493,19 @@
         };
 
         var EVENTOS_PADRAO = [
-            { id: '0106', dia: 1, diaTexto: 'Dia 01/08 - Segunda', titulo: 'Gira de Esquerda', categoria: 'red', horario: '17:00', descricao: 'Trabalhos com as forças da Esquerda.', tipo: 'presenca' },
-            { id: '0506', dia: 5, diaTexto: 'Dia 05/08 - Sexta', titulo: 'Organização / Limpeza do Terreiro', categoria: 'amber', horario: 'Mutirão', descricao: 'Ajuda dos filhos para limpar e organizar a casa.', tipo: 'presenca' },
-            { id: '0606', dia: 6, diaTexto: 'Dia 06/08 - Sábado', titulo: 'Oferenda para Obará de Oxóssi', categoria: 'emerald', horario: '', descricao: 'Aguardem comunicado interno sobre materiais.', tipo: 'presenca' },
-            { id: '0806', dia: 8, diaTexto: 'Dia 08/08 - Segunda', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp' },
-            { id: '1206', dia: 12, diaTexto: 'Dia 12/08 - Sexta', titulo: 'Ritual Xamânico da Mãe Marli', categoria: 'purple', horario: '13:00', valor: 'R$ 180,00', entidade: 'o Ritual Xamânico', descricao: 'Trabalho de elevação espiritual.', tipo: 'whatsapp_ritual' },
-            { id: '1306', dia: 13, diaTexto: 'Dia 13/08 - Sábado', titulo: 'Ritual Xamânico', categoria: 'purple', horario: '13:00', valor: 'R$ 180,00', entidade: 'o Ritual Xamânico', descricao: 'Atividades de firmeza xamânica.', tipo: 'whatsapp_ritual' },
-            { id: '1506', dia: 15, diaTexto: 'Dia 15/08 - Segunda', titulo: 'Consulta Particular com Sr. João Caveira', categoria: 'red', valor: 'R$ 100,00', entidade: 'o Sr. João Caveira', descricao: 'Agendamento prévio com a Paula.', tipo: 'whatsapp' },
-            { id: '2706-benzimento', dia: 27, diaTexto: 'Dia 27/08 - Sábado', titulo: 'Benzimento e Cura (Pessoas e Animais)', categoria: 'sky', horario: '10:00 às 12:00', valor: 'GRATUITO', descricao: 'Por ordem de chegada.', tipo: 'presenca' },
-            { id: '2706-eres', dia: 27, diaTexto: 'Dia 27/08 - Sábado', titulo: 'Gira de Erês', categoria: 'pink', horario: '12:00', descricao: 'Médiuns levarem doces e bebidas de Erês.', tipo: 'presenca' },
-            { id: '2906', dia: 29, diaTexto: 'Dia 29/08 - Segunda', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp' }
+            { id: '0106', dia: 1, diaTexto: 'Dia 01/08 - Sábado', titulo: 'Gira de Exu', categoria: 'red', horario: '19:00 às 22:00', valor: 'R$ 70,00', descricao: 'Trabalhos de descarrego, proteção e abertura de caminhos na vibração da Esquerda.', tipo: 'presenca', publico: 'Aberto ao público', status: 'Confirmado' },
+            { id: '0506', dia: 5, diaTexto: 'Dia 05/08 - Quarta', titulo: 'Organização / Limpeza do Terreiro', categoria: 'amber', horario: 'Mutirão', descricao: 'Ajuda dos filhos para limpar e organizar a casa.', tipo: 'presenca', publico: 'Fechado para médiuns', status: 'Confirmado' },
+            { id: '0606', dia: 8, diaTexto: 'Dia 08/08 - Sábado', titulo: 'Gira de Caboclos', categoria: 'emerald', horario: '18:00', descricao: 'Passes de cura e renovação nas forças da mata.', tipo: 'presenca', publico: 'Aberto ao público', status: 'Confirmado' },
+            { id: '0806', dia: 12, diaTexto: 'Dia 12/08 - Quarta', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp', publico: 'Aberto ao público', status: 'Confirmado' },
+            { id: '1206', dia: 15, diaTexto: 'Dia 15/08 - Sábado', titulo: 'Gira de Marinheiros', categoria: 'sky', horario: '17:00', valor: 'GRATUITO', entidade: 'os Marinheiros', descricao: 'Limpeza nas águas sagradas.', tipo: 'presenca', publico: 'Aberto ao público', status: 'Confirmado' },
+            { id: '2706-eres', dia: 22, diaTexto: 'Dia 22/08 - Sábado', titulo: 'Gira de Erês', categoria: 'pink', horario: '15:00', descricao: 'Médiuns levarem doces e bebidas de Erês.', tipo: 'presenca', publico: 'Aberto ao público', status: 'Confirmado' }
         ];
 
         tailwind.config = {
             theme: {
                 extend: {
                     colors: { umbanda: { green: '#0D472B', lightgreen: '#15673E', gold: '#C59B27', goldlight: '#E6C665', cream: '#FCFAF5', cardBg: '#FFFFFF', dark: '#1C2822' } },
-                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Plus Jakarta Sans', 'sans-serif'] }
+                    fontFamily: { serif: ['Playfair Display', 'serif'], cinzel: ['Cinzel', 'serif'], sans: ['Plus Jakarta Sans', 'sans-serif'] }
                 }
             }
         };
@@ -519,6 +521,7 @@
             fecharModalSeletorMes();
             carregarCalendarioDoSupabase();
             if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
+            atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
         }
 
@@ -561,6 +564,122 @@
             return t;
         }
 
+        // DESIGN SYSTEM ULTRA PREMIUM (EXATAMENTE IGUAL AO MODELO EXU / ENTIDADES)
+        function obterEstiloPremiumPorCategoria(categoria, titulo) {
+            var tLow = (titulo || "").toLowerCase();
+            var corBase = categoria || "emerald";
+
+            if (tLow.includes("exu") || tLow.includes("pombagira") || tLow.includes("caveira") || corBase === 'red' || corBase === 'joaocaveira') {
+                return {
+                    bgGradient: 'bg-gradient-to-b from-[#1c0303] via-[#0d0101] to-[#080000]',
+                    radialGlow: 'radial-glow-red',
+                    borderColor: 'border-red-600/40',
+                    borderGlow: 'shadow-[0_0_35px_rgba(220,38,38,0.25)]',
+                    iconBg: 'bg-gradient-to-b from-red-900/80 to-red-950/90 border-red-500/50 text-red-400 shadow-[0_0_15px_rgba(220,38,38,0.4)]',
+                    titleColor: 'text-stone-100',
+                    subTitleColor: 'text-red-400',
+                    accentColor: 'text-red-500',
+                    badgeBorder: 'border-red-500/40 bg-red-950/50 text-red-200',
+                    cardBoxBg: 'bg-[#120303]/90 border-red-900/40 shadow-inner',
+                    iconSimbolo: '🔱',
+                    decorLeft: '<i class="fa-solid fa-trident text-red-600/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"></i>',
+                    decorRight: '<i class="fa-solid fa-trident text-red-600/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"></i>',
+                    btnGradient: 'bg-gradient-to-r from-red-900 via-red-600 to-red-900 border-red-500/60 hover:from-red-800 hover:to-red-800 text-white drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]',
+                    saudacao: 'Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.'
+                };
+            } else if (tLow.includes("caboclo") || tLow.includes("oxóssi") || tLow.includes("jurema") || corBase === 'emerald' || corBase === 'jurema') {
+                return {
+                    bgGradient: 'bg-gradient-to-b from-[#021c0e] via-[#010e07] to-[#000804]',
+                    radialGlow: 'radial-glow-emerald',
+                    borderColor: 'border-emerald-500/40',
+                    borderGlow: 'shadow-[0_0_35px_rgba(16,185,129,0.25)]',
+                    iconBg: 'bg-gradient-to-b from-emerald-900/80 to-emerald-950/90 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]',
+                    titleColor: 'text-stone-100',
+                    subTitleColor: 'text-emerald-400',
+                    accentColor: 'text-emerald-500',
+                    badgeBorder: 'border-emerald-500/40 bg-emerald-950/50 text-emerald-200',
+                    cardBoxBg: 'bg-[#03140a]/90 border-emerald-900/40 shadow-inner',
+                    iconSimbolo: '🏹',
+                    decorLeft: '<i class="fa-solid fa-feather-pointed text-emerald-500/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]"></i>',
+                    decorRight: '<i class="fa-solid fa-feather-pointed text-emerald-500/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]"></i>',
+                    btnGradient: 'bg-gradient-to-r from-emerald-900 via-emerald-600 to-emerald-900 border-emerald-500/60 hover:from-emerald-800 hover:to-emerald-800 text-white drop-shadow-[0_0_12px_rgba(16,185,129,0.5)]',
+                    saudacao: 'Okê Arô! Salve as forças das matas sagradas e da fartura.'
+                };
+            } else if (tLow.includes("marinheiro") || tLow.includes("iemanjá") || corBase === 'sky') {
+                return {
+                    bgGradient: 'bg-gradient-to-b from-[#031525] via-[#010a14] to-[#00050a]',
+                    radialGlow: 'radial-glow-sky',
+                    borderColor: 'border-sky-500/40',
+                    borderGlow: 'shadow-[0_0_35px_rgba(14,165,233,0.25)]',
+                    iconBg: 'bg-gradient-to-b from-sky-900/80 to-sky-950/90 border-sky-500/50 text-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.4)]',
+                    titleColor: 'text-stone-100',
+                    subTitleColor: 'text-sky-400',
+                    accentColor: 'text-sky-500',
+                    badgeBorder: 'border-sky-500/40 bg-sky-950/50 text-sky-200',
+                    cardBoxBg: 'bg-[#03111f]/90 border-sky-900/40 shadow-inner',
+                    iconSimbolo: '⚓',
+                    decorLeft: '<i class="fa-solid fa-anchor text-sky-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]"></i>',
+                    decorRight: '<i class="fa-solid fa-anchor text-sky-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]"></i>',
+                    btnGradient: 'bg-gradient-to-r from-sky-900 via-sky-600 to-sky-900 border-sky-500/60 hover:from-sky-800 hover:to-sky-800 text-white drop-shadow-[0_0_12px_rgba(14,165,233,0.5)]',
+                    saudacao: 'Émaribô! Salve o Povo do Mar e a limpeza das águas sagradas.'
+                };
+            } else if (tLow.includes("preto") || tLow.includes("velho") || corBase === 'amber') {
+                return {
+                    bgGradient: 'bg-gradient-to-b from-[#1c1203] via-[#0e0901] to-[#080500]',
+                    radialGlow: 'radial-glow-amber',
+                    borderColor: 'border-amber-500/40',
+                    borderGlow: 'shadow-[0_0_35px_rgba(245,158,11,0.25)]',
+                    iconBg: 'bg-gradient-to-b from-amber-900/80 to-amber-950/90 border-amber-500/50 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)]',
+                    titleColor: 'text-stone-100',
+                    subTitleColor: 'text-amber-400',
+                    accentColor: 'text-amber-500',
+                    badgeBorder: 'border-amber-500/40 bg-amber-950/50 text-amber-200',
+                    cardBoxBg: 'bg-[#140c02]/90 border-amber-900/40 shadow-inner',
+                    iconSimbolo: '📿',
+                    decorLeft: '<i class="fa-solid fa-hands-praying text-amber-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"></i>',
+                    decorRight: '<i class="fa-solid fa-hands-praying text-amber-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"></i>',
+                    btnGradient: 'bg-gradient-to-r from-amber-900 via-amber-600 to-amber-900 border-amber-500/60 hover:from-amber-800 hover:to-amber-800 text-white drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]',
+                    saudacao: 'Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos.'
+                };
+            } else if (tLow.includes("erê") || tLow.includes("criança") || corBase === 'pink') {
+                return {
+                    bgGradient: 'bg-gradient-to-b from-[#240315] via-[#12010a] to-[#090005]',
+                    radialGlow: 'radial-glow-pink',
+                    borderColor: 'border-pink-500/40',
+                    borderGlow: 'shadow-[0_0_35px_rgba(236,72,153,0.25)]',
+                    iconBg: 'bg-gradient-to-b from-pink-900/80 to-pink-950/90 border-pink-500/50 text-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.4)]',
+                    titleColor: 'text-stone-100',
+                    subTitleColor: 'text-pink-400',
+                    accentColor: 'text-pink-500',
+                    badgeBorder: 'border-pink-500/40 bg-pink-950/50 text-pink-200',
+                    cardBoxBg: 'bg-[#18020e]/90 border-pink-900/40 shadow-inner',
+                    iconSimbolo: '🍬',
+                    decorLeft: '<i class="fa-solid fa-candy-cane text-pink-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(236,72,153,0.8)]"></i>',
+                    decorRight: '<i class="fa-solid fa-candy-cane text-pink-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(236,72,153,0.8)]"></i>',
+                    btnGradient: 'bg-gradient-to-r from-pink-900 via-pink-600 to-pink-900 border-pink-500/60 hover:from-pink-800 hover:to-pink-800 text-white drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]',
+                    saudacao: 'Onibejada! Salve a alegria e a doçura da linha infantil.'
+                };
+            } else {
+                return {
+                    bgGradient: 'bg-gradient-to-b from-[#140324] via-[#090112] to-[#040008]',
+                    radialGlow: 'radial-glow-purple',
+                    borderColor: 'border-purple-500/40',
+                    borderGlow: 'shadow-[0_0_35px_rgba(168,85,247,0.25)]',
+                    iconBg: 'bg-gradient-to-b from-purple-900/80 to-purple-950/90 border-purple-500/50 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.4)]',
+                    titleColor: 'text-stone-100',
+                    subTitleColor: 'text-purple-400',
+                    accentColor: 'text-purple-500',
+                    badgeBorder: 'border-purple-500/40 bg-purple-950/50 text-purple-200',
+                    cardBoxBg: 'bg-[#0e021a]/90 border-purple-900/40 shadow-inner',
+                    iconSimbolo: '🦅',
+                    decorLeft: '<i class="fa-solid fa-spa text-purple-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"></i>',
+                    decorRight: '<i class="fa-solid fa-spa text-purple-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"></i>',
+                    btnGradient: 'bg-gradient-to-r from-purple-900 via-purple-600 to-purple-900 border-purple-500/60 hover:from-purple-800 hover:to-purple-800 text-white drop-shadow-[0_0_12px_rgba(168,85,247,0.5)]',
+                    saudacao: 'Haux Haux! Que as forças sagradas tragam cura e firmeza.'
+                };
+            }
+        }
+
         function abrirModalDetalhesEvento(dia) {
             var eventsOnDay = window.EVENTOS_ATIVOS_CACHE ? window.EVENTOS_ATIVOS_CACHE.filter(e => e.dia === dia) : [];
             if (eventsOnDay.length === 0) return;
@@ -572,8 +691,7 @@
             var nomeDiaSemana = DIAS_SEMANA[dateObj.getDay()] || "Segunda-feira";
             var diaFmt = dia < 10 ? '0' + dia : '' + dia;
 
-            var horarioTexto = ev.horario ? ev.horario : "Horário Regular";
-            var descCard = obterDescricaoAutomatica(ev.titulo, ev.descricao);
+            var estilo = obterEstiloPremiumPorCategoria(ev.categoria, ev.titulo);
             
             var tituloLow = (ev.titulo || "").toLowerCase();
             var eAgendamentoWhatsApp = tituloLow.includes("consulta") || 
@@ -583,93 +701,140 @@
 
             var eMutiraoOuPresenca = !eAgendamentoWhatsApp;
 
-            var catMapNamesPublic = {
-                'red': 'Gira de Esquerda', 'amber': 'Mutirão',
-                'emerald': 'Consultas / Oferenda', 'purple': 'Ritual Xamânico',
-                'sky': 'Benzimento', 'pink': 'Gira de Erês',
-                'jurema': 'Consulta Particular', 'joaocaveira': 'Consulta Particular'
-            };
-            var catName = catMapNamesPublic[ev.categoria] || "Atividade do Templo";
-
-            var saudacaoText = "Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.";
-            var iconeEsp = "🔱";
-
-            if (tituloLow.includes("cabocla") || tituloLow.includes("oxóssi") || tituloLow.includes("jurema")) {
-                saudacaoText = "Okê Arô! Salve as forças das matas sagradas e da fartura."; iconeEsp = "🏹";
-            } else if (tituloLow.includes("iemanjá") || tituloLow.includes("marinheiro") || tituloLow.includes("oxum")) {
-                saudacaoText = "Odoyá! Que as águas sagradas purifiquem e tragam paz."; iconeEsp = "🌊";
-            } else if (tituloLow.includes("preto") || tituloLow.includes("velho")) {
-                saudacaoText = "Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos."; iconeEsp = "📿";
-            } else if (tituloLow.includes("erê") || tituloLow.includes("criança")) {
-                saudacaoText = "Onibejada! Salve a alegria e a doçura da linha infantil."; iconeEsp = "🍬";
-            } else if (tituloLow.includes("xamânico") || tituloLow.includes("mãe marli")) {
-                saudacaoText = "Haux Haux! Que o fogo sagrado do xamanismo traga cura e elevação."; iconeEsp = "🦅";
-            }
-
-            var st = CATEGORIA_STYLES[ev.categoria] || CATEGORIA_STYLES['emerald'];
-
             var acaoBtnHtml = "";
             if (eMutiraoOuPresenca) {
                 var estaConfirmadoModal = localStorage.getItem("confirmado_gira_" + ev.id);
                 if (estaConfirmadoModal) {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-3 bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold rounded-xl text-xs sm:text-sm cursor-default">' +
-                                        '<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Presença Confirmada' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-3.5 bg-stone-900/90 border border-emerald-500/50 text-emerald-400 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-wider uppercase font-cinzel">' +
+                                        '<i class="fa-solid fa-circle-check text-emerald-400"></i> PRESENÇA CONFIRMADA' +
                                    '</button>';
                 } else {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-3 ' + st.btnBg + ' active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2">' +
-                                        '<i class="fa-solid fa-check text-sm"></i> Confirmar Presença' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-3.5 ' + estilo.btnGradient + ' border active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-widest uppercase font-cinzel shadow-lg">' +
+                                        '<i class="fa-solid fa-check text-sm"></i> CONFIRMAR PRESENÇA' +
                                    '</button>';
                 }
             } else {
-                acaoBtnHtml = '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="w-full py-3 ' + st.btnBg + ' active:scale-95 text-white font-bold rounded-xl text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2">' +
-                                    '<i class="fa-brands fa-whatsapp text-base"></i> Agendar pelo WhatsApp' +
+                acaoBtnHtml = '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="w-full py-3.5 ' + estilo.btnGradient + ' border active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-widest uppercase font-cinzel shadow-lg">' +
+                                    '<i class="fa-brands fa-whatsapp text-lg"></i> AGENDAR PELO WHATSAPP' +
                                '</button>';
             }
 
-            var badgeHtml = "";
-            if (!ev.titulo.toLowerCase().startsWith("gira")) {
-                badgeHtml = `<div class="mt-2"><span class="bg-amber-100 text-amber-950 font-bold px-3.5 py-1 rounded-full text-xs inline-block">${catName}</span></div>`;
+            var badgesTopoHtml = "";
+            if (ev.horario && ev.horario.trim() !== '') {
+                badgesTopoHtml += `<span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border ${estilo.badgeBorder} text-xs font-semibold backdrop-blur-md shadow-inner">
+                                    <i class="fa-regular fa-clock ${estilo.accentColor}"></i> ${ev.horario.trim()}
+                                </span>`;
             }
+            if (ev.valor && ev.valor.trim() !== '') {
+                badgesTopoHtml += `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border ${estilo.badgeBorder} text-xs font-semibold backdrop-blur-md">
+                                    <i class="fa-solid fa-sack-dollar ${estilo.accentColor}"></i> ${ev.valor.trim()}
+                                </span>`;
+            }
+
+            var topoBadgesContainer = badgesTopoHtml !== "" ? `<div class="flex items-center justify-center gap-2 pt-2 flex-wrap">${badgesTopoHtml}</div>` : "";
+
+            var infoBoxRows = [];
+            if (ev.publico && ev.publico.trim() !== '') {
+                infoBoxRows.push(`
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-full bg-red-950/80 border border-red-800/60 flex items-center justify-center text-amber-400 text-xs">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <span class="text-stone-400 font-medium text-xs block">Público</span>
+                            <strong class="text-stone-200 font-semibold text-xs sm:text-sm">${ev.publico.trim()}</strong>
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (ev.status && ev.status.trim() !== '') {
+                var statusColorClass = "text-emerald-400 bg-emerald-950/60 border-emerald-800/60";
+                if (ev.status.toLowerCase().includes("cancel")) statusColorClass = "text-red-400 bg-red-950/60 border-red-800/60";
+                else if (ev.status.toLowerCase().includes("confirmar")) statusColorClass = "text-amber-400 bg-amber-950/60 border-amber-800/60";
+
+                infoBoxRows.push(`
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-full bg-red-950/80 border border-red-800/60 flex items-center justify-center text-emerald-400 text-xs">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div>
+                            <span class="text-stone-400 font-medium text-xs block">Status</span>
+                            <span class="inline-flex items-center gap-1 font-bold text-xs px-2.5 py-0.5 rounded-full border mt-0.5 ${statusColorClass}">
+                                ${ev.status.trim()}
+                            </span>
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (ev.responsavel && ev.responsavel.trim() !== '') {
+                infoBoxRows.push(`
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-full bg-red-950/80 border border-red-800/60 flex items-center justify-center text-purple-400 text-xs">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div>
+                            <span class="text-stone-400 font-medium text-xs block">Responsável</span>
+                            <strong class="text-stone-200 font-semibold text-xs sm:text-sm">${ev.responsavel.trim()}</strong>
+                        </div>
+                    </div>
+                `);
+            }
+
+            var cardInfoBoxHtml = "";
+            if (infoBoxRows.length > 0) {
+                cardInfoBoxHtml = `<div class="${estilo.cardBoxBg} rounded-2xl p-4 border text-left space-y-2.5 text-xs sm:text-sm z-10 relative">` +
+                                    infoBoxRows.join('<div class="h-[1px] bg-stone-800/60 w-full"></div>') +
+                                  `</div>`;
+            }
+
+            var descTexto = (ev.descricao && ev.descricao.trim() !== '') ? ev.descricao.trim() : estilo.saudacao;
+            var descHtml = descTexto ? `
+                <div class="pt-1 text-center text-xs sm:text-sm text-stone-300 font-medium italic space-y-2 z-10 relative">
+                    <p class="text-stone-300/90 leading-relaxed font-serif"><span class="text-amber-400 text-lg font-serif font-bold">“</span> ${descTexto} <span class="text-amber-400 text-lg font-serif font-bold">”</span></p>
+                    
+                    <div class="w-10 h-10 rounded-full border ${estilo.badgeBorder} flex items-center justify-center mx-auto text-xl shadow-md">
+                        ${estilo.iconSimbolo}
+                    </div>
+                </div>` : "";
 
             var containerModal = document.getElementById("evento-detalhe-modal-content");
             if (containerModal) {
                 containerModal.innerHTML = `
-                    <div class="bg-[#121E1B] rounded-2xl p-5 sm:p-6 border-2 border-amber-400 text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl">
-                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3 right-3 text-stone-400 hover:text-white text-xl font-bold leading-none w-8 h-8 rounded-full bg-stone-900/80 flex items-center justify-center transition z-20">&times;</button>
+                    <div class="${estilo.bgGradient} ${estilo.radialGlow} rounded-[28px] p-5 sm:p-7 border ${estilo.borderColor} ${estilo.borderGlow} text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-2xl">
+                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-4 right-4 text-stone-300 hover:text-white text-base font-bold w-8 h-8 rounded-full bg-black/60 border border-stone-700/80 flex items-center justify-center transition shadow-md z-30">&times;</button>
 
-                        <div class="w-14 h-14 rounded-full bg-red-950/80 text-red-400 border border-red-800/50 flex items-center justify-center text-2xl mx-auto shadow-inner">
+                        <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-full ${estilo.iconBg} flex items-center justify-center text-2xl sm:text-3xl mx-auto border relative z-10">
                             <i class="fa-regular fa-calendar-days"></i>
                         </div>
 
-                        <div>
-                            <span class="text-xs font-extrabold text-amber-400 uppercase tracking-widest block">${nomeDiaSemana.toUpperCase()}</span>
-                            <h3 class="text-2xl sm:text-3xl font-serif font-black text-white tracking-tight mt-0.5">${diaFmt}/${mesNum}/${details.ano}</h3>
-                            <span class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-amber-300 mt-1">
-                                <i class="fa-regular fa-clock"></i> ${horarioTexto} ${ev.valor ? '• ' + ev.valor : ''}
-                            </span>
+                        <div class="space-y-1 z-10 relative">
+                            <span class="text-[11px] sm:text-xs font-extrabold text-red-500 uppercase tracking-[0.2em] font-cinzel block">${nomeDiaSemana.toUpperCase()}</span>
+                            <h3 class="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-stone-100 to-amber-200/90 tracking-tight mt-0.5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+                            ${topoBadgesContainer}
                         </div>
 
-                        <div class="pt-1">
-                            <h4 class="font-serif font-extrabold text-white text-xl sm:text-2xl">${ev.titulo}</h4>
-                            ${badgeHtml}
+                        <div class="pt-2 pb-1 relative z-10">
+                            <div class="inline-flex items-center justify-center gap-3 w-full px-2 py-2 rounded-2xl bg-black/40 border border-stone-800/80 backdrop-blur-sm">
+                                ${estilo.decorLeft}
+                                <div class="text-center px-2">
+                                    <span class="text-[9px] sm:text-[10px] uppercase font-cinzel font-bold text-amber-300/80 tracking-widest block">Gira de</span>
+                                    <h4 class="font-cinzel font-black text-stone-100 text-2xl sm:text-3xl tracking-widest uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">${ev.titulo.replace('Gira de ', '')}</h4>
+                                </div>
+                                ${estilo.decorRight}
+                            </div>
                         </div>
 
-                        <div class="pt-2 border-t border-stone-800/80 text-left space-y-2 text-xs sm:text-sm text-stone-300">
-                            <p class="leading-relaxed text-stone-300 font-medium mb-3">${descCard}</p><br>
-                            ${ev.entidade ? '<div class="flex items-center gap-2 pt-1"><i class="fa-solid fa-user text-amber-400 w-4 text-center"></i><span><strong class="text-stone-200">Entidade:</strong> ' + ev.entidade + '</span></div>' : ''}
-                            <div class="flex items-center gap-2"><i class="fa-solid fa-users text-amber-400 w-4 text-center"></i><span><strong class="text-stone-200">Público:</strong> Aberto ao público</span></div>
-                            <div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-400 w-4 text-center"></i><span><strong class="text-stone-200">Status:</strong> <span class="text-emerald-400 font-bold">Confirmado</span></span></div>
-                        </div>
+                        ${cardInfoBoxHtml}
 
-                        <div class="pt-3 text-center text-xs sm:text-sm text-stone-300 font-medium italic border-t border-stone-800/80 space-y-1">
-                            <p>"${saudacaoText}"</p>
-                            <span class="block text-2xl text-amber-400">${iconeEsp}</span>
-                        </div>
+                        ${descHtml}
 
-                        <div class="pt-2 space-y-2">
+                        <div class="pt-2 space-y-2.5 z-10 relative">
                             ${acaoBtnHtml}
-                            <button onclick="fecharModalDetalhesEvento()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
-                                <i class="fa-solid fa-xmark mr-1"></i> Fechar
+                            
+                            <button onclick="fecharModalDetalhesEvento()" class="w-full py-2.5 bg-black/60 hover:bg-stone-900 text-stone-400 hover:text-white font-bold rounded-xl text-xs border border-stone-800/80 transition flex items-center justify-center gap-1 uppercase tracking-wider font-cinzel">
+                                &times; FECHAR
                             </button>
                         </div>
                     </div>
@@ -762,7 +927,7 @@
                 <option value="amber">🟡 Mutirão (Amarelo)</option>
                 <option value="emerald">🟢 Consultas / Oferenda (Verde)</option>
                 <option value="purple">🟣 Ritual Xamânico (Roxo)</option>
-                <option value="sky">🔵 Benzimento (Azul)</option>
+                <option value="sky">🔵 Benzimento / Marinheiros (Azul)</option>
                 <option value="pink">🩷 Gira de Erês (Rosa)</option>
                 <option value="jurema">🌿 Consulta Particular (Cabocla Jurema) (Verde)</option>
                 <option value="joaocaveira">💀 Consulta Particular (Sr. João Caveira) (Vermelho)</option>
@@ -809,6 +974,7 @@
             if (elOrixa) elOrixa.innerText = "BÊNÇÃO DE " + f.orixa.toUpperCase();
 
             fetchRealGoatCounterData(); carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
+            atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
         }
 
@@ -825,6 +991,7 @@
                 btnStats.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
                 btnMontar.className = "px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-2";
                 carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
+                atualizarInfoDiaDigitado();
                 atualizarPrevisualizacao();
             } else {
                 tabMontar.classList.add("hidden"); tabStats.classList.remove("hidden");
@@ -856,8 +1023,8 @@
             }
             var btnModalElem = document.getElementById("btn-presenca-modal-" + id);
             if (btnModalElem) {
-                btnModalElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Presença Confirmada';
-                btnModalElem.className = 'w-full py-3 bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold rounded-xl text-xs sm:text-sm cursor-default';
+                btnModalElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> PRESENÇA CONFIRMADA';
+                btnModalElem.className = 'w-full py-3.5 bg-stone-900/90 border border-emerald-500/50 text-emerald-400 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 font-cinzel tracking-wider';
                 btnModalElem.disabled = true;
             }
         }
@@ -960,14 +1127,12 @@
             var dateObj = new Date(details.ano, details.mNum, dia);
             var nomeDiaSemana = DIAS_SEMANA[dateObj.getDay()] || "Segunda-feira";
 
-            var hInicio = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value.trim() : "";
-            var hFim = document.getElementById("input-horario-fim") ? document.getElementById("input-horario-fim").value.trim() : "";
-            
-            var horarioTexto = "";
-            if (hInicio && hFim) horarioTexto = hInicio + " às " + hFim; 
-            else if (hInicio) horarioTexto = hInicio;
-
+            var horarioTexto = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value.trim() : "";
             var valorDigitado = document.getElementById("input-valor") ? document.getElementById("input-valor").value.trim() : "";
+            var publicoDigitado = document.getElementById("input-publico-display") ? document.getElementById("input-publico-display").value.trim() : (document.getElementById("input-publico") ? document.getElementById("input-publico").value.trim() : "");
+            var statusDigitado = document.getElementById("input-status-display") ? document.getElementById("input-status-display").value.trim() : (document.getElementById("input-status") ? document.getElementById("input-status").value.trim() : "");
+            var responsavelDigitado = document.getElementById("input-responsavel") ? document.getElementById("input-responsavel").value.trim() : "";
+            var descricaoDigitada = document.getElementById("input-descricao") ? document.getElementById("input-descricao").value.trim() : "";
 
             var titulo = document.getElementById("input-titulo") ? document.getElementById("input-titulo").value : "Gira de Exu";
             var categoria = document.getElementById("input-categoria") ? document.getElementById("input-categoria").value : "red";
@@ -976,88 +1141,91 @@
             else if (categoria === 'jurema') titulo = "Consulta Particular com Cabocla Jurema";
             else if (categoria === 'joaocaveira') titulo = "Consulta Particular com Sr. João Caveira";
 
-            var catMapNames = {
-                'red': 'Gira de Esquerda (Vermelho)', 'amber': 'Mutirão (Amarelo)',
-                'emerald': 'Consultas / Oferenda (Verde)', 'purple': 'Ritual Xamânico (Roxo)',
-                'sky': 'Benzimento (Azul)', 'pink': 'Gira de Erês (Rosa)',
-                'jurema': 'Consulta Particular (Cabocla Jurema)', 'joaocaveira': 'Consulta Particular (Sr. João Caveira)'
-            };
-            var catName = catMapNames[categoria] || "Gira de Esquerda (Vermelho)";
+            var estilo = obterEstiloPremiumPorCategoria(categoria, titulo);
 
-            var entidadeVal = document.getElementById("input-entidade") ? document.getElementById("input-entidade").value.trim() : "";
-            var publicoVal = document.getElementById("input-publico") ? document.getElementById("input-publico").value : "Aberto ao público";
-            var respVal = document.getElementById("input-responsavel") ? document.getElementById("input-responsavel").value.trim() : "";
-            var statusVal = document.getElementById("input-status") ? document.getElementById("input-status").value : "Confirmado";
-
-            var tituloLow = titulo.toLowerCase();
-            var saudacaoText = "Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.";
-            var iconeEsp = "🔱";
-
-            if (tituloLow.includes("cabocla") || tituloLow.includes("oxóssi") || tituloLow.includes("jurema")) {
-                saudacaoText = "Okê Arô! Salve as forças das matas sagradas e da fartura."; iconeEsp = "🏹";
-            } else if (tituloLow.includes("iemanjá") || tituloLow.includes("marinheiro") || tituloLow.includes("oxum")) {
-                saudacaoText = "Odoyá! Que as águas sagradas purifiquem e tragam paz."; iconeEsp = "🌊";
-            } else if (tituloLow.includes("preto") || tituloLow.includes("velho")) {
-                saudacaoText = "Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos."; iconeEsp = "📿";
-            } else if (tituloLow.includes("erê") || tituloLow.includes("criança")) {
-                saudacaoText = "Onibejada! Salve a alegria e a doçura da linha infantil."; iconeEsp = "🍬";
-            } else if (tituloLow.includes("xamânico") || tituloLow.includes("mãe marli")) {
-                saudacaoText = "Haux Haux! Que o fogo sagrado do xamanismo traga cura e elevação."; iconeEsp = "🦅";
-            }
-
-            var detalhesHtml = "";
-            if (entidadeVal !== "") {
-                detalhesHtml += '<div class="flex items-center gap-2"><i class="fa-solid fa-user text-stone-400 w-4 text-center"></i><span><strong class="text-stone-200 font-semibold">Entidade:</strong> ' + entidadeVal + '</span></div>';
+            var badgesTopoHtml = "";
+            if (horarioTexto !== "") {
+                badgesTopoHtml += `<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full border ${estilo.badgeBorder} text-[11px] font-semibold">
+                                    <i class="fa-regular fa-clock ${estilo.accentColor}"></i> ${horarioTexto}
+                               </span>`;
             }
             if (valorDigitado !== "") {
-                detalhesHtml += '<div class="flex items-center gap-2"><i class="fa-solid fa-tag text-amber-400 w-4 text-center"></i><span><strong class="text-stone-200 font-semibold">Valor:</strong> ' + valorDigitado + '</span></div>';
-            }
-            if (publicoVal !== "") {
-                detalhesHtml += '<div class="flex items-center gap-2"><i class="fa-solid fa-users text-stone-400 w-4 text-center"></i><span><strong class="text-stone-200 font-semibold">Público:</strong> ' + publicoVal + '</span></div>';
-            }
-            if (respVal !== "") {
-                detalhesHtml += '<div class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-stone-400 w-4 text-center"></i><span><strong class="text-stone-200 font-semibold">Responsável:</strong> ' + respVal + '</span></div>';
+                badgesTopoHtml += `<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full border ${estilo.badgeBorder} text-[11px] font-semibold">
+                                    <i class="fa-solid fa-sack-dollar ${estilo.accentColor}"></i> ${valorDigitado}
+                               </span>`;
             }
 
-            var statusClass = "text-emerald-300 bg-emerald-950 border border-emerald-800";
-            if (statusVal === 'A confirmar') statusClass = "text-amber-300 bg-amber-950 border border-amber-800";
-            else if (statusVal === 'Cancelado') statusClass = "text-red-300 bg-red-950 border border-red-800";
+            var topoBadgesContainer = badgesTopoHtml !== "" ? `<div class="flex items-center justify-center gap-2 pt-1 flex-wrap">${badgesTopoHtml}</div>` : "";
 
-            detalhesHtml += '<div class="flex items-center gap-2 pt-0.5"><span class="text-stone-300"><strong class="text-stone-200 font-semibold">Status:</strong> <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-md ' + statusClass + '">' + statusVal + '</span></span></div>';
-
-            var prevBadgeHtml = "";
-            if (!tituloLow.startsWith("gira")) {
-                prevBadgeHtml = `<div class="mt-2"><span class="bg-red-200/90 text-red-950 font-bold px-3.5 py-1 rounded-full text-xs inline-block">${catName}</span></div>`;
+            var infoBoxRows = [];
+            if (publicoDigitado !== "") {
+                infoBoxRows.push(`
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-users ${estilo.accentColor}"></i>
+                        <span class="text-stone-300">Público: <strong class="text-white">${publicoDigitado}</strong></span>
+                    </div>
+                `);
+            }
+            if (statusDigitado !== "") {
+                infoBoxRows.push(`
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                        <span class="text-stone-300">Status: <strong class="text-emerald-400">${statusDigitado}</strong></span>
+                    </div>
+                `);
+            }
+            if (responsavelDigitado !== "") {
+                infoBoxRows.push(`
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-user text-purple-400"></i>
+                        <span class="text-stone-300">Responsável: <strong class="text-white">${responsavelDigitado}</strong></span>
+                    </div>
+                `);
             }
 
-            var blocoHorarioHtml = horarioTexto !== "" ? 
-                `<span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 mt-1"><i class="fa-regular fa-clock"></i> ${horarioTexto}</span>` : "";
+            var cardInfoBoxHtml = "";
+            if (infoBoxRows.length > 0) {
+                cardInfoBoxHtml = `<div class="${estilo.cardBoxBg} rounded-xl p-3 border text-left space-y-2 text-xs z-10 relative">` +
+                                    infoBoxRows.join('') +
+                                  `</div>`;
+            }
+
+            var descTextoPrev = descricaoDigitada !== "" ? descricaoDigitada : estilo.saudacao;
+            var descHtmlPrev = descTextoPrev ? `
+                <div class="pt-1 text-center text-xs text-stone-300 font-medium italic space-y-1.5 z-10 relative">
+                    <p class="text-stone-300/90 font-serif"><span class="text-amber-400 font-bold">“</span> ${descTextoPrev} <span class="text-amber-400 font-bold">”</span></p>
+                    <div class="w-8 h-8 rounded-full border ${estilo.badgeBorder} flex items-center justify-center mx-auto text-base">
+                        ${estilo.iconSimbolo}
+                    </div>
+                </div>` : "";
 
             prevBox.innerHTML = `
-                <div class="bg-[#121E1B] rounded-2xl p-5 border border-amber-900/40 text-stone-200 text-center space-y-3 relative overflow-hidden shadow-xl">
-                    <div class="w-12 h-12 rounded-full bg-red-950/60 text-red-400 border border-red-800/40 flex items-center justify-center text-xl mx-auto">
+                <div class="${estilo.bgGradient} ${estilo.radialGlow} rounded-[24px] p-5 border ${estilo.borderColor} ${estilo.borderGlow} text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-md">
+                    
+                    <div class="w-14 h-14 rounded-full ${estilo.iconBg} flex items-center justify-center text-2xl mx-auto border relative z-10">
                         <i class="fa-regular fa-calendar-days"></i>
                     </div>
 
-                    <div>
-                        <span class="text-xs font-bold text-stone-400 uppercase tracking-widest block">${nomeDiaSemana.toUpperCase()}</span>
-                        <h3 class="text-2xl font-serif font-black text-white tracking-tight mt-0.5">${diaFmt}/${mesNum}/${details.ano}</h3>
-                        ${blocoHorarioHtml}
+                    <div class="space-y-1 z-10 relative">
+                        <span class="text-[11px] font-extrabold text-red-500 uppercase tracking-[0.2em] font-cinzel block">${nomeDiaSemana.toUpperCase()}</span>
+                        <h3 class="text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 to-stone-100 tracking-tight mt-0.5">${diaFmt}/${mesNum}/${details.ano}</h3>
+                        ${topoBadgesContainer}
                     </div>
 
-                    <div class="pt-1">
-                        <h4 class="font-serif font-extrabold text-white text-xl sm:text-2xl">${titulo}</h4>
-                        ${prevBadgeHtml}
+                    <div class="pt-1 pb-1 relative z-10">
+                        <div class="inline-flex items-center justify-center gap-2.5 w-full px-2 py-2 rounded-2xl bg-black/40 border border-stone-800/80">
+                            ${estilo.decorLeft}
+                            <div class="text-center px-1">
+                                <span class="text-[9px] uppercase font-cinzel font-bold text-amber-300/80 tracking-widest block">Gira de</span>
+                                <h4 class="font-cinzel font-black text-stone-100 text-xl tracking-widest uppercase">${titulo.replace('Gira de ', '')}</h4>
+                            </div>
+                            ${estilo.decorRight}
+                        </div>
                     </div>
 
-                    <div class="pt-3 border-t border-stone-800/80 text-left space-y-2 text-xs text-stone-300">
-                        ${detalhesHtml}
-                    </div>
+                    ${cardInfoBoxHtml}
 
-                    <div class="pt-3 text-center text-xs text-stone-400 font-medium italic border-t border-stone-800/80 space-y-1">
-                        <p>"${saudacaoText}"</p>
-                        <span class="block text-xl text-amber-400">${iconeEsp}</span>
-                    </div>
+                    ${descHtmlPrev}
                 </div>
             `;
         }
@@ -1084,20 +1252,27 @@
             eventoSendoEditadoId = null;
             document.getElementById("input-dia").value = "1"; 
             document.getElementById("input-horario-inicio").value = "";
-            document.getElementById("input-horario-fim").value = "";
             document.getElementById("input-valor").value = ""; 
-            document.getElementById("input-entidade").value = ""; 
             document.getElementById("input-descricao").value = "";
             
+            if (document.getElementById("input-publico")) document.getElementById("input-publico").value = "";
+            if (document.getElementById("input-publico-display")) document.getElementById("input-publico-display").value = "";
+            
+            if (document.getElementById("input-status")) document.getElementById("input-status").value = "";
+            if (document.getElementById("input-status-display")) document.getElementById("input-status-display").value = "";
+            
+            if (document.getElementById("input-responsavel")) document.getElementById("input-responsavel").value = "";
+
             var btn = document.getElementById("btn-salvar-atividade");
-            if (btn) btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-base"></i> Salvar Atividade no Calendário';
+            if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check text-base"></i> Salvar Atividade';
             
             var btnCancel = document.getElementById("btn-cancelar-edicao");
             if (btnCancel) btnCancel.classList.add("hidden");
 
             var formTitle = document.getElementById("form-cadastro-titulo");
-            if (formTitle) formTitle.innerHTML = '<i class="fa-solid fa-circle-plus text-umbanda-green"></i> Cadastrar Nova Atividade';
+            if (formTitle) formTitle.innerText = 'NOVA ATIVIDADE';
 
+            atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
         }
 
@@ -1121,32 +1296,31 @@
             var catSelect = document.getElementById("input-categoria");
             if (catSelect) catSelect.value = eventoEncontrado.categoria || "red";
 
-            var hor = eventoEncontrado.horario || "";
-            if (hor.includes("às")) {
-                var partesH = hor.split("às");
-                document.getElementById("input-horario-inicio").value = partesH[0].trim();
-                document.getElementById("input-horario-fim").value = partesH[1].trim();
-            } else {
-                document.getElementById("input-horario-inicio").value = hor.trim();
-                document.getElementById("input-horario-fim").value = "";
-            }
-
+            document.getElementById("input-horario-inicio").value = eventoEncontrado.horario || "";
             document.getElementById("input-valor").value = eventoEncontrado.valor || "";
-            document.getElementById("input-entidade").value = eventoEncontrado.entidade || "";
             document.getElementById("input-descricao").value = eventoEncontrado.descricao || "";
 
+            if (document.getElementById("input-publico")) document.getElementById("input-publico").value = eventoEncontrado.publico || "";
+            if (document.getElementById("input-publico-display")) document.getElementById("input-publico-display").value = eventoEncontrado.publico || "";
+
+            if (document.getElementById("input-status")) document.getElementById("input-status").value = eventoEncontrado.status || "";
+            if (document.getElementById("input-status-display")) document.getElementById("input-status-display").value = eventoEncontrado.status || "";
+
+            if (document.getElementById("input-responsavel")) document.getElementById("input-responsavel").value = eventoEncontrado.responsavel || "";
+
             var btn = document.getElementById("btn-salvar-atividade");
-            if (btn) btn.innerHTML = '<i class="fa-solid fa-pen-to-square text-base"></i> Atualizar Atividade no Calendário';
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-pen-to-square text-base"></i> Atualizar Atividade';
 
             var btnCancel = document.getElementById("btn-cancelar-edicao");
             if (btnCancel) btnCancel.classList.remove("hidden");
 
             var formTitle = document.getElementById("form-cadastro-titulo");
-            if (formTitle) formTitle.innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-600"></i> Editando Atividade (Dia ' + eventoEncontrado.dia + ')';
+            if (formTitle) formTitle.innerText = 'EDITANDO ATIVIDADE (Dia ' + eventoEncontrado.dia + ')';
 
             var formContainer = document.getElementById("form-cadastro-container");
             if (formContainer) formContainer.scrollIntoView({ behavior: 'smooth' });
 
+            atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
         }
 
@@ -1160,14 +1334,13 @@
             else if (categoria === 'jurema') titulo = "Consulta Particular com Cabocla Jurema";
             else if (categoria === 'joaocaveira') titulo = "Consulta Particular com Sr. João Caveira";
 
-            var hInicio = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value.trim() : "";
-            var hFim = document.getElementById("input-horario-fim") ? document.getElementById("input-horario-fim").value.trim() : "";
-            var horario = hInicio; if (hInicio && hFim) horario = hInicio + " às " + hFim;
-
+            var horario = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value.trim() : "";
             var valor = document.getElementById("input-valor").value.trim();
-            var entidade = document.getElementById("input-entidade").value.trim();
             var descricaoDigitada = document.getElementById("input-descricao").value.trim();
-            var descricao = obterDescricaoAutomatica(titulo, descricaoDigitada);
+            var publico = document.getElementById("input-publico") ? document.getElementById("input-publico").value.trim() : "";
+            var status = document.getElementById("input-status") ? document.getElementById("input-status").value.trim() : "";
+            var responsavel = document.getElementById("input-responsavel") ? document.getElementById("input-responsavel").value.trim() : "";
+            var descricao = descricaoDigitada;
 
             if (!dia || dia < 1 || dia > 31 || !titulo) { 
                 alert("Preencha o Dia do Mês e o Título do Evento!"); 
@@ -1188,7 +1361,7 @@
                         const { error } = await supabaseClient
                             .from('eventos')
                             .update({
-                                mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao
+                                mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel
                             })
                             .eq('id', realSupaId);
 
@@ -1199,7 +1372,7 @@
                     var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
                     var idx = customEventos.findIndex(e => String(e.id) === String(realLocId));
                     if (idx !== -1) {
-                        customEventos[idx] = { id: realLocId, mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao, tipo: 'whatsapp' };
+                        customEventos[idx] = { id: realLocId, mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel, tipo: 'whatsapp' };
                         localStorage.setItem("custom_eventos", JSON.stringify(customEventos));
                         salvouNoBanco = true;
                     }
@@ -1210,7 +1383,7 @@
                         const { data, error } = await supabaseClient
                             .from('eventos')
                             .insert([{
-                                mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao
+                                mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel
                             }])
                             .select();
 
@@ -1220,7 +1393,7 @@
 
                 if (!salvouNoBanco) {
                     var novoEventoLocal = {
-                        id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, entidade: entidade, descricao: descricao, tipo: 'whatsapp'
+                        id: Date.now(), mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel, tipo: 'whatsapp'
                     };
                     var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]");
                     customEventos.push(novoEventoLocal);
@@ -1317,7 +1490,7 @@
                 var diaStr = ev.dia < 10 ? '0' + ev.dia : '' + ev.dia;
                 var mesNum = mesAtualAtivo.includes("Junho") ? "06" : (mesAtualAtivo.includes("Julho") ? "07" : (mesAtualAtivo.includes("Agosto") ? "08" : (mesAtualAtivo.includes("Setembro") ? "09" : (mesAtualAtivo.includes("Outubro") ? "10" : (mesAtualAtivo.includes("Novembro") ? "11" : "12")))));
                 listaEventos.push({
-                    id: 'loc-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: obterDescricaoAutomatica(ev.titulo, ev.descricao), tipo: ev.tipo || 'whatsapp'
+                    id: 'loc-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: ev.descricao || '', publico: ev.publico || '', status: ev.status || '', responsavel: ev.responsavel || '', tipo: ev.tipo || 'whatsapp'
                 });
             });
 
@@ -1330,7 +1503,7 @@
                                 var diaStr = ev.dia < 10 ? '0' + ev.dia : '' + ev.dia;
                                 var mesNum = mesAtualAtivo.includes("Junho") ? "06" : (mesAtualAtivo.includes("Julho") ? "07" : (mesAtualAtivo.includes("Agosto") ? "08" : (mesAtualAtivo.includes("Setembro") ? "09" : (mesAtualAtivo.includes("Outubro") ? "10" : (mesAtualAtivo.includes("Novembro") ? "11" : "12")))));
                                 listaEventos.push({
-                                    id: 'supa-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: obterDescricaoAutomatica(ev.titulo, ev.descricao), tipo: 'whatsapp'
+                                    id: 'supa-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: ev.descricao || '', publico: ev.publico || '', status: ev.status || '', responsavel: ev.responsavel || '', tipo: 'whatsapp'
                                 });
                             }
                         });
@@ -1379,7 +1552,7 @@
                                 '</div>' +
                                 '<br>' +
                                 '<h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">' + ev.titulo + '</h4>' +
-                                '<p class="text-xs text-stone-600 leading-relaxed mb-2">' + descCard + '</p>';
+                                (descCard ? '<p class="text-xs text-stone-600 leading-relaxed mb-2">' + descCard + '</p>' : '');
 
                 if (eAgendamentoWhatsApp) {
                     html += '</div>' +
@@ -1462,6 +1635,25 @@
             transform: skewX(-25deg); animation: shineSweep 4s infinite ease-in-out; pointer-events: none;
         }
 
+        .radial-glow-red {
+            background-image: radial-gradient(circle at 50% 20%, rgba(220, 38, 38, 0.35) 0%, rgba(13, 1, 1, 0.95) 75%);
+        }
+        .radial-glow-emerald {
+            background-image: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.35) 0%, rgba(1, 14, 7, 0.95) 75%);
+        }
+        .radial-glow-sky {
+            background-image: radial-gradient(circle at 50% 20%, rgba(14, 165, 233, 0.35) 0%, rgba(1, 10, 20, 0.95) 75%);
+        }
+        .radial-glow-amber {
+            background-image: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.35) 0%, rgba(14, 9, 1, 0.95) 75%);
+        }
+        .radial-glow-pink {
+            background-image: radial-gradient(circle at 50% 20%, rgba(236, 72, 153, 0.35) 0%, rgba(18, 1, 10, 0.95) 75%);
+        }
+        .radial-glow-purple {
+            background-image: radial-gradient(circle at 50% 20%, rgba(168, 85, 247, 0.35) 0%, rgba(9, 1, 18, 0.95) 75%);
+        }
+
         .admin-modal-card {
             height: 96vh;
             height: 96dvh;
@@ -1486,7 +1678,7 @@
         </div>
     </div>
 
-    <!-- MODAL PREMIUM DE SELEÇÃO DE MÊS -->
+    <!-- MODAL SELEÇÃO DE MÊS -->
     <div id="seletor-mes-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[80] hidden flex items-start pt-6 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorMes()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
@@ -1510,7 +1702,7 @@
         </div>
     </div>
 
-    <!-- MODAL PARA SELEÇÃO DE DIA -->
+    <!-- MODAL SELEÇÃO DE DIA -->
     <div id="seletor-dia-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[88] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorDia()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
@@ -1534,7 +1726,7 @@
         </div>
     </div>
 
-    <!-- MODAL OTIMIZADO DE SELEÇÃO DE TÍTULO COM BUSCA -->
+    <!-- MODAL SELEÇÃO DE TÍTULO -->
     <div id="seletor-titulo-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[89] hidden flex items-start pt-3 sm:items-center sm:pt-0 justify-center p-2.5 sm:p-4 overflow-y-auto no-print" onclick="fecharModalTitulo()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-md w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2 flex-shrink-0">
@@ -1550,7 +1742,6 @@
                 <button type="button" onclick="fecharModalTitulo()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
             </div>
 
-            <!-- CAMPO DE BUSCA -->
             <div class="relative pt-1 flex-shrink-0">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></i>
                 <input type="text" id="modal-titulo-busca" placeholder="Digite para buscar evento..." oninput="renderizarListaTitulosModal(this.value)" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white text-xs sm:text-sm pl-9 pr-3 py-2.5 rounded-xl outline-none transition placeholder-stone-500 font-medium">
@@ -1563,7 +1754,6 @@
                 </button>
             </div>
 
-            <!-- LISTA COM ROLAGEM DINÂMICA DENTRO DO TECLADO -->
             <div id="modal-titulo-lista" class="space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-[160px] max-h-[35vh]"></div>
 
             <button type="button" onclick="fecharModalTitulo()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition flex-shrink-0">
@@ -1572,7 +1762,7 @@
         </div>
     </div>
 
-    <!-- MODAL PREMIUM DE REPETIÇÃO -->
+    <!-- MODAL REPETIÇÃO -->
     <div id="seletor-repeticao-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalRepeticao()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
@@ -1629,7 +1819,7 @@
         </div>
     </div>
 
-    <!-- MODAL PREMIUM DE STATUS -->
+    <!-- MODAL STATUS -->
     <div id="seletor-status-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalStatus()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
@@ -1678,6 +1868,16 @@
                     </div>
                     <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-400 text-xs"></i>
                 </button>
+
+                <button type="button" onclick="selecionarStatusModal('', '')" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800/40 hover:border-stone-500 text-left transition flex items-center justify-between group">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-eye-slash text-stone-400"></i>
+                        <div>
+                            <span class="text-xs sm:text-sm font-bold text-stone-300 block">Não exibir status</span>
+                            <span class="text-[10px] text-stone-500 block">Oculta esta linha no card</span>
+                        </div>
+                    </div>
+                </button>
             </div>
 
             <button type="button" onclick="fecharModalStatus()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
@@ -1686,7 +1886,7 @@
         </div>
     </div>
 
-    <!-- MODAL PREMIUM DE PÚBLICO -->
+    <!-- MODAL PÚBLICO -->
     <div id="seletor-publico-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalPublico()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
@@ -1735,6 +1935,16 @@
                     </div>
                     <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-400 text-xs"></i>
                 </button>
+
+                <button type="button" onclick="selecionarPublicoModal('')" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800/40 hover:border-stone-500 text-left transition flex items-center justify-between group">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-eye-slash text-stone-400"></i>
+                        <div>
+                            <span class="text-xs sm:text-sm font-bold text-stone-300 block">Não exibir público</span>
+                            <span class="text-[10px] text-stone-500 block">Oculta esta linha no card</span>
+                        </div>
+                    </div>
+                </button>
             </div>
 
             <button type="button" onclick="fecharModalPublico()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
@@ -1743,7 +1953,7 @@
         </div>
     </div>
 
-    <!-- MODAL PREMIUM UNIFICADO PARA HORÁRIO -->
+    <!-- MODAL HORÁRIO -->
     <div id="seletor-horario-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[85] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalHorario()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2">
@@ -1774,7 +1984,7 @@
         </div>
     </div>
 
-    <!-- MODAL PREMIUM PARA VALOR -->
+    <!-- MODAL VALOR -->
     <div id="seletor-valor-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[86] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalValor()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2">
@@ -1811,7 +2021,7 @@
     </div>
 
     <!-- MODAL DE DETALHES DO EVENTO -->
-    <div id="evento-detalhe-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] hidden flex items-center justify-center p-3 sm:p-4 no-print" onclick="fecharModalDetalhesEvento()">
+    <div id="evento-detalhe-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[70] hidden flex items-center justify-center p-3 sm:p-4 no-print" onclick="fecharModalDetalhesEvento()">
         <div class="max-w-md w-full" onclick="event.stopPropagation()">
             <div id="evento-detalhe-modal-content"></div>
         </div>
@@ -1852,7 +2062,6 @@
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-1 sm:p-4 no-print font-sans overflow-hidden">
         <div class="admin-modal-card bg-white rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col overflow-hidden border-2 border-amber-400">
             
-            <!-- HEADER MODAL -->
             <div class="bg-umbanda-green text-white px-3 sm:px-6 py-2.5 sm:py-3.5 flex justify-between items-center border-b border-amber-400/30 flex-shrink-0">
                 <div class="flex items-center gap-2.5">
                     <div onclick="abrirFotoJoaoCaveira()" title="Clique para expandir a foto do Sr. João Caveira" class="w-8 h-8 sm:w-12 sm:h-12 rounded-full border-2 border-amber-400 bg-stone-900 flex items-center justify-center overflow-hidden shadow-md flex-shrink-0 cursor-pointer hover:scale-105 transition">
@@ -1870,7 +2079,6 @@
                 <button onclick="closeAdminStats()" class="text-stone-300 hover:text-white text-2xl font-bold leading-none p-1">&times;</button>
             </div>
 
-            <!-- TABS & SELETOR DE MÊS -->
             <div class="bg-stone-100 border-b border-stone-200 px-3 sm:px-4 pt-2 flex flex-wrap justify-between items-center gap-2 text-xs sm:text-sm flex-shrink-0">
                 <div class="flex gap-1 sm:gap-2">
                     <button id="tab-btn-stats" onclick="switchAdminTab('stats')" class="px-3 sm:px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm">
@@ -1882,10 +2090,8 @@
                 </div>
             </div>
 
-            <!-- CONTEÚDO PRINCIPAL COM ROLAGEM DENTRO DO MODAL -->
             <div class="p-3 sm:p-6 overflow-y-auto space-y-4 bg-stone-50 flex-1 min-h-0">
                 
-                <!-- TAB ESTATÍSTICAS -->
                 <div id="tab-content-stats" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs relative">
@@ -1929,7 +2135,6 @@
                         </div>
                     </div>
 
-                    <!-- HORÁRIO DE MAIOR MOVIMENTO -->
                     <div class="bg-white p-4 sm:p-5 rounded-xl border border-stone-200 shadow-2xs">
                         <div class="flex items-center justify-between mb-3">
                             <h4 class="font-bold text-stone-900 text-xs uppercase tracking-wider flex items-center gap-2">
@@ -1968,7 +2173,6 @@
                         </div>
                     </div>
 
-                    <!-- DISPOSITIVOS -->
                     <div class="bg-white p-4 sm:p-5 rounded-xl border border-stone-200 shadow-2xs">
                         <div class="flex items-center justify-between mb-3">
                             <h4 class="font-bold text-stone-900 text-xs uppercase tracking-wider flex items-center gap-2">
@@ -2000,7 +2204,6 @@
                         </div>
                     </div>
 
-                    <!-- ORIGEM E PAÍS DA VISITA -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
                         <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-2xs flex items-center justify-between">
                             <div>
@@ -2043,7 +2246,6 @@
                         </div>
                     </div>
 
-                    <!-- ATALHO GOATCOUNTER -->
                     <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-stone-200 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-lg font-bold"><i class="fa-solid fa-chart-line"></i></div>
@@ -2057,7 +2259,6 @@
                         </a>
                     </div>
 
-                    <!-- BANNER INFERIOR -->
                     <div class="bg-gradient-to-r from-stone-900 via-emerald-950 to-stone-900 text-white p-4 sm:p-5 rounded-2xl border border-amber-500/30 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl relative overflow-hidden">
                         <div class="absolute -left-10 -top-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
                         <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -2086,118 +2287,217 @@
 
                 </div>
 
-                <!-- TAB MONTAR NOVO MÊS -->
+                <!-- TAB MONTAR NOVO MÊS (ADAPTADO EXATAMENTE CONFORME A FOTO) -->
                 <div id="tab-content-montar" class="space-y-4 hidden pb-4">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
                         <div class="lg:col-span-2 space-y-4">
-                            <div id="form-cadastro-container" class="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200 shadow-sm space-y-4">
+                            <div id="form-cadastro-container" class="bg-white p-4 sm:p-6 rounded-2xl border border-stone-200/90 shadow-sm space-y-5">
+                                
+                                <!-- CABEÇALHO DA SEÇÃO -->
                                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-                                    <h4 id="form-cadastro-titulo" class="font-bold text-stone-800 text-sm sm:text-base flex items-center gap-2"><i class="fa-solid fa-circle-plus text-umbanda-green"></i> Cadastrar Nova Atividade</h4>
-                                    <button type="button" id="btn-ocultar-opcoes" onclick="alternarOcultarOpcoes()" class="text-xs font-semibold text-stone-500 bg-stone-100 px-2.5 py-1 rounded-lg">Ocultar opções <i class="fa-solid fa-chevron-up ml-1"></i></button>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-800/80 flex items-center justify-center text-lg font-bold shadow-xs">
+                                            <i class="fa-regular fa-calendar-plus"></i>
+                                        </div>
+                                        <div>
+                                            <h4 id="form-cadastro-titulo" class="font-serif font-black text-stone-900 text-base sm:text-lg tracking-wide uppercase">NOVA ATIVIDADE</h4>
+                                            <p class="text-xs text-stone-500 font-medium">Preencha os dados da atividade que será realizada.</p>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="btn-ocultar-opcoes" onclick="alternarOcultarOpcoes()" class="text-xs font-bold text-stone-600 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-full transition flex items-center gap-1 border border-stone-200">
+                                        Ocultar opções <i class="fa-solid fa-chevron-up text-[10px]"></i>
+                                    </button>
                                 </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                    <!-- MÊS E ANO (MODAL CUSTOMIZADO) -->
-                                    <div>
-                                        <label class="font-bold text-stone-700 block mb-1">Mês e Ano</label>
-                                        <input type="hidden" id="input-mes-ano" value="Agosto de 2026">
-                                        <input type="text" id="input-mes-ano-display" readonly value="Agosto de 2026" onclick="abrirModalSeletorMes()" placeholder="Selecione o mês..." class="w-full p-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                    </div>
+                                <div class="space-y-5 text-xs">
+                                    
+                                    <!-- 1. DATA DA ATIVIDADE -->
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">1</span>
+                                            <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">DATA DA ATIVIDADE</label>
+                                        </div>
 
-                                    <!-- DIA DO MÊS -->
-                                    <div class="relative">
-                                        <label class="font-bold text-stone-700 block mb-1">Dia do Mês (1 a 31)</label>
-                                        <input type="text" id="input-dia" value="1" readonly onclick="abrirModalSeletorDia()" class="w-full p-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                        <span id="badge-dia-semana" class="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md mt-1 block">✓ Dia 01 - Terça-feira (Agosto de 2026)</span>
-                                    </div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-7">
+                                            <div>
+                                                <label class="font-bold text-stone-600 block mb-1">Mês e Ano</label>
+                                                <input type="hidden" id="input-mes-ano" value="Agosto de 2026">
+                                                <div class="relative">
+                                                    <i class="fa-regular fa-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
+                                                    <input type="text" id="input-mes-ano-display" readonly value="Agosto de 2026" onclick="abrirModalSeletorMes()" class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                                </div>
+                                            </div>
 
-                                    <!-- EVENTO / TÍTULO -->
-                                    <div>
-                                        <label class="font-bold text-stone-700 block mb-1">Evento / Título</label>
-                                        <input type="hidden" id="input-titulo" value="Gira de Exu">
-                                        <input type="text" id="input-titulo-display" readonly value="Gira de Exu" onclick="abrirModalTitulo()" placeholder="Clique para selecionar evento..." class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                    </div>
+                                            <div>
+                                                <label class="font-bold text-stone-600 block mb-1">Dia do Mês (1 a 31)</label>
+                                                <div class="relative">
+                                                    <i class="fa-regular fa-calendar-days absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
+                                                    <input type="text" id="input-dia" value="1" readonly onclick="abrirModalSeletorDia()" class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                                </div>
+                                            </div>
 
-                                    <div>
-                                        <div class="flex justify-between items-center mb-1">
-                                            <label class="font-bold text-stone-700">Categoria / Tipo</label>
-                                            <div class="flex gap-1">
-                                                <button type="button" onclick="adicionarNovaCategoria()" class="text-[10px] text-umbanda-green font-bold">+ Nova</button>
+                                            <div class="sm:col-span-2">
+                                                <div id="badge-dia-semana" class="w-full p-2.5 bg-emerald-50/80 border border-emerald-200/80 text-emerald-900 rounded-xl font-bold text-xs flex items-center gap-2">
+                                                    <i class="fa-regular fa-calendar-check text-emerald-600 text-sm"></i>
+                                                    <span>Dia 01 – Terça-feira (Agosto de 2026)</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <select id="input-categoria" onchange="verificarCategoriaEspecial(); atualizarPrevisualizacao();" class="w-full p-2.5 rounded-xl border border-stone-300 bg-stone-50 font-semibold text-stone-800"></select>
                                     </div>
 
-                                    <div class="sm:col-span-2 flex flex-wrap gap-1.5 pt-1">
-                                        <button type="button" onclick="aplicarTagRapida('Gira de Exu')" class="text-[11px] font-semibold bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200"><i class="fa-solid fa-fire text-xs mr-1"></i> Gira Exu</button>
-                                        <button type="button" onclick="aplicarTagRapida('Gira de Pombagira')" class="text-[11px] font-semibold bg-pink-50 text-pink-800 px-2.5 py-1 rounded-lg border border-pink-200"><i class="fa-solid fa-wine-glass text-xs mr-1"></i> Pombagira</button>
-                                        <button type="button" onclick="aplicarTagRapida('Gira de Caboclos')" class="text-[11px] font-semibold bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200"><i class="fa-solid fa-leaf text-xs mr-1"></i> Caboclos</button>
-                                        <button type="button" onclick="aplicarTagRapida('Gira de Pretos-Velhos')" class="text-[11px] font-semibold bg-amber-50 text-amber-800 px-2.5 py-1 rounded-lg border border-amber-200"><i class="fa-solid fa-hands-praying text-xs mr-1"></i> Pretos-Velhos</button>
-                                        <button type="button" onclick="aplicarTagRapida('Gira de Erês (Crianças)')" class="text-[11px] font-semibold bg-purple-50 text-purple-800 px-2.5 py-1 rounded-lg border border-purple-200"><i class="fa-solid fa-candy-cane text-xs mr-1"></i> Erês</button>
-                                    </div>
-
-                                    <div>
-                                        <label class="font-bold text-stone-700 block mb-1">Horário de Início</label>
-                                        <input type="text" id="input-horario-inicio" readonly onclick="abrirModalHorario()" placeholder="Clique para selecionar..." class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800 font-semibold bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                    </div>
-
-                                    <div>
-                                        <label class="font-bold text-stone-700 block mb-1">Horário de Término</label>
-                                        <input type="text" id="input-horario-fim" readonly onclick="abrirModalHorario()" placeholder="Clique para selecionar..." class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800 font-semibold bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                    </div>
-
-                                    <div id="container-opcoes-avancadas" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                        <div>
-                                            <label class="font-bold text-stone-700 block mb-1">Entidade / Detalhes</label>
-                                            <input type="text" id="input-entidade" value="" oninput="atualizarPrevisualizacao()" placeholder="Ex: Sr. Tranca Rua das Almas" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
+                                    <!-- 2. EVENTO / TÍTULO -->
+                                    <div class="space-y-2 pt-1 border-t border-stone-100">
+                                        <div class="flex items-center gap-2 pt-2">
+                                            <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">2</span>
+                                            <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">EVENTO / TÍTULO</label>
                                         </div>
 
-                                        <div>
-                                            <label class="font-bold text-stone-700 block mb-1">Valor (se houver)</label>
-                                            <input type="text" id="input-valor" readonly onclick="abrirModalValor()" placeholder="Clique para selecionar..." class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800 font-semibold bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                        </div>
-
-                                        <div>
-                                            <label class="font-bold text-stone-700 block mb-1">Responsável</label>
-                                            <input type="text" id="input-responsavel" value="" oninput="atualizarPrevisualizacao()" placeholder="Ex: Pai João de Xangô" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
-                                        </div>
-
-                                        <!-- REPETIÇÃO (MODAL CUSTOMIZADO) -->
-                                        <div>
-                                            <label class="font-bold text-stone-700 block mb-1">Repetição</label>
-                                            <input type="hidden" id="input-repeticao" value="Não repetir">
-                                            <input type="text" id="input-repeticao-display" readonly value="Não repetir" onclick="abrirModalRepeticao()" placeholder="Clique para selecionar repetição..." class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                        </div>
-
-                                        <!-- PÚBLICO (MODAL CUSTOMIZADO) -->
-                                        <div>
-                                            <label class="font-bold text-stone-700 block mb-1">Público</label>
-                                            <input type="hidden" id="input-publico" value="Aberto ao público">
-                                            <input type="text" id="input-publico-display" readonly value="Aberto ao público" onclick="abrirModalPublico()" placeholder="Clique para selecionar público..." class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                        </div>
-
-                                        <!-- STATUS (MODAL CUSTOMIZADO) -->
-                                        <div>
-                                            <label class="font-bold text-stone-700 block mb-1">Status</label>
-                                            <input type="hidden" id="input-status" value="Confirmado">
-                                            <input type="text" id="input-status-display" readonly value="🟢 Confirmado" onclick="abrirModalStatus()" placeholder="Clique para selecionar status..." class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                        </div>
-
-                                        <div class="sm:col-span-2">
-                                            <label class="font-bold text-stone-700 block mb-1">Descrição / Observações</label>
-                                            <textarea id="input-descricao" rows="2" placeholder="Descreva o objetivo ou orientações..." oninput="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800"></textarea>
+                                        <div class="pl-7">
+                                            <input type="hidden" id="input-titulo" value="Gira de Exu">
+                                            <div class="relative">
+                                                <i class="fa-solid fa-bars-staggered absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
+                                                <input type="text" id="input-titulo-display" readonly value="Gira de Exu" onclick="abrirModalTitulo()" placeholder="Clique para selecionar evento..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <!-- 3. CATEGORIA / TIPO -->
+                                    <div class="space-y-2 pt-1 border-t border-stone-100">
+                                        <div class="flex items-center justify-between pt-2">
+                                            <div class="flex items-center gap-2">
+                                                <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">3</span>
+                                                <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">CATEGORIA / TIPO</label>
+                                            </div>
+                                            <button type="button" onclick="adicionarNovaCategoria()" class="text-[11px] text-emerald-800 hover:underline font-bold">+ Nova Categoria</button>
+                                        </div>
+
+                                        <div class="pl-7 space-y-2.5">
+                                            <div class="relative">
+                                                <select id="input-categoria" onchange="verificarCategoriaEspecial(); atualizarPrevisualizacao();" class="w-full pl-3 pr-8 py-2.5 rounded-xl border border-stone-300 bg-stone-50/50 font-bold text-stone-800 text-xs sm:text-sm appearance-none outline-none"></select>
+                                                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                            </div>
+
+                                            <!-- TAGS RÁPIDAS FORMATADAS CONFORME A FOTO -->
+                                            <div class="flex flex-wrap gap-2 pt-1">
+                                                <button type="button" onclick="aplicarTagRapida('Gira de Exu')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 text-emerald-900 font-bold text-xs hover:bg-emerald-100 transition shadow-2xs">
+                                                    <i class="fa-solid fa-droplet text-emerald-700 text-xs"></i> Gira Exu
+                                                </button>
+                                                <button type="button" onclick="aplicarTagRapida('Gira de Pombagira')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50/80 border border-pink-200/80 text-pink-900 font-bold text-xs hover:bg-pink-100 transition shadow-2xs">
+                                                    <i class="fa-solid fa-wine-glass text-pink-700 text-xs"></i> Pombagira
+                                                </button>
+                                                <button type="button" onclick="aplicarTagRapida('Gira de Caboclos')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 text-emerald-900 font-bold text-xs hover:bg-emerald-100 transition shadow-2xs">
+                                                    <i class="fa-solid fa-leaf text-emerald-700 text-xs"></i> Caboclos
+                                                </button>
+                                                <button type="button" onclick="aplicarTagRapida('Gira de Pretos-Velhos')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50/80 border border-amber-200/80 text-amber-900 font-bold text-xs hover:bg-amber-100 transition shadow-2xs">
+                                                    <i class="fa-solid fa-hands-praying text-amber-700 text-xs"></i> Pretos-Velhos
+                                                </button>
+                                                <button type="button" onclick="aplicarTagRapida('Gira de Erês (Crianças)')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50/80 border border-purple-200/80 text-purple-900 font-bold text-xs hover:bg-purple-100 transition shadow-2xs">
+                                                    <i class="fa-solid fa-microphone text-purple-700 text-xs"></i> Erês
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 4. HORÁRIOS -->
+                                    <div class="space-y-2 pt-1 border-t border-stone-100">
+                                        <div class="flex items-center gap-2 pt-2">
+                                            <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">4</span>
+                                            <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">HORÁRIOS</label>
+                                        </div>
+
+                                        <div class="pl-7">
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <div>
+                                                    <label class="font-bold text-stone-600 block mb-1">Horário de Início / Término</label>
+                                                    <div class="relative">
+                                                        <i class="fa-regular fa-clock absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
+                                                        <input type="text" id="input-horario-inicio" readonly onclick="abrirModalHorario()" placeholder="Selecione o horário" class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                        <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label class="font-bold text-stone-600 block mb-1">Valor <span class="text-stone-400 font-normal">(Opcional)</span></label>
+                                                    <div class="relative">
+                                                        <i class="fa-solid fa-tag absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
+                                                        <input type="text" id="input-valor" readonly onclick="abrirModalValor()" placeholder="Clique para selecionar..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- OPÇÕES AVANÇADAS / COMPLEMENTARES -->
+                                    <div id="container-opcoes-avancadas" class="space-y-4 pt-1">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-7">
+                                            <div>
+                                                <label class="font-bold text-stone-600 block mb-1">Responsável <span class="text-stone-400 font-normal">(Opcional)</span></label>
+                                                <div class="relative">
+                                                    <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
+                                                    <input type="text" id="input-responsavel" value="" oninput="atualizarPrevisualizacao()" placeholder="Ex: Pai João de Xangô" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-300 text-stone-800 font-semibold bg-stone-50/50 text-xs sm:text-sm">
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label class="font-bold text-stone-600 block mb-1">Repetição <span class="text-stone-400 font-normal">(Opcional)</span></label>
+                                                <input type="hidden" id="input-repeticao" value="Não repetir">
+                                                <div class="relative">
+                                                    <i class="fa-solid fa-rotate-right absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
+                                                    <input type="text" id="input-repeticao-display" readonly value="Não repetir" onclick="abrirModalRepeticao()" placeholder="Clique para selecionar..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label class="font-bold text-stone-600 block mb-1">Público <span class="text-stone-400 font-normal">(Opcional)</span></label>
+                                                <input type="hidden" id="input-publico" value="">
+                                                <div class="relative">
+                                                    <i class="fa-solid fa-users absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
+                                                    <input type="text" id="input-publico-display" readonly value="" onclick="abrirModalPublico()" placeholder="Clique para selecionar público..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label class="font-bold text-stone-600 block mb-1">Status <span class="text-stone-400 font-normal">(Opcional)</span></label>
+                                                <input type="hidden" id="input-status" value="">
+                                                <div class="relative">
+                                                    <i class="fa-solid fa-shield-halved absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
+                                                    <input type="text" id="input-status-display" readonly value="" onclick="abrirModalStatus()" placeholder="Clique para selecionar status..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 5. OBSERVAÇÕES -->
+                                    <div class="space-y-2 pt-1 border-t border-stone-100">
+                                        <div class="flex items-center gap-2 pt-2">
+                                            <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">5</span>
+                                            <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">OBSERVAÇÕES <span class="text-stone-400 font-normal">(OPCIONAL)</span></label>
+                                        </div>
+
+                                        <div class="pl-7 relative">
+                                            <i class="fa-regular fa-comment absolute left-3.5 top-3.5 text-stone-400 text-sm pointer-events-none"></i>
+                                            <textarea id="input-descricao" rows="2" placeholder="Adicione informações importantes sobre a atividade..." oninput="atualizarPrevisualizacao()" class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-stone-300 text-stone-800 bg-stone-50/50 font-medium text-xs sm:text-sm outline-none focus:border-amber-400 transition"></textarea>
+                                        </div>
+                                    </div>
+
                                 </div>
 
-                                <div class="flex flex-col sm:flex-row gap-2 my-2">
-                                    <button id="btn-salvar-atividade" onclick="salvarAtividadeSupabase()" class="w-full py-3.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2">
-                                        <i class="fa-solid fa-cloud-arrow-up text-base"></i> Salvar Atividade no Calendário
+                                <!-- BOTÕES DE AÇÃO RODAPÉ -->
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-stone-100">
+                                    <button id="btn-cancelar-edicao" type="button" onclick="cancelarEdicaoAtividade()" class="w-full sm:w-auto px-5 py-2.5 border border-stone-300 hover:bg-stone-100 text-stone-700 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-xmark text-stone-500"></i> Cancelar
                                     </button>
-                                    <button id="btn-cancelar-edicao" onclick="cancelarEdicaoAtividade()" class="hidden w-full sm:w-auto px-5 py-3.5 bg-stone-500 hover:bg-stone-600 active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2">
-                                        <i class="fa-solid fa-xmark"></i> Cancelar
+
+                                    <button id="btn-salvar-atividade" type="button" onclick="salvarAtividadeSupabase()" class="w-full sm:w-auto px-6 py-3 bg-emerald-900 hover:bg-emerald-950 active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-md">
+                                        <i class="fa-regular fa-circle-check text-base"></i> Salvar Atividade
                                     </button>
                                 </div>
+
                             </div>
                         </div>
 
@@ -2205,7 +2505,7 @@
                         <div class="space-y-4">
                             <div class="sticky top-2 space-y-2">
                                 <div class="flex items-center gap-2 text-umbanda-green font-bold text-xs uppercase tracking-wider pb-1">
-                                    <i class="fa-solid fa-eye text-emerald-600 text-sm"></i> Pré-visualização
+                                    <i class="fa-solid fa-eye text-emerald-600 text-sm"></i> Pré-visualização Ultra Premium
                                 </div>
 
                                 <div id="prev-card-box"></div>
@@ -2225,7 +2525,6 @@
                 </div>
             </div>
 
-            <!-- RODAPÉ FIXO -->
             <div class="bg-stone-100 px-4 py-2 text-right border-t border-stone-200 flex justify-end flex-shrink-0 z-20">
                 <button onclick="closeAdminStats()" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs px-5 py-2 rounded-lg transition shadow-xs flex items-center gap-1.5">
                     <i class="fa-solid fa-xmark"></i> Fechar
@@ -2279,7 +2578,7 @@
                         <span class="flex items-center gap-1.5 bg-white px-2 sm:px-2.5 py-1 rounded-lg border border-stone-200/80 shadow-2xs"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Mutirão</span>
                         <span class="flex items-center gap-1.5 bg-white px-2 sm:px-2.5 py-1 rounded-lg border border-stone-200/80 shadow-2xs"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span> Consultas</span>
                         <span class="flex items-center gap-1.5 bg-white px-2 sm:px-2.5 py-1 rounded-lg border border-stone-200/80 shadow-2xs"><span class="w-2.5 h-2.5 rounded-full bg-purple-600 inline-block"></span> Ritual Xamânico</span>
-                        <span class="flex items-center gap-1.5 bg-white px-2 sm:px-2.5 py-1 rounded-lg border border-stone-200/80 shadow-2xs"><span class="w-2.5 h-2.5 rounded-full bg-sky-600 inline-block"></span> Benzimento</span>
+                        <span class="flex items-center gap-1.5 bg-white px-2 sm:px-2.5 py-1 rounded-lg border border-stone-200/80 shadow-2xs"><span class="w-2.5 h-2.5 rounded-full bg-sky-600 inline-block"></span> Benzimento / Marinheiros</span>
                     </div>
                 </div>
 
