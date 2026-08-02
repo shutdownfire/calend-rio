@@ -15,7 +15,7 @@
 
     <script>
         var SUPABASE_URL = "https://ndkooiyqhafsinxawzxe.supabase.co";
-        var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI6MjEwMDk0NTczMH0.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
+        var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI62100945730f.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
         var supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
         if (!localStorage.getItem("user_device_id")) {
@@ -44,7 +44,7 @@
             'Gira de Caboclos': 'Trabalhos de passe, cura e limpeza fluídica na vibração da Mata.',
             'Gira de Pretos-Velhos': 'Trabalhos de aconselhamento, fé e harmonização espiritual.',
             'Gira de Erês (Crianças)': 'Trabalhos de purificação, alegria e renovação das energias.',
-            'Gira de Esquerda': 'Trabalhos com as forças da Esquerda.'
+            'Gira de Baianos': 'Trabalhos com as forças da Esquerda.'
         };
 
         var TITULOS_PADRAO = [
@@ -239,6 +239,50 @@
             }
         }
 
+        // MODAL PREMIUM DE REPETIÇÃO
+        function abrirModalRepeticao() {
+            var modal = document.getElementById("seletor-repeticao-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalRepeticao() {
+            var modal = document.getElementById("seletor-repeticao-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        function selecionarRepeticaoModal(valor) {
+            var targetRepeticao = document.getElementById("input-repeticao");
+            var displayRepeticao = document.getElementById("input-repeticao-display");
+            
+            if (targetRepeticao) targetRepeticao.value = valor;
+            if (displayRepeticao) displayRepeticao.value = valor;
+
+            fecharModalRepeticao();
+            atualizarPrevisualizacao();
+        }
+
+        // MODAL PREMIUM DE STATUS
+        function abrirModalStatus() {
+            var modal = document.getElementById("seletor-status-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalStatus() {
+            var modal = document.getElementById("seletor-status-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        function selecionarStatusModal(valor, labelComIcone) {
+            var targetStatus = document.getElementById("input-status");
+            var displayStatus = document.getElementById("input-status-display");
+            
+            if (targetStatus) targetStatus.value = valor;
+            if (displayStatus) displayStatus.value = labelComIcone;
+
+            fecharModalStatus();
+            atualizarPrevisualizacao();
+        }
+
         // MODAL PREMIUM DE PÚBLICO
         function abrirModalPublico() {
             var modal = document.getElementById("seletor-publico-modal");
@@ -263,7 +307,7 @@
 
         function getMonthDetails(mesAno) {
             var mesesMap = { "Janeiro": 0, "Fevereiro": 1, "Março": 2, "Abril": 3, "Maio": 4, "Junho": 5, "Julho": 6, "Agosto": 7, "Setembro": 8, "Outubro": 9, "Novembro": 10, "Dezembro": 11 };
-            var parts = mesAno.split(" "); var mNome = parts[0]; var mNum = mesesMap[mNome] !== undefined ? mesesMap[mNome] : 5;
+            var parts = mesAno.split(" "); var mNome = parts[0]; var mNum = mesesMap[mNome] !== undefined ? mesesMap[mNome] : 7;
             var aNum = parseInt(parts[2]) || 2026;
             return { firstDay: new Date(aNum, mNum, 1).getDay(), totalDays: new Date(aNum, mNum + 1, 0).getDate(), mNome: mNome, mNum: mNum, ano: aNum };
         }
@@ -443,16 +487,16 @@
         };
 
         var EVENTOS_PADRAO = [
-            { id: '0106', dia: 1, diaTexto: 'Dia 01/06 - Segunda', titulo: 'Gira de Esquerda', categoria: 'red', horario: '17:00', descricao: 'Trabalhos com as forças da Esquerda.', tipo: 'presenca' },
-            { id: '0506', dia: 5, diaTexto: 'Dia 05/06 - Sexta', titulo: 'Organização / Limpeza do Terreiro', categoria: 'amber', horario: 'Mutirão', descricao: 'Ajuda dos filhos para limpar e organizar a casa.', tipo: 'presenca' },
-            { id: '0606', dia: 6, diaTexto: 'Dia 06/06 - Sábado', titulo: 'Oferenda para Obará de Oxóssi', categoria: 'emerald', horario: '', descricao: 'Aguardem comunicado interno sobre materiais.', tipo: 'presenca' },
-            { id: '0806', dia: 8, diaTexto: 'Dia 08/06 - Segunda', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp' },
-            { id: '1206', dia: 12, diaTexto: 'Dia 12/06 - Sexta', titulo: 'Ritual Xamânico da Mãe Marli', categoria: 'purple', horario: '13:00', valor: 'R$ 180,00', entidade: 'o Ritual Xamânico', descricao: 'Trabalho de elevação espiritual.', tipo: 'whatsapp_ritual' },
-            { id: '1306', dia: 13, diaTexto: 'Dia 13/06 - Sábado', titulo: 'Ritual Xamânico', categoria: 'purple', horario: '13:00', valor: 'R$ 180,00', entidade: 'o Ritual Xamânico', descricao: 'Atividades de firmeza xamânica.', tipo: 'whatsapp_ritual' },
-            { id: '1506', dia: 15, diaTexto: 'Dia 15/06 - Segunda', titulo: 'Consulta Particular com Sr. João Caveira', categoria: 'red', valor: 'R$ 100,00', entidade: 'o Sr. João Caveira', descricao: 'Agendamento prévio com a Paula.', tipo: 'whatsapp' },
-            { id: '2706-benzimento', dia: 27, diaTexto: 'Dia 27/06 - Sábado', titulo: 'Benzimento e Cura (Pessoas e Animais)', categoria: 'sky', horario: '10:00 às 12:00', valor: 'GRATUITO', descricao: 'Por ordem de chegada.', tipo: 'presenca' },
-            { id: '2706-eres', dia: 27, diaTexto: 'Dia 27/06 - Sábado', titulo: 'Gira de Erês', categoria: 'pink', horario: '12:00', descricao: 'Médiuns levarem doces e bebidas de Erês.', tipo: 'presenca' },
-            { id: '2906', dia: 29, diaTexto: 'Dia 29/06 - Segunda', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp' }
+            { id: '0106', dia: 1, diaTexto: 'Dia 01/08 - Segunda', titulo: 'Gira de Esquerda', categoria: 'red', horario: '17:00', descricao: 'Trabalhos com as forças da Esquerda.', tipo: 'presenca' },
+            { id: '0506', dia: 5, diaTexto: 'Dia 05/08 - Sexta', titulo: 'Organização / Limpeza do Terreiro', categoria: 'amber', horario: 'Mutirão', descricao: 'Ajuda dos filhos para limpar e organizar a casa.', tipo: 'presenca' },
+            { id: '0606', dia: 6, diaTexto: 'Dia 06/08 - Sábado', titulo: 'Oferenda para Obará de Oxóssi', categoria: 'emerald', horario: '', descricao: 'Aguardem comunicado interno sobre materiais.', tipo: 'presenca' },
+            { id: '0806', dia: 8, diaTexto: 'Dia 08/08 - Segunda', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp' },
+            { id: '1206', dia: 12, diaTexto: 'Dia 12/08 - Sexta', titulo: 'Ritual Xamânico da Mãe Marli', categoria: 'purple', horario: '13:00', valor: 'R$ 180,00', entidade: 'o Ritual Xamânico', descricao: 'Trabalho de elevação espiritual.', tipo: 'whatsapp_ritual' },
+            { id: '1306', dia: 13, diaTexto: 'Dia 13/08 - Sábado', titulo: 'Ritual Xamânico', categoria: 'purple', horario: '13:00', valor: 'R$ 180,00', entidade: 'o Ritual Xamânico', descricao: 'Atividades de firmeza xamânica.', tipo: 'whatsapp_ritual' },
+            { id: '1506', dia: 15, diaTexto: 'Dia 15/08 - Segunda', titulo: 'Consulta Particular com Sr. João Caveira', categoria: 'red', valor: 'R$ 100,00', entidade: 'o Sr. João Caveira', descricao: 'Agendamento prévio com a Paula.', tipo: 'whatsapp' },
+            { id: '2706-benzimento', dia: 27, diaTexto: 'Dia 27/08 - Sábado', titulo: 'Benzimento e Cura (Pessoas e Animais)', categoria: 'sky', horario: '10:00 às 12:00', valor: 'GRATUITO', descricao: 'Por ordem de chegada.', tipo: 'presenca' },
+            { id: '2706-eres', dia: 27, diaTexto: 'Dia 27/08 - Sábado', titulo: 'Gira de Erês', categoria: 'pink', horario: '12:00', descricao: 'Médiuns levarem doces e bebidas de Erês.', tipo: 'presenca' },
+            { id: '2906', dia: 29, diaTexto: 'Dia 29/08 - Segunda', titulo: 'Consulta Particular com Cabocla Jurema', categoria: 'emerald', valor: 'R$ 70,00', entidade: 'a Cabocla Jurema', descricao: 'Agendar com a Paula.', tipo: 'whatsapp' }
         ];
 
         tailwind.config = {
@@ -1266,7 +1310,7 @@
         }
 
         async function carregarCalendarioDoSupabase() {
-            var listaEventos = (mesAtualAtivo === "Junho de 2026") ? [...EVENTOS_PADRAO] : [];
+            var listaEventos = (mesAtualAtivo === "Agosto de 2026") ? [...EVENTOS_PADRAO] : [];
 
             var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.mes_ano === mesAtualAtivo);
             customEventos.forEach(ev => {
@@ -1523,6 +1567,120 @@
             <div id="modal-titulo-lista" class="space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-[160px] max-h-[35vh]"></div>
 
             <button type="button" onclick="fecharModalTitulo()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition flex-shrink-0">
+                <i class="fa-solid fa-xmark mr-1"></i> Cancelar
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL PREMIUM DE REPETIÇÃO -->
+    <div id="seletor-repeticao-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalRepeticao()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-sm sm:text-base text-white">Selecionar Repetição</h3>
+                        <p class="text-[11px] text-stone-400 font-medium">Frequência com que o evento acontece</p>
+                    </div>
+                </div>
+                <button type="button" onclick="fecharModalRepeticao()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+            </div>
+
+            <div class="space-y-2 pt-1">
+                <button type="button" onclick="selecionarRepeticaoModal('Não repetir')" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800/80 hover:border-amber-400 hover:bg-stone-700 text-left transition flex items-center justify-between group">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-ban text-stone-400 text-base"></i>
+                        <div>
+                            <span class="text-xs sm:text-sm font-bold text-white block">Não repetir</span>
+                            <span class="text-[10px] text-stone-400 block">Evento único nesta data</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-400 text-xs"></i>
+                </button>
+
+                <button type="button" onclick="selecionarRepeticaoModal('Toda semana')" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800/80 hover:border-amber-400 hover:bg-stone-700 text-left transition flex items-center justify-between group">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-calendar-week text-amber-400 text-base"></i>
+                        <div>
+                            <span class="text-xs sm:text-sm font-bold text-white block">Semanalmente</span>
+                            <span class="text-[10px] text-stone-400 block">Repete no mesmo dia da semana</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-400 text-xs"></i>
+                </button>
+
+                <button type="button" onclick="selecionarRepeticaoModal('Todo mês')" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800/80 hover:border-amber-400 hover:bg-stone-700 text-left transition flex items-center justify-between group">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-calendar-days text-emerald-400 text-base"></i>
+                        <div>
+                            <span class="text-xs sm:text-sm font-bold text-white block">Mensalmente</span>
+                            <span class="text-[10px] text-stone-400 block">Repete mensalmente no mesmo dia</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-400 text-xs"></i>
+                </button>
+            </div>
+
+            <button type="button" onclick="fecharModalRepeticao()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
+                <i class="fa-solid fa-xmark mr-1"></i> Cancelar
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL PREMIUM DE STATUS -->
+    <div id="seletor-status-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalStatus()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-circle-dot"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-sm sm:text-base text-white">Selecionar Status</h3>
+                        <p class="text-[11px] text-stone-400 font-medium">Situação da atividade no calendário</p>
+                    </div>
+                </div>
+                <button type="button" onclick="fecharModalStatus()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+            </div>
+
+            <div class="space-y-2 pt-1">
+                <button type="button" onclick="selecionarStatusModal('Confirmado', '🟢 Confirmado')" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800/80 hover:border-emerald-400 hover:bg-stone-700 text-left transition flex items-center justify-between group">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+                        <div>
+                            <span class="text-xs sm:text-sm font-bold text-white block">Confirmado</span>
+                            <span class="text-[10px] text-stone-400 block">Evento garantido e confirmado</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-400 text-xs"></i>
+                </button>
+
+                <button type="button" onclick="selecionarStatusModal('A confirmar', '🟡 A confirmar')" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800/80 hover:border-amber-400 hover:bg-stone-700 text-left transition flex items-center justify-between group">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50"></span>
+                        <div>
+                            <span class="text-xs sm:text-sm font-bold text-white block">A confirmar</span>
+                            <span class="text-[10px] text-stone-400 block">Pendente de confirmação final</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-400 text-xs"></i>
+                </button>
+
+                <button type="button" onclick="selecionarStatusModal('Cancelado', '🔴 Cancelado')" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800/80 hover:border-red-400 hover:bg-stone-700 text-left transition flex items-center justify-between group">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-3 h-3 rounded-full bg-red-500 shadow-sm shadow-red-500/50"></span>
+                        <div>
+                            <span class="text-xs sm:text-sm font-bold text-white block">Cancelado</span>
+                            <span class="text-[10px] text-stone-400 block">Atividade suspensa ou cancelada</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-400 text-xs"></i>
+                </button>
+            </div>
+
+            <button type="button" onclick="fecharModalStatus()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
             </button>
         </div>
@@ -1950,7 +2108,7 @@
                                     <div class="relative">
                                         <label class="font-bold text-stone-700 block mb-1">Dia do Mês (1 a 31)</label>
                                         <input type="text" id="input-dia" value="1" readonly onclick="abrirModalSeletorDia()" class="w-full p-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
-                                        <span id="badge-dia-semana" class="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md mt-1 block">✓ Dia 01 - Terça-feira (Setembro de 2026)</span>
+                                        <span id="badge-dia-semana" class="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md mt-1 block">✓ Dia 01 - Terça-feira (Agosto de 2026)</span>
                                     </div>
 
                                     <!-- EVENTO / TÍTULO -->
@@ -2004,13 +2162,11 @@
                                             <input type="text" id="input-responsavel" value="" oninput="atualizarPrevisualizacao()" placeholder="Ex: Pai João de Xangô" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
                                         </div>
 
+                                        <!-- REPETIÇÃO (MODAL CUSTOMIZADO) -->
                                         <div>
                                             <label class="font-bold text-stone-700 block mb-1">Repetição</label>
-                                            <select id="input-repeticao" onchange="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 text-stone-800">
-                                                <option value="Não repetir">Não repetir</option>
-                                                <option value="Toda semana">Semanalmente</option>
-                                                <option value="Todo mês">Mensalmente</option>
-                                            </select>
+                                            <input type="hidden" id="input-repeticao" value="Não repetir">
+                                            <input type="text" id="input-repeticao-display" readonly value="Não repetir" onclick="abrirModalRepeticao()" placeholder="Clique para selecionar repetição..." class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
                                         </div>
 
                                         <!-- PÚBLICO (MODAL CUSTOMIZADO) -->
@@ -2020,13 +2176,11 @@
                                             <input type="text" id="input-publico-display" readonly value="Aberto ao público" onclick="abrirModalPublico()" placeholder="Clique para selecionar público..." class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
                                         </div>
 
+                                        <!-- STATUS (MODAL CUSTOMIZADO) -->
                                         <div>
                                             <label class="font-bold text-stone-700 block mb-1">Status</label>
-                                            <select id="input-status" onchange="atualizarPrevisualizacao()" class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800">
-                                                <option value="Confirmado">🟢 Confirmado</option>
-                                                <option value="A confirmar">🟡 A confirmar</option>
-                                                <option value="Cancelado">🔴 Cancelado</option>
-                                            </select>
+                                            <input type="hidden" id="input-status" value="Confirmado">
+                                            <input type="text" id="input-status-display" readonly value="🟢 Confirmado" onclick="abrirModalStatus()" placeholder="Clique para selecionar status..." class="w-full p-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50 cursor-pointer hover:border-amber-400 transition">
                                         </div>
 
                                         <div class="sm:col-span-2">
