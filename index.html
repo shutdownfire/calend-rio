@@ -232,6 +232,95 @@
             }
         }
 
+        function abrirModalCategoria() {
+            renderizarListaCategoriasModal();
+            var modal = document.getElementById("seletor-categoria-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalCategoria() {
+            var modal = document.getElementById("seletor-categoria-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        function renderizarListaCategoriasModal() {
+            var container = document.getElementById("modal-categoria-lista"); if (!container) return;
+            var catAtual = document.getElementById("input-categoria") ? document.getElementById("input-categoria").value : "red";
+
+            var categorias = [
+                { id: 'red', nome: 'Gira de Esquerda', desc: 'Vermelho', icone: '🔴', custom: false },
+                { id: 'amber', nome: 'Mutirão / Organização', desc: 'Amarelo', icone: '🟡', custom: false },
+                { id: 'emerald', nome: 'Consultas / Oferenda', desc: 'Verde', icone: '🟢', custom: false },
+                { id: 'purple', nome: 'Ritual Xamânico', desc: 'Roxo', icone: '🟣', custom: false },
+                { id: 'sky', nome: 'Benzimento / Marinheiros', desc: 'Azul', icone: '🔵', custom: false },
+                { id: 'pink', nome: 'Gira de Erês', desc: 'Rosa', icone: '🩷', custom: false },
+                { id: 'jurema', nome: 'Consulta Particular (Cabocla Jurema)', desc: 'Verde Especial', icone: '🌿', custom: false },
+                { id: 'joaocaveira', nome: 'Consulta Particular (Sr. João Caveira)', desc: 'Vermelho Especial', icone: '💀', custom: false }
+            ];
+
+            var customCats = JSON.parse(localStorage.getItem("custom_categorias") || "[]");
+            var corIconeMap = { 'red': '🔴', 'amber': '🟡', 'emerald': '🟢', 'purple': '🟣', 'sky': '🔵', 'pink': '🩷' };
+            customCats.forEach(function(c) {
+                categorias.push({ id: c.cor, nome: c.nome, desc: c.corNome + ' (Personalizado)', icone: corIconeMap[c.cor] || '🟢', custom: true, rawId: c.id });
+            });
+
+            var html = "";
+            categorias.forEach(function(c) {
+                var isSelected = (c.id === catAtual);
+                var bgClass = isSelected ? "bg-amber-500/20 border-amber-400 text-amber-300 font-bold" : "bg-stone-800/60 border-stone-700/60 text-stone-200 hover:bg-stone-700/80";
+
+                var btnAcoes = c.custom ? 
+                    '<div class="flex gap-1" onclick="event.stopPropagation()">' +
+                        '<button type="button" onclick="editarCategoriaCustomModal(' + c.rawId + ', \'' + c.nome + '\')" class="p-1.5 text-stone-400 hover:text-amber-400 text-xs"><i class="fa-solid fa-pen"></i></button>' +
+                        '<button type="button" onclick="excluirCategoriaCustomModal(' + c.rawId + ')" class="p-1.5 text-stone-400 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>' +
+                    '</div>' : '<i class="fa-solid fa-chevron-right text-stone-500 text-xs"></i>';
+
+                html += `<div onclick="selecionarCategoriaModal('${c.id}', '${c.nome.replace(/'/g, "\\'")}')" class="p-3 rounded-xl border flex items-center justify-between transition cursor-pointer active:scale-98 ${bgClass}">
+                            <div class="flex items-center gap-3">
+                                <span class="text-base">${c.icone}</span>
+                                <div>
+                                    <span class="text-xs sm:text-sm font-bold block">${c.nome}</span>
+                                    <span class="text-[10px] text-stone-400 block">${c.desc}</span>
+                                </div>
+                            </div>
+                            ${btnAcoes}
+                        </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selecionarCategoriaModal(id, nome) {
+            var targetCat = document.getElementById("input-categoria");
+            var displayCat = document.getElementById("input-categoria-display");
+
+            if (targetCat) targetCat.value = id;
+            if (displayCat) displayCat.value = nome;
+
+            fecharModalCategoria();
+            verificarCategoriaEspecial();
+            atualizarPrevisualizacao();
+        }
+
+        function editarCategoriaCustomModal(id, nomeAtual) {
+            var novoNome = prompt("Novo nome da Categoria:", nomeAtual); if (!novoNome || !novoNome.trim()) return;
+            var custom = JSON.parse(localStorage.getItem("custom_categorias") || "[]");
+            var item = custom.find(c => c.id == id);
+            if (item) {
+                item.nome = novoNome.trim();
+                localStorage.setItem("custom_categorias", JSON.stringify(custom));
+                renderizarListaCategoriasModal();
+            }
+        }
+
+        function excluirCategoriaCustomModal(id) {
+            if (confirm("Deseja realmente excluir esta categoria personalizada?")) {
+                var custom = JSON.parse(localStorage.getItem("custom_categorias") || "[]").filter(c => c.id != id);
+                localStorage.setItem("custom_categorias", JSON.stringify(custom));
+                renderizarListaCategoriasModal();
+            }
+        }
+
         function abrirModalRepeticao() {
             var modal = document.getElementById("seletor-repeticao-modal");
             if (modal) modal.classList.remove("hidden");
@@ -360,6 +449,7 @@
         }
 
         function ajustarFormatacaoFinal(valStr) {
+            if (!valStr) return "";
             var val = valStr.trim();
             if (val.length === 1 || val.length === 2) {
                 var hh = parseInt(val);
@@ -377,7 +467,7 @@
             var inputFimModal = document.getElementById("modal-horario-fim");
 
             var valInicio = inputInicioModal ? ajustarFormatacaoFinal(inputInicioModal.value) : "";
-            var valFim = inputFimModal ? meajustarFormatacaoFinal(inputFimModal.value) : "";
+            var valFim = inputFimModal ? ajustarFormatacaoFinal(inputFimModal.value) : "";
 
             var targetInicio = document.getElementById("input-horario-inicio");
 
@@ -507,7 +597,6 @@
 
         function mudarMesAtivo(novoMes) {
             mesAtualAtivo = novoMes;
-            var elTop = document.getElementById("texto-mes-topbar"); if (elTop) elTop.innerText = novoMes;
             var elMainBtn = document.getElementById("btn-mes-principal-texto"); if (elMainBtn) elMainBtn.innerText = novoMes;
             
             var inputMesAno = document.getElementById("input-mes-ano"); if (inputMesAno) inputMesAno.value = novoMes;
@@ -566,100 +655,86 @@
             if (tLow.includes("exu") || tLow.includes("pombagira") || tLow.includes("caveira") || corBase === 'red' || corBase === 'joaocaveira') {
                 return {
                     linhaTag: 'ESQUERDA / EXU',
-                    bgCardStyle: 'bg-gradient-to-b from-[#1a0202] via-[#0d0101] to-[#050000] border-2 border-red-500/60 shadow-[0_0_50px_rgba(220,38,38,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-red-950 to-stone-950 shadow-[0_0_20px_rgba(220,38,38,0.6)]',
+                    bgCardStyle: 'bg-gradient-to-b from-[#1c0202] via-[#2c0505] to-[#0d0101] border-2 border-red-500/80 shadow-[0_0_35px_rgba(239,68,68,0.5)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(239,68,68,0.8)]',
                     topIcon: '<img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" alt="Sr. João Caveira" class="w-full h-full object-cover rounded-full p-0.5" onerror="this.onerror=null; this.src=\'https://drive.google.com/thumbnail?id=18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH&sz=w1000\';">',
                     boxTituloBg: 'plate-red-gold',
-                    symbolEmblem: '<i class="fa-solid fa-trident text-red-500 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(220,38,38,0.9)]"></i>',
-                    symbolLeft: '<i class="fa-solid fa-trident text-amber-400 text-lg"></i>',
-                    symbolRight: '<i class="fa-solid fa-trident text-amber-400 text-lg"></i>',
-                    accentText: 'text-red-400 font-cinzel font-bold',
+                    symbolEmblem: '<i class="fa-solid fa-trident text-red-500 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(239,68,68,0.9)]"></i>',
+                    accentText: 'text-red-400 font-cinzel font-black tracking-[0.3em]',
                     saudacao: 'Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.',
-                    btnStyle: 'bg-gradient-to-r from-red-950 via-red-600 to-red-950 border border-amber-400/60 hover:from-red-900 hover:to-red-700 text-white drop-shadow-[0_0_20px_rgba(220,38,38,0.7)]'
+                    btnStyle: 'bg-gradient-to-r from-red-950 via-red-600 to-red-950 border border-amber-400 hover:from-red-900 hover:to-red-700 text-white drop-shadow-[0_0_20px_rgba(239,68,68,0.7)]'
                 };
             } else if (tLow.includes("caboclo") || tLow.includes("oxóssi") || tLow.includes("jurema") || corBase === 'emerald' || corBase === 'jurema') {
                 return {
-                    linhaTag: 'CABOCLO',
-                    bgCardStyle: 'bg-gradient-to-b from-[#021d12] via-[#01100b] to-[#000805] border-2 border-emerald-500/60 shadow-[0_0_50px_rgba(16,185,129,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-emerald-950 to-stone-950 shadow-[0_0_20px_rgba(16,185,129,0.6)]',
-                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(16,185,129,0.9)]"><i class="fa-solid fa-leaf"></i></div>',
+                    linhaTag: 'LINHA DAS MATAS / CABOCLOS',
+                    bgCardStyle: 'bg-gradient-to-b from-[#012213] via-[#02331d] to-[#01140c] border-2 border-emerald-400/80 shadow-[0_0_35px_rgba(52,211,153,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(52,211,153,0.7)]',
+                    topIcon: '<div class="text-emerald-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(52,211,153,0.9)]"><i class="fa-solid fa-leaf"></i></div>',
                     boxTituloBg: 'plate-emerald-gold',
-                    symbolEmblem: '<i class="fa-solid fa-feather-pointed text-emerald-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(16,185,129,0.9)]"></i>',
-                    symbolLeft: '<i class="fa-solid fa-feather-pointed text-amber-400 text-lg"></i>',
-                    symbolRight: '<i class="fa-solid fa-feather-pointed text-amber-400 text-lg"></i>',
-                    accentText: 'text-emerald-400 font-cinzel font-bold',
-                    saudacao: 'Okê Arô! Salve as forças das matas sagradas e da fartura.',
-                    btnStyle: 'bg-gradient-to-r from-emerald-950 via-emerald-600 to-emerald-950 border border-amber-400/60 hover:from-emerald-900 hover:to-emerald-700 text-white drop-shadow-[0_0_20px_rgba(16,185,129,0.7)]'
+                    symbolEmblem: '<i class="fa-solid fa-feather-pointed text-emerald-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(52,211,153,0.9)]"></i>',
+                    accentText: 'text-emerald-300 font-cinzel font-black tracking-[0.3em]',
+                    saudacao: 'Okê Arô Caboclo! Salve as forças sagradas das matas e da cura.',
+                    btnStyle: 'bg-gradient-to-r from-emerald-950 via-emerald-600 to-emerald-950 border border-amber-400 hover:from-emerald-900 hover:to-emerald-700 text-white drop-shadow-[0_0_20px_rgba(52,211,153,0.7)]'
                 };
             } else if (tLow.includes("boiadeiro")) {
                 return {
-                    linhaTag: 'BOIADEIRO',
-                    bgCardStyle: 'bg-gradient-to-b from-[#1c1405] via-[#0e0a02] to-[#050300] border-2 border-amber-600/60 shadow-[0_0_50px_rgba(245,158,11,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-amber-950 to-stone-950 shadow-[0_0_20px_rgba(245,158,11,0.6)]',
-                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(245,158,11,0.9)]"><i class="fa-solid fa-hat-cowboy"></i></div>',
+                    linhaTag: 'LINHA DOS BOIADEIROS',
+                    bgCardStyle: 'bg-gradient-to-b from-[#261503] via-[#3a1d04] to-[#120a01] border-2 border-amber-500/80 shadow-[0_0_35px_rgba(245,158,11,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(245,158,11,0.7)]',
+                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(245,158,11,0.9)]"><i class="fa-solid fa-hat-cowboy"></i></div>',
                     boxTituloBg: 'plate-amber-gold',
-                    symbolEmblem: '<i class="fa-solid fa-hat-cowboy-side text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(245,158,11,0.9)]"></i>',
-                    symbolLeft: '<i class="fa-solid fa-hat-cowboy text-amber-400 text-lg"></i>',
-                    symbolRight: '<i class="fa-solid fa-hat-cowboy text-amber-400 text-lg"></i>',
-                    accentText: 'text-amber-400 font-cinzel font-bold',
-                    saudacao: 'Xetruá Boiadeiro! Salve a força e a garra do sertão.',
-                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400/60 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(245,158,11,0.7)]'
+                    symbolEmblem: '<i class="fa-solid fa-hat-cowboy-side text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(245,158,11,0.9)]"></i>',
+                    accentText: 'text-amber-400 font-cinzel font-black tracking-[0.3em]',
+                    saudacao: 'Xetruá Boiadeiro! Salve a força, a garra e o laço do sertão.',
+                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(245,158,11,0.7)]'
                 };
             } else if (tLow.includes("marinheiro") || tLow.includes("iemanjá") || corBase === 'sky') {
                 return {
-                    linhaTag: 'MARINHEIRO / POVO DO MAR',
-                    bgCardStyle: 'bg-gradient-to-b from-[#021629] via-[#010b14] to-[#00050a] border-2 border-sky-500/60 shadow-[0_0_50px_rgba(14,165,233,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-sky-950 to-stone-950 shadow-[0_0_20px_rgba(14,165,233,0.6)]',
-                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(14,165,233,0.9)]"><i class="fa-solid fa-anchor"></i></div>',
+                    linhaTag: 'POVO DO MAR / MARINHEIROS',
+                    bgCardStyle: 'bg-gradient-to-b from-[#02182b] via-[#042846] to-[#010e17] border-2 border-sky-400/80 shadow-[0_0_35px_rgba(56,189,248,0.5)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(56,189,248,0.7)]',
+                    topIcon: '<div class="text-sky-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(56,189,248,0.9)]"><i class="fa-solid fa-anchor"></i></div>',
                     boxTituloBg: 'plate-sky-gold',
-                    symbolEmblem: '<i class="fa-solid fa-water text-sky-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(14,165,233,0.9)]"></i>',
-                    symbolLeft: '<i class="fa-solid fa-anchor text-amber-400 text-lg"></i>',
-                    symbolRight: '<i class="fa-solid fa-anchor text-amber-400 text-lg"></i>',
-                    accentText: 'text-sky-400 font-cinzel font-bold',
+                    symbolEmblem: '<i class="fa-solid fa-water text-sky-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(56,189,248,0.9)]"></i>',
+                    accentText: 'text-sky-300 font-cinzel font-black tracking-[0.3em]',
                     saudacao: 'Émaribô! Salve o Povo do Mar e a limpeza das águas sagradas.',
-                    btnStyle: 'bg-gradient-to-r from-sky-950 via-sky-600 to-sky-950 border border-amber-400/60 hover:from-sky-900 hover:to-sky-700 text-white drop-shadow-[0_0_20px_rgba(14,165,233,0.7)]'
+                    btnStyle: 'bg-gradient-to-r from-sky-950 via-sky-600 to-sky-950 border border-amber-400 hover:from-sky-900 hover:to-sky-700 text-white drop-shadow-[0_0_20px_rgba(56,189,248,0.7)]'
                 };
             } else if (tLow.includes("preto") || tLow.includes("velho") || corBase === 'amber') {
                 return {
-                    linhaTag: 'PRETO-VELHO',
-                    bgCardStyle: 'bg-gradient-to-b from-[#1f1203] via-[#0f0901] to-[#060400] border-2 border-amber-500/60 shadow-[0_0_50px_rgba(245,158,11,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-amber-950 to-stone-950 shadow-[0_0_20px_rgba(245,158,11,0.6)]',
-                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(245,158,11,0.9)]"><i class="fa-solid fa-hands-praying"></i></div>',
+                    linhaTag: 'SABEDORIA DOS PRETOS-VELHOS',
+                    bgCardStyle: 'bg-gradient-to-b from-[#211403] via-[#332003] to-[#120c01] border-2 border-amber-400/80 shadow-[0_0_35px_rgba(251,191,36,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(251,191,36,0.7)]',
+                    topIcon: '<div class="text-amber-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(251,191,36,0.9)]"><i class="fa-solid fa-hands-praying"></i></div>',
                     boxTituloBg: 'plate-amber-gold',
-                    symbolEmblem: '<i class="fa-solid fa-hands-holding text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(245,158,11,0.9)]"></i>',
-                    symbolLeft: '<i class="fa-solid fa-hands-praying text-amber-400 text-lg"></i>',
-                    symbolRight: '<i class="fa-solid fa-hands-praying text-amber-400 text-lg"></i>',
-                    accentText: 'text-amber-400 font-cinzel font-bold',
+                    symbolEmblem: '<i class="fa-solid fa-hands-holding text-amber-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(251,191,36,0.9)]"></i>',
+                    accentText: 'text-amber-300 font-cinzel font-black tracking-[0.3em]',
                     saudacao: 'Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos.',
-                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400/60 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(245,158,11,0.7)]'
+                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(251,191,36,0.7)]'
                 };
             } else if (tLow.includes("erê") || tLow.includes("criança") || corBase === 'pink') {
                 return {
-                    linhaTag: 'IBEJI / ERÊ',
-                    bgCardStyle: 'bg-gradient-to-b from-[#26031b] via-[#12010d] to-[#060005] border-2 border-pink-500/60 shadow-[0_0_50px_rgba(236,72,153,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-pink-950 to-stone-950 shadow-[0_0_20px_rgba(236,72,153,0.6)]',
-                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(236,72,153,0.9)]"><i class="fa-solid fa-candy-cane"></i></div>',
+                    linhaTag: 'ALEGRIA DE IBEJI / ERÊS',
+                    bgCardStyle: 'bg-gradient-to-b from-[#2b021a] via-[#420427] to-[#14000c] border-2 border-pink-400/80 shadow-[0_0_35px_rgba(244,114,182,0.5)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(244,114,182,0.7)]',
+                    topIcon: '<div class="text-pink-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(244,114,182,0.9)]"><i class="fa-solid fa-candy-cane"></i></div>',
                     boxTituloBg: 'plate-pink-gold',
-                    symbolEmblem: '<i class="fa-solid fa-cookie-bite text-pink-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(236,72,153,0.9)]"></i>',
-                    symbolLeft: '<i class="fa-solid fa-candy-cane text-amber-400 text-lg"></i>',
-                    symbolRight: '<i class="fa-solid fa-candy-cane text-amber-400 text-lg"></i>',
-                    accentText: 'text-pink-400 font-cinzel font-bold',
-                    saudacao: 'Onibejada! Salve a alegria e a doçura da linha infantil.',
-                    btnStyle: 'bg-gradient-to-r from-pink-950 via-pink-600 to-pink-950 border border-amber-400/60 hover:from-pink-900 hover:to-pink-700 text-white drop-shadow-[0_0_20px_rgba(236,72,153,0.7)]'
+                    symbolEmblem: '<i class="fa-solid fa-cookie-bite text-pink-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(244,114,182,0.9)]"></i>',
+                    accentText: 'text-pink-300 font-cinzel font-black tracking-[0.3em]',
+                    saudacao: 'Onibejada! Salve a pureza, a doçura e a alegria da linha infantil.',
+                    btnStyle: 'bg-gradient-to-r from-pink-950 via-pink-600 to-pink-950 border border-amber-400 hover:from-pink-900 hover:to-pink-700 text-white drop-shadow-[0_0_20px_rgba(244,114,182,0.7)]'
                 };
             } else {
                 return {
-                    linhaTag: 'TRABALHO ESPIRITUAL',
-                    bgCardStyle: 'bg-gradient-to-b from-[#18032b] via-[#0b0117] to-[#04000a] border-2 border-purple-500/60 shadow-[0_0_50px_rgba(168,85,247,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-purple-950 to-stone-950 shadow-[0_0_20px_rgba(168,85,247,0.6)]',
-                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(168,85,247,0.9)]"><i class="fa-solid fa-spa"></i></div>',
+                    linhaTag: 'TRABALHO ESPIRITUAL SACRO',
+                    bgCardStyle: 'bg-gradient-to-b from-[#1b022b] via-[#2d0347] to-[#0c0014] border-2 border-purple-400/80 shadow-[0_0_35px_rgba(192,132,252,0.5)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(192,132,252,0.7)]',
+                    topIcon: '<div class="text-purple-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(192,132,252,0.9)]"><i class="fa-solid fa-spa"></i></div>',
                     boxTituloBg: 'plate-purple-gold',
-                    symbolEmblem: '<i class="fa-solid fa-cross text-purple-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(168,85,247,0.9)]"></i>',
-                    symbolLeft: '<i class="fa-solid fa-spa text-amber-400 text-lg"></i>',
-                    symbolRight: '<i class="fa-solid fa-spa text-amber-400 text-lg"></i>',
-                    accentText: 'text-purple-400 font-cinzel font-bold',
-                    saudacao: 'Haux Haux! Que as forças sagradas tragam cura e firmeza.',
-                    btnStyle: 'bg-gradient-to-r from-purple-950 via-purple-600 to-purple-950 border border-amber-400/60 hover:from-purple-900 hover:to-purple-700 text-white drop-shadow-[0_0_20px_rgba(168,85,247,0.7)]'
+                    symbolEmblem: '<i class="fa-solid fa-cross text-purple-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(192,132,252,0.9)]"></i>',
+                    accentText: 'text-purple-300 font-cinzel font-black tracking-[0.3em]',
+                    saudacao: 'Haux Haux! Que as forças sagradas tragam cura, firmeza e elevação.',
+                    btnStyle: 'bg-gradient-to-r from-purple-950 via-purple-600 to-purple-950 border border-amber-400 hover:from-purple-900 hover:to-purple-700 text-white drop-shadow-[0_0_20px_rgba(192,132,252,0.7)]'
                 };
             }
         }
@@ -768,9 +843,9 @@
             if (containerModal) {
                 containerModal.innerHTML = `
                     <div class="${estilo.bgCardStyle} rounded-[36px] p-6 sm:p-8 text-stone-200 text-center space-y-5 relative overflow-hidden shadow-2xl backdrop-blur-3xl">
-                        <div class="absolute inset-2 border border-amber-500/30 rounded-[30px] pointer-events-none"></div>
+                        <div class="absolute inset-2 border border-amber-500/40 rounded-[30px] pointer-events-none"></div>
                         <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-5 right-5 text-amber-400 hover:text-white text-base font-bold w-10 h-10 rounded-full bg-black/80 border border-amber-500/40 flex items-center justify-center transition shadow-2xl z-30 cursor-pointer hover:scale-110 active:scale-95">&times;</button>
-                        <span class="text-[10px] sm:text-xs uppercase tracking-[0.35em] font-cinzel text-amber-300 font-bold block pt-1">${estilo.linhaTag}</span>
+                        <span class="text-[10px] sm:text-xs uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.35em]">${estilo.linhaTag}</span>
                         <div class="relative w-22 h-22 sm:w-24 sm:h-24 mx-auto z-10">
                             <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
                                 ${estilo.topIcon}
@@ -788,10 +863,10 @@
                         </div>
                         ${cardInfoBoxHtml}
                         <div class="z-10 relative pt-1">
-                            <div class="bg-amber-100/90 text-stone-900 p-3.5 rounded-xl border border-amber-300 shadow-xl font-serif italic text-xs sm:text-sm relative">
-                                <span class="text-amber-700 font-bold text-lg leading-none">“</span>
+                            <div class="bg-black/50 text-amber-100 p-4 rounded-2xl border border-amber-400/40 shadow-2xl font-serif italic text-xs sm:text-sm relative backdrop-blur-md">
+                                <span class="text-amber-400 font-bold text-lg leading-none">“</span>
                                 <span>${descTexto}</span>
-                                <span class="text-amber-700 font-bold text-lg leading-none">”</span>
+                                <span class="text-amber-400 font-bold text-lg leading-none">”</span>
                             </div>
                             <div class="mt-3 text-center">
                                 ${estilo.symbolEmblem}
@@ -886,21 +961,10 @@
         }
 
         function carregarCategoriasCustomizadas() {
-            var select = document.getElementById("input-categoria"); if (!select) return;
-            var customCats = JSON.parse(localStorage.getItem("custom_categorias") || "[]");
-            select.innerHTML = `
-                <option value="red">🔴 Gira de Esquerda (Vermelho)</option>
-                <option value="amber">🟡 Mutirão (Amarelo)</option>
-                <option value="emerald">🟢 Consultas / Oferenda (Verde)</option>
-                <option value="purple">🟣 Ritual Xamânico (Roxo)</option>
-                <option value="sky">🔵 Benzimento / Marinheiros (Azul)</option>
-                <option value="pink">🩷 Gira de Erês (Rosa)</option>
-                <option value="jurema">🌿 Consulta Particular (Cabocla Jurema) (Verde)</option>
-                <option value="joaocaveira">💀 Consulta Particular (Sr. João Caveira) (Vermelho)</option>
-            `;
-            customCats.forEach(function(cat) {
-                var opt = document.createElement("option"); opt.value = cat.cor; opt.text = cat.nome + " (" + cat.corNome + ")"; opt.setAttribute("data-custom-id", cat.id); select.appendChild(opt);
-            });
+            var display = document.getElementById("input-categoria-display");
+            if (display && (!display.value || display.value.trim() === "")) {
+                display.value = "Gira de Esquerda";
+            }
             verificarCategoriaEspecial();
         }
 
@@ -1112,8 +1176,10 @@
             var descTextoPrev = descricaoDigitada !== "" ? descricaoDigitada : estilo.saudacao;
 
             prevBox.innerHTML = `
-                <div class="${estilo.bgCardStyle} rounded-[32px] p-6 text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-3xl">
-                    <span class="text-[10px] uppercase tracking-[0.3em] font-cinzel text-amber-300 font-bold block pt-1">${estilo.linhaTag}</span>
+                <div class="${estilo.bgCardStyle} rounded-[36px] p-6 text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-3xl">
+                    <div class="absolute inset-2 border border-amber-500/40 rounded-[30px] pointer-events-none"></div>
+
+                    <span class="text-[10px] uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.3em]">${estilo.linhaTag}</span>
 
                     <div class="relative w-20 h-20 mx-auto z-10">
                         <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
@@ -1123,21 +1189,21 @@
 
                     <div class="space-y-1 z-10 relative">
                         <span class="${estilo.accentText} uppercase block font-cinzel text-xs tracking-[0.25em]">${nomeDiaSemana.toUpperCase()}</span>
-                        <h3 class="text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+                        <h3 class="text-3xl sm:text-4xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">${diaFmt}/${mesNum}/${details.ano}</h3>
                     </div>
 
                     <div class="relative z-10 my-2">
-                        <div class="${estilo.boxTituloBg} p-3.5 rounded-xl relative shadow-xl">
+                        <div class="${estilo.boxTituloBg} p-3.5 rounded-2xl relative shadow-xl">
                             <span class="text-[8px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.25em] block mb-0.5">GIRA DE</span>
-                            <h4 class="font-serif font-extrabold text-stone-100 text-lg tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-tight">${titulo.replace('Gira de ', '')}</h4>
+                            <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-tight">${titulo.replace('Gira de ', '')}</h4>
                         </div>
                     </div>
 
                     <div class="z-10 relative pt-1">
-                        <div class="bg-amber-100/90 text-stone-900 p-3 rounded-xl border border-amber-300 shadow-lg font-serif italic text-xs relative">
+                        <div class="bg-black/50 text-amber-100 p-3 rounded-2xl border border-amber-400/40 shadow-xl font-serif italic text-xs relative backdrop-blur-md">
                             “${descTextoPrev}”
                         </div>
-                        <div class="mt-2 text-center">
+                        <div class="mt-2.5 text-center">
                             ${estilo.symbolEmblem}
                         </div>
                     </div>
@@ -1557,34 +1623,34 @@
         }
 
         .plate-red-gold {
-            background: linear-gradient(180deg, #3d0707 0%, #1a0202 100%);
-            border: 2px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(220,38,38,0.4);
+            background: linear-gradient(180deg, rgba(60, 4, 4, 0.9) 0%, rgba(20, 1, 1, 0.95) 100%);
+            border: 1.5px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
         }
         .plate-emerald-gold {
-            background: linear-gradient(180deg, #073820 0%, #021a0f 100%);
-            border: 2px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(16,185,129,0.4);
+            background: linear-gradient(180deg, rgba(4, 50, 28, 0.9) 0%, rgba(1, 20, 11, 0.95) 100%);
+            border: 1.5px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
         }
         .plate-sky-gold {
-            background: linear-gradient(180deg, #072a40 0%, #021421 100%);
-            border: 2px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(14,165,233,0.4);
+            background: linear-gradient(180deg, rgba(4, 40, 70, 0.9) 0%, rgba(1, 15, 28, 0.95) 100%);
+            border: 1.5px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
         }
         .plate-amber-gold {
-            background: linear-gradient(180deg, #3d2207 0%, #1c0e02 100%);
-            border: 2px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(245,158,11,0.4);
+            background: linear-gradient(180deg, rgba(55, 30, 4, 0.9) 0%, rgba(20, 10, 1, 0.95) 100%);
+            border: 1.5px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
         }
         .plate-pink-gold {
-            background: linear-gradient(180deg, #42072f 0%, #1f0216 100%);
-            border: 2px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(236,72,153,0.4);
+            background: linear-gradient(180deg, rgba(60, 4, 38, 0.9) 0%, rgba(20, 1, 13, 0.95) 100%);
+            border: 1.5px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
         }
         .plate-purple-gold {
-            background: linear-gradient(180deg, #2c0742 0%, #13021f 100%);
-            border: 2px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(168,85,247,0.4);
+            background: linear-gradient(180deg, rgba(40, 4, 60, 0.9) 0%, rgba(12, 1, 20, 0.95) 100%);
+            border: 1.5px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
         }
 
         .admin-modal-card {
@@ -1606,7 +1672,7 @@
             </span>
             <div class="truncate">
                 <span class="text-[8px] sm:text-[9px] uppercase font-cinzel font-bold text-amber-300/90 tracking-widest block leading-none">STATUS DO SISTEMA</span>
-                <h1 class="font-serif font-bold text-white text-xs sm:text-sm tracking-wide mt-0.5 truncate">Painel — <span id="texto-mes-topbar" class="text-amber-200">Agosto de 2026</span></h1>
+                <h1 class="font-serif font-bold text-white text-xs sm:text-sm tracking-wide mt-0.5 truncate">Painel</h1>
             </div>
         </div>
 
@@ -1619,7 +1685,7 @@
 
     <!-- MODAL SELEÇÃO DE MÊS -->
     <div id="seletor-mes-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[80] hidden flex items-start pt-6 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorMes()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1633,7 +1699,7 @@
                 <button type="button" onclick="fecharModalSeletorMes()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
             </div>
 
-            <div id="seletor-mes-lista" class="space-y-2 max-h-[45vh] overflow-y-auto pr-1"></div>
+            <div id="seletor-mes-lista" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1"></div>
 
             <button type="button" onclick="fecharModalSeletorMes()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
@@ -1643,7 +1709,7 @@
 
     <!-- MODAL SELEÇÃO DE DIA -->
     <div id="seletor-dia-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[88] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorDia()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1667,7 +1733,7 @@
 
     <!-- MODAL SELEÇÃO DE TÍTULO -->
     <div id="seletor-titulo-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[89] hidden flex items-start pt-3 sm:items-center sm:pt-0 justify-center p-2.5 sm:p-4 overflow-y-auto no-print" onclick="fecharModalTitulo()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-md w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2 flex-shrink-0">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1695,7 +1761,7 @@
                 </button>
             </div>
 
-            <div id="modal-titulo-lista" class="space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-[160px] max-h-[35vh]"></div>
+            <div id="modal-titulo-lista" class="space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-[220px] max-h-[60vh]"></div>
 
             <button type="button" onclick="fecharModalTitulo()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition flex-shrink-0">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
@@ -1703,9 +1769,40 @@
         </div>
     </div>
 
+    <!-- MODAL SELEÇÃO DE CATEGORIA -->
+    <div id="seletor-categoria-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[89] hidden flex items-start pt-3 sm:items-center sm:pt-0 justify-center p-2.5 sm:p-4 overflow-y-auto no-print" onclick="fecharModalCategoria()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2 flex-shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-tags"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-sm sm:text-base text-white">Selecionar Categoria / Tipo</h3>
+                        <p class="text-[11px] text-stone-400 font-medium">Escolha a linha espiritual do trabalho</p>
+                    </div>
+                </div>
+                <button type="button" onclick="fecharModalCategoria()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+            </div>
+
+            <div class="flex justify-between items-center text-xs pt-1 flex-shrink-0">
+                <span class="text-stone-400 font-bold uppercase tracking-wider text-[10px]">Opções de Linhas</span>
+                <button type="button" onclick="adicionarNovaCategoria()" class="text-amber-400 font-bold hover:underline text-[11px] flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i> Nova Categoria
+                </button>
+            </div>
+
+            <div id="modal-categoria-lista" class="space-y-2 overflow-y-auto pr-1 flex-1 min-h-[220px] max-h-[60vh] pt-1"></div>
+
+            <button type="button" onclick="fecharModalCategoria()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition flex-shrink-0">
+                <i class="fa-solid fa-xmark mr-1"></i> Cancelar
+            </button>
+        </div>
+    </div>
+
     <!-- MODAL REPETIÇÃO -->
     <div id="seletor-repeticao-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalRepeticao()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1762,7 +1859,7 @@
 
     <!-- MODAL STATUS -->
     <div id="seletor-status-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalStatus()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1829,7 +1926,7 @@
 
     <!-- MODAL PÚBLICO -->
     <div id="seletor-publico-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalPublico()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1896,7 +1993,7 @@
 
     <!-- MODAL HORÁRIO -->
     <div id="seletor-horario-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[85] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalHorario()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2">
                 <div class="flex items-center gap-2">
                     <i class="fa-regular fa-clock text-amber-400 text-base sm:text-lg"></i>
@@ -1908,17 +2005,17 @@
             <div class="grid grid-cols-2 gap-2.5 pt-1">
                 <div>
                     <label for="modal-horario-inicio" class="text-[10px] sm:text-xs font-bold text-stone-400 block mb-1 uppercase tracking-wider">Horário de Início</label>
-                    <input type="text" id="modal-horario-inicio" inputmode="numeric" placeholder="Ex: 19:00" maxlength="5" oninput="formatarMascaraHorario(this)" onkeydown="tratarKeydownHorarioInicio(event)" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-base sm:text-lg p-2.5 rounded-xl outline-none transition placeholder-stone-600">
+                    <input type="text" id="modal-horario-inicio" inputmode="numeric" placeholder="Ex: 19:00" maxlength="5" oninput="formatarMascaraHorario(this)" onblur="this.value = ajustarFormatacaoFinal(this.value)" onkeydown="tratarKeydownHorarioInicio(event)" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-base sm:text-lg p-2.5 rounded-xl outline-none transition placeholder-stone-600">
                 </div>
 
                 <div>
                     <label for="modal-horario-fim" class="text-[10px] sm:text-xs font-bold text-stone-400 block mb-1 uppercase tracking-wider">Horário de Término</label>
-                    <input type="text" id="modal-horario-fim" inputmode="numeric" placeholder="Ex: 22:00" maxlength="5" oninput="formatarMascaraHorario(this)" onkeydown="if(event.key==='Enter') confirmarHorariosModal()" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-base sm:text-lg p-2.5 rounded-xl outline-none transition placeholder-stone-600">
+                    <input type="text" id="modal-horario-fim" inputmode="numeric" placeholder="Ex: 22:00" maxlength="5" oninput="formatarMascaraHorario(this)" onblur="this.value = ajustarFormatacaoFinal(this.value)" onkeydown="if(event.key==='Enter') confirmarHorariosModal()" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white font-bold text-center text-base sm:text-lg p-2.5 rounded-xl outline-none transition placeholder-stone-600">
                 </div>
             </div>
 
             <div class="pt-1 flex gap-2">
-                <button type="button" onclick="confirmarHorariosModal()" class="w-full py-3 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center justify-center gap-1.5">
+                <button type="button" onclick="confirmarHorariosModal()" class="w-full py-3 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-check"></i> Confirmar
                 </button>
             </div>
@@ -1927,7 +2024,7 @@
 
     <!-- MODAL VALOR -->
     <div id="seletor-valor-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[86] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalValor()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-tag text-amber-400 text-base sm:text-lg"></i>
@@ -2317,8 +2414,10 @@
                                         </div>
 
                                         <div class="pl-7 space-y-2.5">
+                                            <input type="hidden" id="input-categoria" value="red">
                                             <div class="relative">
-                                                <select id="input-categoria" onchange="verificarCategoriaEspecial(); atualizarPrevisualizacao();" class="w-full pl-3 pr-8 py-2.5 rounded-xl border border-stone-300 bg-stone-50/50 font-bold text-stone-800 text-xs sm:text-sm appearance-none outline-none"></select>
+                                                <i class="fa-solid fa-tags absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
+                                                <input type="text" id="input-categoria-display" readonly value="Gira de Esquerda" onclick="abrirModalCategoria()" placeholder="Clique para selecionar categoria..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                                 <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
                                             </div>
 
@@ -2442,7 +2541,7 @@
                         <div class="space-y-4">
                             <div class="sticky top-2 space-y-2">
                                 <div class="flex items-center gap-2 text-umbanda-green font-bold text-xs uppercase tracking-wider pb-1">
-                                    <i class="fa-solid fa-eye text-emerald-600 text-sm"></i> Pré-visualização Ultra Premium
+                                    <i class="fa-solid fa-eye text-emerald-600 text-sm"></i> Pré-visualização
                                 </div>
 
                                 <div id="prev-card-box"></div>
