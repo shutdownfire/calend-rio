@@ -605,6 +605,16 @@
             }
         }
 
+        function abrirModalZoomBanner() {
+            var m = document.getElementById("modal-zoom-banner");
+            if (m) m.classList.remove("hidden");
+        }
+
+        function fecharModalZoomBanner() {
+            var m = document.getElementById("modal-zoom-banner");
+            if (m) m.classList.add("hidden");
+        }
+
         var CATEGORIA_STYLES = {
             'red': { border: 'border-l-red-600', badge: 'bg-red-100 text-red-900', btnBg: 'bg-red-600 hover:bg-red-700', icon: 'fa-fire' },
             'amber': { border: 'border-l-amber-500', badge: 'bg-amber-100 text-amber-900', btnBg: 'bg-amber-600 hover:bg-amber-700', icon: 'fa-hand-holding-heart' },
@@ -2194,6 +2204,20 @@
         </div>
     </div>
 
+    <!-- MODAL EXPANDIR BANNER (ZOOM) -->
+    <div id="modal-zoom-banner" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[99] hidden flex flex-col items-center justify-center p-2 sm:p-4 no-print cursor-zoom-out" onclick="fecharModalZoomBanner()">
+        <div class="relative max-w-5xl w-full text-center space-y-3" onclick="event.stopPropagation()">
+            <button type="button" onclick="fecharModalZoomBanner()" class="absolute -top-12 right-2 text-amber-400 hover:text-white text-2xl font-bold leading-none w-10 h-10 rounded-full bg-stone-900/80 border border-amber-400/40 flex items-center justify-center transition">&times;</button>
+            <div class="w-full rounded-2xl overflow-hidden border-2 border-amber-400/50 shadow-2xl bg-black">
+                <img src="https://lh3.googleusercontent.com/d/1ui9CS1TIpXVsOGomqIRrK8Z3Jt5M2WZE" 
+                     alt="Banner Ampliado" 
+                     class="w-full h-auto object-contain max-h-[85vh] block mx-auto"
+                     onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=1ui9CS1TIpXVsOGomqIRrK8Z3Jt5M2WZE&sz=w1000';">
+            </div>
+            <p class="text-stone-300 text-xs font-semibold">Toque em qualquer lugar para fechar</p>
+        </div>
+    </div>
+
     <!-- MODAL EXPANDIR FOTO SR. JOÃO CAVEIRA -->
     <div id="foto-joao-caveira-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex flex-col items-center justify-center p-4 no-print" onclick="fecharFotoJoaoCaveira()">
         <div class="relative max-w-md w-full bg-stone-900 border-2 border-amber-400 rounded-2xl p-4 text-center shadow-2xl space-y-3" onclick="event.stopPropagation()">
@@ -2689,13 +2713,16 @@
         <div class="h-1.5 sm:h-2 bg-gradient-to-r from-umbanda-green via-umbanda-gold to-umbanda-green"></div>
 
         <header class="p-0 text-center relative border-b border-amber-900/10">
-            <div class="w-full relative overflow-hidden">
+            <div onclick="abrirModalZoomBanner()" title="Clique para ampliar o banner" class="w-full relative overflow-hidden cursor-zoom-in group">
                 <img id="drive-header-banner" 
                      src="https://lh3.googleusercontent.com/d/1ui9CS1TIpXVsOGomqIRrK8Z3Jt5M2WZE" 
                      alt="Banner Templo de Umbanda Vovó Maria Conga" 
-                     class="w-full h-auto object-cover block"
+                     class="w-full h-auto min-h-[200px] sm:min-h-[260px] md:min-h-0 object-cover object-center block transition duration-300 group-hover:scale-102"
                      onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=1ui9CS1TIpXVsOGomqIRrK8Z3Jt5M2WZE&sz=w1000';">
                 <div class="shine-effect"></div>
+                <div class="absolute bottom-2 right-2 bg-black/60 text-amber-300 text-[10px] px-2 py-1 rounded-md border border-amber-400/40 backdrop-blur-sm sm:hidden flex items-center gap-1">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> Toque para ampliar
+                </div>
             </div>
 
             <div class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-full z-30">
