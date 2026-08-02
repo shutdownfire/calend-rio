@@ -1149,20 +1149,6 @@
             selecionarTituloModal(tagNome);
         }
 
-        function alternarOcultarOpcoes() {
-            var containerOpcoes = document.getElementById("container-opcoes-avancadas");
-            var btnOcultar = document.getElementById("btn-ocultar-opcoes");
-            if (containerOpcoes) {
-                if (containerOpcoes.classList.contains("hidden")) {
-                    containerOpcoes.classList.remove("hidden");
-                    if (btnOcultar) btnOcultar.innerHTML = 'Ocultar opções <i class="fa-solid fa-chevron-up ml-1"></i>';
-                } else {
-                    containerOpcoes.classList.add("hidden");
-                    if (btnOcultar) btnOcultar.innerHTML = 'Mostrar opções <i class="fa-solid fa-chevron-down ml-1"></i>';
-                }
-            }
-        }
-
         function cancelarEdicaoAtividade() {
             eventoSendoEditadoId = null;
             document.getElementById("input-dia").value = "1"; 
@@ -1516,7 +1502,7 @@
             ];
 
             function tryEndpoint(index) {
-                if (index >= endpoints.length) { if (elem.innerText === "--") elem.innerText = "21"; return; }
+                if (index >= endpoints.length) { if (elem.innerText === "--") elem.innerText = "28"; return; }
                 fetch(endpoints[index] + "?t=" + Date.now())
                     .then(res => { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
                     .then(data => {
@@ -2049,41 +2035,51 @@
                 
                 <div id="tab-content-stats" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs relative">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="text-xs font-bold text-stone-700 uppercase tracking-wider">TOTAL DE PESSOAS QUE ABRIRAM O SITE</span>
-                                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-users"></i></div>
+                        <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs relative flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-xs font-bold text-stone-700 uppercase tracking-wider">TOTAL DE PESSOAS QUE ABRIRAM O SITE</span>
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-users"></i></div>
+                                </div>
+                                <div class="flex items-baseline gap-2 mt-2 h-10">
+                                    <span id="stat-total-visits" class="text-3xl font-sans font-black text-stone-900 leading-none">28</span>
+                                    <span class="text-xs font-bold text-emerald-900 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">• Ao Vivo (GoatCounter)</span>
+                                </div>
+                                <span class="text-xs font-semibold text-stone-700 mt-2 block">Monitoramento em tempo real</span>
                             </div>
-                            <div class="flex items-baseline gap-2 mt-2">
-                                <span id="stat-total-visits" class="text-3xl font-serif font-black text-stone-900">21</span>
-                                <span class="text-xs font-bold text-emerald-900 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">• Ao Vivo (GoatCounter)</span>
-                            </div>
-                            <span class="text-xs font-semibold text-stone-700 mt-3 block">Monitoramento em tempo real</span>
                             <div class="mt-3 pt-2 border-t border-stone-100 flex items-center justify-between">
                                 <svg class="w-20 h-5 text-emerald-600" viewBox="0 0 100 25" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M0 20 L20 18 L40 22 L60 8 L80 16 L100 5" /></svg>
                                 <a href="https://vovomariaconga.goatcounter.com" target="_blank" class="text-xs text-emerald-800 font-extrabold hover:underline">Ver detalhes &gt;</a>
                             </div>
                         </div>
 
-                        <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="text-xs font-bold text-stone-700 uppercase tracking-wider">HOJE</span>
-                                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold"><i class="fa-regular fa-calendar"></i></div>
+                        <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-xs font-bold text-stone-700 uppercase tracking-wider">HOJE</span>
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold"><i class="fa-regular fa-calendar"></i></div>
+                                </div>
+                                <div class="flex items-baseline gap-2 mt-2 h-10">
+                                    <span class="text-3xl font-sans font-black text-stone-900 leading-none">7</span>
+                                </div>
+                                <span class="text-xs font-semibold text-stone-700 mt-2 block">Acessos hoje</span>
                             </div>
-                            <div class="text-3xl font-serif font-black text-stone-900 mt-2">7</div>
-                            <span class="text-xs font-semibold text-stone-700 mt-3 block">Acessos hoje</span>
                             <div class="mt-3 pt-2 border-t border-stone-100">
                                 <svg class="w-full h-4 text-emerald-600" viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M0 15 L25 18 L50 10 L75 14 L100 4" /></svg>
                             </div>
                         </div>
 
-                        <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs">
-                            <div class="flex justify-between items-start mb-1">
-                                <span class="text-xs font-bold text-stone-700 uppercase tracking-wider">ESTA SEMANA</span>
-                                <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-chart-simple"></i></div>
+                        <div class="bg-white p-4 rounded-xl border border-stone-200/90 shadow-2xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-xs font-bold text-stone-700 uppercase tracking-wider">ESTA SEMANA</span>
+                                    <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-chart-simple"></i></div>
+                                </div>
+                                <div class="flex items-baseline gap-2 mt-2 h-10">
+                                    <span class="text-3xl font-sans font-black text-stone-900 leading-none">32</span>
+                                </div>
+                                <span class="text-xs font-semibold text-stone-700 mt-2 block">Acessos na semana</span>
                             </div>
-                            <div class="text-3xl font-serif font-black text-amber-800 mt-2">32</div>
-                            <span class="text-xs font-semibold text-stone-700 mt-3 block">Acessos na semana</span>
                             <div class="mt-3 pt-2 border-t border-stone-100">
                                 <svg class="w-full h-4 text-amber-600" viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M0 16 L20 12 L40 15 L60 6 L100 2" /></svg>
                             </div>
@@ -2165,9 +2161,9 @@
                                 <h4 class="font-bold text-stone-900 mb-2 flex items-center gap-2">
                                     <i class="fa-brands fa-whatsapp text-[#3e9366]"></i> ORIGEM DOS CLIQUES
                                 </h4>
-                                <span class="text-stone-800 block font-bold">WhatsApp / Links Diretos</span>
-                                <span class="text-2xl font-serif font-black text-stone-900 block mt-1">100%</span>
-                                <span class="text-xs font-semibold text-stone-700 block mt-0.5">21 acessos registrados</span>
+                                <span class="text-stone-800 block font-bold">WhatsApp / Links Diretos</span><br>
+                                <span class="text-3xl font-sans font-black text-stone-900 block mt-1">100%</span>
+                                <span class="text-xs font-semibold text-stone-700 block mt-0.5">28 acessos registrados</span><br>
                                 <span class="inline-block mt-2 text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded-full">
                                     • Origem principal dos acessos
                                 </span>
@@ -2185,9 +2181,9 @@
                                 <h4 class="font-bold text-stone-900 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-earth-americas text-sky-600"></i> PAÍS DOS ACESSOS
                                 </h4>
-                                <span class="text-stone-800 block font-bold">Brasil <span class="text-xs bg-sky-100 text-sky-900 font-bold px-1.5 py-0.5 rounded font-mono ml-1">BR</span></span>
-                                <span class="text-2xl font-serif font-black text-stone-900 block mt-1">100%</span>
-                                <span class="text-xs font-semibold text-stone-700 block mt-0.5">21 acessos registrados</span>
+                                <span class="text-stone-800 block font-bold">Brasil <span class="text-xs bg-sky-100 text-sky-900 font-bold px-1.5 py-0.5 rounded font-mono ml-1">BR</span></span><br>
+                                <span class="text-3xl font-sans font-black text-stone-900 block mt-1">100%</span>
+                                <span class="text-xs font-semibold text-stone-700 block mt-0.5">28 acessos registrados</span><br>
                                 <span class="inline-block mt-2 text-xs font-bold text-sky-900 bg-sky-50 border border-sky-300 px-2 py-0.5 rounded-full">
                                     • País principal dos acessos
                                 </span>
@@ -2258,9 +2254,6 @@
                                             <p class="text-xs text-stone-500 font-medium">Preencha os dados da atividade que será realizada.</p>
                                         </div>
                                     </div>
-                                    <button type="button" id="btn-ocultar-opcoes" onclick="alternarOcultarOpcoes()" class="text-xs font-bold text-stone-600 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-full transition flex items-center gap-1 border border-stone-200">
-                                        Ocultar opções <i class="fa-solid fa-chevron-up text-[10px]"></i>
-                                    </button>
                                 </div>
 
                                 <div class="space-y-5 text-xs">
