@@ -1226,6 +1226,11 @@
                 return; 
             }
 
+            var countElem = document.getElementById("count-" + id) || document.getElementById("count-supa-" + idNorm);
+            if (countElem && !isNaN(parseInt(countElem.innerText))) {
+                countElem.innerText = (parseInt(countElem.innerText) + 1).toString();
+            }
+
             if (supabaseClient) {
                 try {
                     const { error } = await supabaseClient
