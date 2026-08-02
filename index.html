@@ -144,12 +144,7 @@
             if (inputBusca) inputBusca.value = "";
             var modal = document.getElementById("seletor-titulo-modal");
             if (modal) modal.classList.remove("hidden");
-            setTimeout(function() { 
-                if (inputBusca) {
-                    inputBusca.focus();
-                    inputBusca.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } 
-            }, 200);
+            // CORREÇÃO: Removida a chamada automatica de focus() para que o teclado do celular NÃO abra sozinho ao abrir o modal.
         }
 
         function fecharModalTitulo() {
@@ -340,7 +335,6 @@
             if (inputFimModal) inputFimModal.value = valFimAtual;
 
             if (modal) modal.classList.remove("hidden");
-            setTimeout(function() { if (inputInicioModal) inputInicioModal.focus(); }, 150);
         }
 
         function fecharModalHorario() {
@@ -412,7 +406,6 @@
             }
 
             if (modal) modal.classList.remove("hidden");
-            setTimeout(function() { if (inputValorModal) inputValorModal.focus(); }, 150);
         }
 
         function fecharModalValor() {
@@ -564,7 +557,6 @@
             return t;
         }
 
-        // DESIGN SYSTEM ULTRA PREMIUM (EXATAMENTE IGUAL AO MODELO EXU / ENTIDADES)
         function obterEstiloPremiumPorCategoria(categoria, titulo) {
             var tLow = (titulo || "").toLowerCase();
             var corBase = categoria || "emerald";
@@ -1742,9 +1734,12 @@
                 <button type="button" onclick="fecharModalTitulo()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
             </div>
 
+            <!-- CAMPO DE BUSCA: Teclado só abre se o usuário clicar/tocar no input -->
             <div class="relative pt-1 flex-shrink-0">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></i>
-                <input type="text" id="modal-titulo-busca" placeholder="Digite para buscar evento..." oninput="renderizarListaTitulosModal(this.value)" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white text-xs sm:text-sm pl-9 pr-3 py-2.5 rounded-xl outline-none transition placeholder-stone-500 font-medium">
+                <label for="modal-titulo-busca" class="cursor-pointer">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></i>
+                </label>
+                <input type="text" id="modal-titulo-busca" placeholder="Clique aqui para buscar evento..." oninput="renderizarListaTitulosModal(this.value)" class="w-full bg-stone-800 border-2 border-stone-700 focus:border-amber-400 text-white text-xs sm:text-sm pl-9 pr-3 py-2.5 rounded-xl outline-none transition placeholder-stone-500 font-medium cursor-pointer focus:cursor-text">
             </div>
 
             <div class="flex justify-between items-center text-xs pt-1 flex-shrink-0">
@@ -2287,7 +2282,7 @@
 
                 </div>
 
-                <!-- TAB MONTAR NOVO MÊS (ADAPTADO EXATAMENTE CONFORME A FOTO) -->
+                <!-- TAB MONTAR NOVO MÊS -->
                 <div id="tab-content-montar" class="space-y-4 hidden pb-4">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
                         <div class="lg:col-span-2 space-y-4">
@@ -2379,7 +2374,6 @@
                                                 <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
                                             </div>
 
-                                            <!-- TAGS RÁPIDAS FORMATADAS CONFORME A FOTO -->
                                             <div class="flex flex-wrap gap-2 pt-1">
                                                 <button type="button" onclick="aplicarTagRapida('Gira de Exu')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 text-emerald-900 font-bold text-xs hover:bg-emerald-100 transition shadow-2xs">
                                                     <i class="fa-solid fa-droplet text-emerald-700 text-xs"></i> Gira Exu
