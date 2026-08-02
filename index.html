@@ -101,11 +101,11 @@
         function renderizarCalendarioModalDia() {
             var container = document.getElementById("seletor-dia-grid"); if (!container) return;
             var mesAno = document.getElementById("input-mes-ano") ? document.getElementById("input-mes-ano").value : mesAtualAtivo;
-            var details = getMonthDetails(mesAno);
+            var details = getMonthDetails(mesAno || mesAtualAtivo);
             var diaSel = parseInt(document.getElementById("input-dia").value) || 0;
 
             var titleElem = document.getElementById("modal-dia-mes-titulo");
-            if (titleElem) titleElem.innerText = mesAno;
+            if (titleElem) titleElem.innerText = mesAno || mesAtualAtivo;
 
             var html = '<div class="grid grid-cols-7 gap-1 text-center font-bold text-stone-400 text-xs mb-2">' +
                             '<div class="text-red-500">Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div class="text-emerald-500">Sáb</div>' +
@@ -136,6 +136,7 @@
             if (inputDia) inputDia.value = dia;
             atualizarInfoDiaDigitado();
             fecharModalSeletorDia();
+            atualizarIndicadoresPassos();
         }
 
         function abrirModalTitulo() {
@@ -178,7 +179,7 @@
                 
                 var btnAcoes = item.custom ? 
                     '<div class="flex gap-1" onclick="event.stopPropagation()">' +
-                        '<button type="button" onclick="editarTituloCustomModal(' + item.id + ', \'' + item.nome + '\')" class="p-1.5 text-stone-400 hover:text-amber-400 text-xs"><i class="fa-solid fa-pen"></i></button>' +
+                        '<button type="button" onclick="editarTituloCustomModal(' + item.id + ', \'' + item.nome.replace(/'/g, "\\'") + '\')" class="p-1.5 text-stone-400 hover:text-amber-400 text-xs"><i class="fa-solid fa-pen"></i></button>' +
                         '<button type="button" onclick="excluirTituloCustomModal(' + item.id + ')" class="p-1.5 text-stone-400 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>' +
                     '</div>' : '';
 
@@ -203,6 +204,7 @@
 
             fecharModalTitulo();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         function adicionarNovoTituloComNome(nomeSugestao) {
@@ -214,7 +216,7 @@
         }
 
         function editarTituloCustomModal(id, nomeAtual) {
-            var novoNome = prompt("Novo nome:", nomeAtual); if (!novoNome || !novoNome.trim()) return;
+            var novoNome = prompt("Novo nome do Título:", nomeAtual); if (!novoNome || !novoNome.trim()) return;
             var custom = JSON.parse(localStorage.getItem("custom_titulos") || "[]");
             var item = custom.find(t => t.id == id);
             if (item) {
@@ -271,7 +273,7 @@
 
                 var btnAcoes = c.custom ? 
                     '<div class="flex gap-1" onclick="event.stopPropagation()">' +
-                        '<button type="button" onclick="editarCategoriaCustomModal(' + c.rawId + ', \'' + c.nome + '\')" class="p-1.5 text-stone-400 hover:text-amber-400 text-xs"><i class="fa-solid fa-pen"></i></button>' +
+                        '<button type="button" onclick="editarCategoriaCustomModal(' + c.rawId + ', \'' + c.nome.replace(/'/g, "\\'") + '\')" class="p-1.5 text-stone-400 hover:text-amber-400 text-xs"><i class="fa-solid fa-pen"></i></button>' +
                         '<button type="button" onclick="excluirCategoriaCustomModal(' + c.rawId + ')" class="p-1.5 text-stone-400 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>' +
                     '</div>' : '<i class="fa-solid fa-chevron-right text-stone-500 text-xs"></i>';
 
@@ -300,6 +302,7 @@
             fecharModalCategoria();
             verificarCategoriaEspecial();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         function editarCategoriaCustomModal(id, nomeAtual) {
@@ -340,6 +343,7 @@
 
             fecharModalRepeticao();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         function abrirModalStatus() {
@@ -361,6 +365,7 @@
 
             fecharModalStatus();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         function abrirModalPublico() {
@@ -382,23 +387,30 @@
 
             fecharModalPublico();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         function getMonthDetails(mesAno) {
             var mesesMap = { "Janeiro": 0, "Fevereiro": 1, "Março": 2, "Abril": 3, "Maio": 4, "Junho": 5, "Julho": 6, "Agosto": 7, "Setembro": 8, "Outubro": 9, "Novembro": 10, "Dezembro": 11 };
-            var parts = mesAno.split(" "); var mNome = parts[0]; var mNum = mesesMap[mNome] !== undefined ? mesesMap[mNome] : 7;
+            var parts = (mesAno || "").split(" "); var mNome = parts[0]; var mNum = mesesMap[mNome] !== undefined ? mesesMap[mNome] : 7;
             var aNum = parseInt(parts[2]) || 2026;
             return { firstDay: new Date(aNum, mNum, 1).getDay(), totalDays: new Date(aNum, mNum + 1, 0).getDate(), mNome: mNome, mNum: mNum, ano: aNum };
         }
 
-        function obterNomeDiaSemana(dia, mesAno) { var details = getMonthDetails(mesAno); return DIAS_SEMANA[new Date(details.ano, details.mNum, dia).getDay()]; }
+        function obterNomeDiaSemana(dia, mesAno) { var details = getMonthDetails(mesAno || mesAtualAtivo); return DIAS_SEMANA[new Date(details.ano, details.mNum, dia).getDay()]; }
 
         function atualizarInfoDiaDigitado() {
             var inputDia = document.getElementById("input-dia"); var badge = document.getElementById("badge-dia-semana");
+            var mesAno = document.getElementById("input-mes-ano") ? document.getElementById("input-mes-ano").value : "";
             if (!inputDia || !badge) return;
-            var dia = parseInt(inputDia.value); var mesAno = document.getElementById("input-mes-ano").value; var details = getMonthDetails(mesAno);
-            if (dia >= 1 && dia <= details.totalDays) { badge.innerHTML = '<i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i> Dia ' + (dia < 10 ? '0' + dia : dia) + " – " + obterNomeDiaSemana(dia, mesAno) + " (" + mesAno + ")"; badge.classList.remove("hidden"); } 
-            else { badge.classList.add("hidden"); }
+            var dia = parseInt(inputDia.value);
+            if (dia >= 1 && mesAno && mesAno !== "") { 
+                var details = getMonthDetails(mesAno);
+                if (dia <= details.totalDays) {
+                    badge.innerHTML = '<i class="fa-regular fa-calendar-check mr-1 text-emerald-600"></i> Dia ' + (dia < 10 ? '0' + dia : dia) + " – " + obterNomeDiaSemana(dia, mesAno) + " (" + mesAno + ")"; 
+                    badge.classList.remove("hidden"); 
+                } else { badge.classList.add("hidden"); }
+            } else { badge.classList.add("hidden"); }
             atualizarPrevisualizacao();
         }
 
@@ -483,6 +495,7 @@
 
             fecharModalHorario();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         function abrirModalValor() {
@@ -554,6 +567,43 @@
             if (display) { display.value = textoTitulo; display.disabled = true; }
         }
 
+        /* LÓGICA DE PULSO E DESTAQUE DOS PASSOS DO FORMULÁRIO (1 a 5) */
+        function atualizarIndicadoresPassos() {
+            var mesAno = document.getElementById("input-mes-ano") ? document.getElementById("input-mes-ano").value : "";
+            var dia = document.getElementById("input-dia") ? document.getElementById("input-dia").value : "";
+            var titulo = document.getElementById("input-titulo") ? document.getElementById("input-titulo").value : "";
+            var categoria = document.getElementById("input-categoria") ? document.getElementById("input-categoria").value : "";
+            var horario = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value : "";
+            var publico = document.getElementById("input-publico") ? document.getElementById("input-publico").value : "";
+            var status = document.getElementById("input-status") ? document.getElementById("input-status").value : "";
+
+            var passoAtivo = 1;
+            var etapa1Concluida = (mesAno && mesAno !== "" && dia && dia !== "");
+            var etapa2Concluida = (etapa1Concluida && titulo && titulo !== "");
+            var etapa3Concluida = (etapa2Concluida && categoria && categoria !== "");
+            
+            /* O Passo 4 é considerado concluído somente após informar os horários e interagir com opções adicionais da seção */
+            var etapa4Concluida = (etapa3Concluida && horario && horario !== "" && (publico !== "" || status !== ""));
+
+            if (etapa1Concluida) passoAtivo = 2;
+            if (etapa2Concluida) passoAtivo = 3;
+            if (etapa3Concluida) passoAtivo = 4;
+            if (etapa4Concluida) passoAtivo = 5;
+
+            for (var p = 1; p <= 5; p++) {
+                var elem = document.getElementById("step-num-" + p);
+                if (elem) {
+                    if (p === passoAtivo) {
+                        elem.className = "w-6 h-6 rounded-full bg-amber-500 text-stone-950 font-black flex items-center justify-center text-xs animate-pulse ring-4 ring-amber-400/40 shadow-lg scale-110 transition-all duration-300";
+                    } else if (p < passoAtivo) {
+                        elem.className = "w-5 h-5 rounded-full bg-emerald-700 text-white font-extrabold flex items-center justify-center text-[11px] transition-all duration-300";
+                    } else {
+                        elem.className = "w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] opacity-70 transition-all duration-300";
+                    }
+                }
+            }
+        }
+
         var CATEGORIA_STYLES = {
             'red': { border: 'border-l-red-600', badge: 'bg-red-100 text-red-900', btnBg: 'bg-red-600 hover:bg-red-700', icon: 'fa-fire' },
             'amber': { border: 'border-l-amber-500', badge: 'bg-amber-100 text-amber-900', btnBg: 'bg-amber-600 hover:bg-amber-700', icon: 'fa-hand-holding-heart' },
@@ -607,6 +657,7 @@
             if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
             atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         function abrirModalSeletorMes() {
@@ -963,9 +1014,10 @@
         function carregarCategoriasCustomizadas() {
             var display = document.getElementById("input-categoria-display");
             if (display && (!display.value || display.value.trim() === "")) {
-                display.value = "Gira de Esquerda";
+                display.value = "";
             }
             verificarCategoriaEspecial();
+            atualizarIndicadoresPassos();
         }
 
         function adicionarNovaCategoria() {
@@ -1007,6 +1059,7 @@
             fetchRealGoatCounterData(); carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
             atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         function closeAdminStats() { 
@@ -1024,6 +1077,7 @@
                 carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
                 atualizarInfoDiaDigitado();
                 atualizarPrevisualizacao();
+                atualizarIndicadoresPassos();
             } else {
                 tabMontar.classList.add("hidden"); tabStats.classList.remove("hidden");
                 btnMontar.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
@@ -1161,13 +1215,13 @@
             if (!prevBox) return;
 
             var mesAno = document.getElementById("input-mes-ano") ? document.getElementById("input-mes-ano").value : mesAtualAtivo;
-            var dia = parseInt(document.getElementById("input-dia") ? document.getElementById("input-dia").value : 1) || 1;
-            var diaFmt = dia < 10 ? '0' + dia : '' + dia;
+            var dia = parseInt(document.getElementById("input-dia") ? document.getElementById("input-dia").value : "") || "";
+            var diaFmt = dia ? (dia < 10 ? '0' + dia : '' + dia) : '--';
             
             var details = getMonthDetails(mesAno);
             var mesNum = (details.mNum + 1) < 10 ? '0' + (details.mNum + 1) : (details.mNum + 1);
-            var dateObj = new Date(details.ano, details.mNum, dia);
-            var nomeDiaSemana = DIAS_SEMANA[dateObj.getDay()] || "Segunda-feira";
+            var dateObj = dia ? new Date(details.ano, details.mNum, dia) : new Date();
+            var nomeDiaSemana = dia ? (DIAS_SEMANA[dateObj.getDay()] || "Segunda-feira") : "DATA NÃO DEFINIDA";
 
             var horarioTexto = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value.trim() : "";
             var valorDigitado = document.getElementById("input-valor") ? document.getElementById("input-valor").value.trim() : "";
@@ -1176,7 +1230,7 @@
             var responsavelDigitado = document.getElementById("input-responsavel") ? document.getElementById("input-responsavel").value.trim() : "";
             var descricaoDigitada = document.getElementById("input-descricao") ? document.getElementById("input-descricao").value.trim() : "";
 
-            var titulo = document.getElementById("input-titulo") ? document.getElementById("input-titulo").value : "Gira de Exu";
+            var titulo = document.getElementById("input-titulo") ? document.getElementById("input-titulo").value : "";
             var categoria = document.getElementById("input-categoria") ? document.getElementById("input-categoria").value : "red";
 
             if (categoria === 'amber') titulo = "Organização / Limpeza do Terreiro";
@@ -1207,7 +1261,7 @@
                     <div class="relative z-10 my-2">
                         <div class="${estilo.boxTituloBg} p-3.5 rounded-2xl relative shadow-xl">
                             <span class="text-[8px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.25em] block mb-0.5">GIRA DE</span>
-                            <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-tight">${titulo.replace('Gira de ', '')}</h4>
+                            <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-tight">${titulo ? titulo.replace('Gira de ', '') : 'SELECIONE O TÍTULO'}</h4>
                         </div>
                     </div>
 
@@ -1229,7 +1283,13 @@
 
         function cancelarEdicaoAtividade() {
             eventoSendoEditadoId = null;
-            document.getElementById("input-dia").value = "1"; 
+            document.getElementById("input-mes-ano").value = "";
+            document.getElementById("input-mes-ano-display").value = "";
+            document.getElementById("input-dia").value = ""; 
+            document.getElementById("input-titulo").value = "";
+            document.getElementById("input-titulo-display").value = "";
+            document.getElementById("input-categoria").value = "";
+            document.getElementById("input-categoria-display").value = "";
             document.getElementById("input-horario-inicio").value = "";
             document.getElementById("input-valor").value = ""; 
             document.getElementById("input-descricao").value = "";
@@ -1253,6 +1313,7 @@
 
             atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         async function carregarParaEditarAtividade(idStr) {
@@ -1265,15 +1326,19 @@
 
             eventoSendoEditadoId = String(idStr);
 
-            document.getElementById("input-dia").value = eventoEncontrado.dia || 1;
+            document.getElementById("input-mes-ano").value = eventoEncontrado.mes_ano || mesAtualAtivo;
+            document.getElementById("input-mes-ano-display").value = eventoEncontrado.mes_ano || mesAtualAtivo;
+            document.getElementById("input-dia").value = eventoEncontrado.dia || "";
             
             var inputHidden = document.getElementById("input-titulo");
             var inputDisplay = document.getElementById("input-titulo-display");
-            if (inputHidden) inputHidden.value = eventoEncontrado.titulo;
-            if (inputDisplay) inputDisplay.value = eventoEncontrado.titulo;
+            if (inputHidden) inputHidden.value = eventoEncontrado.titulo || "";
+            if (inputDisplay) inputDisplay.value = eventoEncontrado.titulo || "";
 
             var catSelect = document.getElementById("input-categoria");
+            var catDisplay = document.getElementById("input-categoria-display");
             if (catSelect) catSelect.value = eventoEncontrado.categoria || "red";
+            if (catDisplay) catDisplay.value = eventoEncontrado.categoria || "Gira de Esquerda";
 
             document.getElementById("input-horario-inicio").value = eventoEncontrado.horario || "";
             document.getElementById("input-valor").value = eventoEncontrado.valor || "";
@@ -1301,6 +1366,7 @@
 
             atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
+            atualizarIndicadoresPassos();
         }
 
         async function salvarAtividadeSupabase() {
@@ -1321,8 +1387,8 @@
             var responsavel = document.getElementById("input-responsavel") ? document.getElementById("input-responsavel").value.trim() : "";
             var descricao = descricaoDigitada;
 
-            if (!dia || dia < 1 || dia > 31 || !titulo) { 
-                alert("Preencha o Dia do Mês e o Título do Evento!"); 
+            if (!mesAno || !dia || dia < 1 || dia > 31 || !titulo) { 
+                alert("Preencha o Mês/Ano, Dia do Mês e o Título do Evento!"); 
                 return; 
             }
 
@@ -1392,15 +1458,16 @@
             if (!container) return;
 
             var mesAno = document.getElementById("input-mes-ano") ? document.getElementById("input-mes-ano").value : mesAtualAtivo;
-            if (tituloSecao) tituloSecao.innerText = "ATIVIDADES CADASTRADAS PARA " + mesAno.toUpperCase();
+            var mesExibicao = (mesAno && mesAno.trim() !== "") ? mesAno : mesAtualAtivo;
+            if (tituloSecao) tituloSecao.innerText = "ATIVIDADES CADASTRADAS PARA " + mesExibicao.toUpperCase();
 
             var eventosDoMes = [];
-            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.mes_ano === mesAno);
+            var customEventos = JSON.parse(localStorage.getItem("custom_eventos") || "[]").filter(e => e.mes_ano === mesExibicao);
             customEventos.forEach(e => eventosDoMes.push({ ...e, id: 'loc-' + e.id }));
 
             if (supabaseClient) {
                 try {
-                    const { data, error } = await supabaseClient.from('eventos').select('*').eq('mes_ano', mesAno);
+                    const { data, error } = await supabaseClient.from('eventos').select('*').eq('mes_ano', mesExibicao);
                     if (!error && data && data.length > 0) {
                         data.forEach(ev => {
                             if (!eventosDoMes.some(e => String(e.id) === 'supa-' + ev.id || (e.dia === ev.dia && e.titulo === ev.titulo))) {
@@ -1414,11 +1481,11 @@
             eventosDoMes.sort((a, b) => a.dia - b.dia);
 
             if (eventosDoMes.length === 0) { 
-                container.innerHTML = '<p class="text-xs text-stone-500 italic p-3">Nenhuma atividade cadastrada para ' + mesAno + ' ainda.</p>'; 
+                container.innerHTML = '<p class="text-xs text-stone-500 italic p-3">Nenhuma atividade cadastrada para ' + mesExibicao + ' ainda.</p>'; 
                 return; 
             }
 
-            var mesNum = mesAno.includes("Junho") ? "06" : (mesAno.includes("Julho") ? "07" : (mesAno.includes("Agosto") ? "08" : (mesAno.includes("Setembro") ? "09" : (mesAno.includes("Outubro") ? "10" : (mesAno.includes("Novembro") ? "11" : "12")))));
+            var mesNum = mesExibicao.includes("Junho") ? "06" : (mesExibicao.includes("Julho") ? "07" : (mesExibicao.includes("Agosto") ? "08" : (mesExibicao.includes("Setembro") ? "09" : (mesExibicao.includes("Outubro") ? "10" : (mesExibicao.includes("Novembro") ? "11" : "12")))));
             var html = '<div class="space-y-2">';
             eventosDoMes.forEach(function(ev) {
                 var diaFmt = (ev.dia < 10 ? '0' + ev.dia : ev.dia) + '/' + mesNum;
@@ -1698,7 +1765,7 @@
 
     <!-- MODAL SELEÇÃO DE MÊS -->
     <div id="seletor-mes-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[80] hidden flex items-start pt-6 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorMes()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1722,7 +1789,7 @@
 
     <!-- MODAL SELEÇÃO DE DIA -->
     <div id="seletor-dia-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[88] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorDia()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1744,9 +1811,9 @@
         </div>
     </div>
 
-    <!-- MODAL SELEÇÃO DE TÍTULO -->
+    <!-- MODAL SELEÇÃO DE TÍTULO DE EVENTO -->
     <div id="seletor-titulo-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[89] hidden flex items-start pt-3 sm:items-center sm:pt-0 justify-center p-2.5 sm:p-4 overflow-y-auto no-print" onclick="fecharModalTitulo()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col pb-6" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2 flex-shrink-0">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1774,7 +1841,7 @@
                 </button>
             </div>
 
-            <div id="modal-titulo-lista" class="space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-[220px] max-h-[60vh]"></div>
+            <div id="modal-titulo-lista" class="space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-[220px] max-h-[60vh] pb-2"></div>
 
             <button type="button" onclick="fecharModalTitulo()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition flex-shrink-0">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
@@ -1784,7 +1851,7 @@
 
     <!-- MODAL SELEÇÃO DE CATEGORIA -->
     <div id="seletor-categoria-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[89] hidden flex items-start pt-3 sm:items-center sm:pt-0 justify-center p-2.5 sm:p-4 overflow-y-auto no-print" onclick="fecharModalCategoria()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col pb-6" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2 flex-shrink-0">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1805,7 +1872,7 @@
                 </button>
             </div>
 
-            <div id="modal-categoria-lista" class="space-y-2 overflow-y-auto pr-1 flex-1 min-h-[220px] max-h-[60vh] pt-1"></div>
+            <div id="modal-categoria-lista" class="space-y-2 overflow-y-auto pr-1 flex-1 min-h-[220px] max-h-[60vh] pt-1 pb-2"></div>
 
             <button type="button" onclick="fecharModalCategoria()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition flex-shrink-0">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
@@ -1815,7 +1882,7 @@
 
     <!-- MODAL REPETIÇÃO -->
     <div id="seletor-repeticao-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalRepeticao()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1872,7 +1939,7 @@
 
     <!-- MODAL STATUS -->
     <div id="seletor-status-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalStatus()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1939,7 +2006,7 @@
 
     <!-- MODAL PÚBLICO -->
     <div id="seletor-publico-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalPublico()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -2006,7 +2073,7 @@
 
     <!-- MODAL HORÁRIO -->
     <div id="seletor-horario-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[85] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalHorario()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 pb-6" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2">
                 <div class="flex items-center gap-2">
                     <i class="fa-regular fa-clock text-amber-400 text-base sm:text-lg"></i>
@@ -2037,7 +2104,7 @@
 
     <!-- MODAL VALOR -->
     <div id="seletor-valor-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[86] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalValor()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 pb-6" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-tag text-amber-400 text-base sm:text-lg"></i>
@@ -2369,17 +2436,17 @@
                                 <div class="space-y-5 text-xs">
                                     <div class="space-y-2">
                                         <div class="flex items-center gap-2">
-                                            <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">1</span>
+                                            <span id="step-num-1" class="w-6 h-6 rounded-full bg-amber-500 text-stone-950 font-black flex items-center justify-center text-xs animate-pulse ring-4 ring-amber-400/40 shadow-lg scale-110 transition-all duration-300">1</span>
                                             <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">DATA DA ATIVIDADE</label>
                                         </div>
 
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-7">
                                             <div>
                                                 <label class="font-bold text-stone-600 block mb-1">Mês e Ano</label>
-                                                <input type="hidden" id="input-mes-ano" value="Agosto de 2026">
+                                                <input type="hidden" id="input-mes-ano" value="">
                                                 <div class="relative">
                                                     <i class="fa-regular fa-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
-                                                    <input type="text" id="input-mes-ano-display" readonly value="Agosto de 2026" onclick="abrirModalSeletorMes()" class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <input type="text" id="input-mes-ano-display" readonly value="" onclick="abrirModalSeletorMes()" placeholder="Clique para selecionar mês e ano..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                                     <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
                                                 </div>
                                             </div>
@@ -2388,15 +2455,15 @@
                                                 <label class="font-bold text-stone-600 block mb-1">Dia do Mês (1 a 31)</label>
                                                 <div class="relative">
                                                     <i class="fa-regular fa-calendar-days absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
-                                                    <input type="text" id="input-dia" value="1" readonly onclick="abrirModalSeletorDia()" class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <input type="text" id="input-dia" value="" readonly onclick="abrirModalSeletorDia()" placeholder="Clique para selecionar dia..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                                     <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
                                                 </div>
                                             </div>
 
                                             <div class="sm:col-span-2">
-                                                <div id="badge-dia-semana" class="w-full p-2.5 bg-emerald-50/80 border border-emerald-200/80 text-emerald-900 rounded-xl font-bold text-xs flex items-center gap-2">
+                                                <div id="badge-dia-semana" class="w-full p-2.5 bg-emerald-50/80 border border-emerald-200/80 text-emerald-900 rounded-xl font-bold text-xs flex items-center gap-2 hidden">
                                                     <i class="fa-regular fa-calendar-check text-emerald-600 text-sm"></i>
-                                                    <span>Dia 01 – Terça-feira (Agosto de 2026)</span>
+                                                    <span>Nenhum dia selecionado</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -2404,15 +2471,15 @@
 
                                     <div class="space-y-2 pt-1 border-t border-stone-100">
                                         <div class="flex items-center gap-2 pt-2">
-                                            <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">2</span>
+                                            <span id="step-num-2" class="w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] transition-all duration-300">2</span>
                                             <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">EVENTO / TÍTULO</label>
                                         </div>
 
                                         <div class="pl-7">
-                                            <input type="hidden" id="input-titulo" value="Gira de Exu">
+                                            <input type="hidden" id="input-titulo" value="">
                                             <div class="relative">
                                                 <i class="fa-solid fa-bars-staggered absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
-                                                <input type="text" id="input-titulo-display" readonly value="Gira de Exu" onclick="abrirModalTitulo()" placeholder="Clique para selecionar evento..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                <input type="text" id="input-titulo-display" readonly value="" onclick="abrirModalTitulo()" placeholder="Clique para selecionar evento..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                             </div>
                                         </div>
                                     </div>
@@ -2420,17 +2487,17 @@
                                     <div class="space-y-2 pt-1 border-t border-stone-100">
                                         <div class="flex items-center justify-between pt-2">
                                             <div class="flex items-center gap-2">
-                                                <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">3</span>
+                                                <span id="step-num-3" class="w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] transition-all duration-300">3</span>
                                                 <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">CATEGORIA / TIPO</label>
                                             </div>
                                             <button type="button" onclick="adicionarNovaCategoria()" class="text-[11px] text-emerald-800 hover:underline font-bold">+ Nova Categoria</button>
                                         </div>
 
                                         <div class="pl-7 space-y-2.5">
-                                            <input type="hidden" id="input-categoria" value="red">
+                                            <input type="hidden" id="input-categoria" value="">
                                             <div class="relative">
                                                 <i class="fa-solid fa-tags absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
-                                                <input type="text" id="input-categoria-display" readonly value="Gira de Esquerda" onclick="abrirModalCategoria()" placeholder="Clique para selecionar categoria..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                <input type="text" id="input-categoria-display" readonly value="" onclick="abrirModalCategoria()" placeholder="Clique para selecionar categoria..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                                 <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
                                             </div>
 
@@ -2456,7 +2523,7 @@
 
                                     <div class="space-y-2 pt-1 border-t border-stone-100">
                                         <div class="flex items-center gap-2 pt-2">
-                                            <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">4</span>
+                                            <span id="step-num-4" class="w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] transition-all duration-300">4</span>
                                             <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">HORÁRIOS</label>
                                         </div>
 
@@ -2526,13 +2593,13 @@
 
                                     <div class="space-y-2 pt-1 border-t border-stone-100">
                                         <div class="flex items-center gap-2 pt-2">
-                                            <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">5</span>
+                                            <span id="step-num-5" class="w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] transition-all duration-300">5</span>
                                             <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">OBSERVAÇÕES <span class="text-stone-400 font-normal">(OPCIONAL)</span></label>
                                         </div>
 
                                         <div class="pl-7 relative">
                                             <i class="fa-regular fa-comment absolute left-3.5 top-3.5 text-stone-400 text-sm pointer-events-none"></i>
-                                            <textarea id="input-descricao" rows="2" placeholder="Adicione informações importantes sobre a atividade..." oninput="atualizarPrevisualizacao()" class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-stone-300 text-stone-800 bg-stone-50/50 font-medium text-xs sm:text-sm outline-none focus:border-amber-400 transition"></textarea>
+                                            <textarea id="input-descricao" rows="2" placeholder="Adicione informações importantes sobre a atividade..." oninput="atualizarPrevisualizacao(); atualizarIndicadoresPassos();" class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-stone-300 text-stone-800 bg-stone-50/50 font-medium text-xs sm:text-sm outline-none focus:border-amber-400 transition"></textarea>
                                         </div>
                                     </div>
 
