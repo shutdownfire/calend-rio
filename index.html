@@ -15,7 +15,7 @@
 
     <script>
         var SUPABASE_URL = "https://ndkooiyqhafsinxawzxe.supabase.co";
-        var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI6MjEwMDk0NTczMH0.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
+        var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI62100945730s0.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
         var supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
         if (!localStorage.getItem("user_device_id")) {
@@ -574,7 +574,6 @@
             var titulo = document.getElementById("input-titulo") ? document.getElementById("input-titulo").value : "";
             var categoria = document.getElementById("input-categoria") ? document.getElementById("input-categoria").value : "";
             var horario = document.getElementById("input-horario-inicio") ? document.getElementById("input-horario-inicio").value : "";
-            var publico = document.getElementById("input-publico") ? document.getElementById("input-publico").value : "";
             var status = document.getElementById("input-status") ? document.getElementById("input-status").value : "";
 
             var passoAtivo = 1;
@@ -582,8 +581,8 @@
             var etapa2Concluida = (etapa1Concluida && titulo && titulo !== "");
             var etapa3Concluida = (etapa2Concluida && categoria && categoria !== "");
             
-            /* O Passo 4 é considerado concluído somente após informar os horários e interagir com opções adicionais da seção */
-            var etapa4Concluida = (etapa3Concluida && horario && horario !== "" && (publico !== "" || status !== ""));
+            /* O Passo 4 é considerado concluído somente após informar os horários e definir o Status do evento */
+            var etapa4Concluida = (etapa3Concluida && horario && horario !== "" && status && status !== "");
 
             if (etapa1Concluida) passoAtivo = 2;
             if (etapa2Concluida) passoAtivo = 3;
