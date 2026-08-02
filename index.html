@@ -57,6 +57,11 @@
             "Gira de Passes", "Gira de Esquerda", "Gira de Direita"
         ];
 
+        function normalizarEventoId(id) {
+            if (!id) return "";
+            return String(id).replace(/^supa-/, '').replace(/^loc-/, '');
+        }
+
         function obterFraseDoDia() {
             var day = new Date().getDay();
             var frasesMap = {
@@ -809,7 +814,8 @@
 
             var acaoBtnHtml = "";
             if (eMutiraoOuPresenca) {
-                var estaConfirmadoModal = localStorage.getItem("confirmado_gira_" + ev.id);
+                var idNorm = normalizarEventoId(ev.id);
+                var estaConfirmadoModal = localStorage.getItem("confirmado_gira_" + idNorm) || localStorage.getItem("confirmado_gira_" + ev.id);
                 if (estaConfirmadoModal) {
                     acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-4 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_25px_rgba(16,185,129,0.3)]">' +
                                         '<i class="fa-solid fa-circle-check text-emerald-400 text-base"></i> PRESENÇA CONFIRMADA' +
@@ -1129,13 +1135,14 @@
         }
 
         function atualizarUIConfirmado(id) {
-            var btnElem = document.getElementById("btn-presenca-" + id);
+            var idNorm = normalizarEventoId(id);
+            var btnElem = document.getElementById("btn-presenca-" + id) || document.getElementById("btn-presenca-supa-" + idNorm) || document.getElementById("btn-presenca-loc-" + idNorm);
             if (btnElem) {
                 btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-xs mr-1"></i> Confirmado';
                 btnElem.className = 'inline-flex items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold text-[11px] py-1 px-3 rounded-full cursor-default shadow-2xs';
                 btnElem.disabled = true; btnElem.title = 'Presença Confirmada';
             }
-            var btnModalElem = document.getElementById("btn-presenca-modal-" + id);
+            var btnModalElem = document.getElementById("btn-presenca-modal-" + id) || document.getElementById("btn-presenca-modal-supa-" + idNorm) || document.getElementById("btn-presenca-modal-loc-" + idNorm);
             if (btnModalElem) {
                 btnModalElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> PRESENÇA CONFIRMADA';
                 btnModalElem.className = 'w-full py-4 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 font-cinzel tracking-[0.2em]';
@@ -1144,7 +1151,8 @@
         }
 
         async function buscarContadorPresenca(id) {
-            var countElem = document.getElementById("count-" + id); 
+            var idNorm = normalizarEventoId(id);
+            var countElem = document.getElementById("count-" + id) || document.getElementById("count-supa-" + idNorm) || document.getElementById("count-loc-" + idNorm); 
             if (!countElem) return;
 
             if (supabaseClient) {
@@ -1152,7 +1160,7 @@
                     const { count, error } = await supabaseClient
                         .from('presencas')
                         .select('*', { count: 'exact', head: true })
-                        .eq('evento_id', String(id));
+                        .eq('evento_id', idNorm);
 
                     if (!error && count !== null) {
                         countElem.innerText = count;
@@ -1161,7 +1169,7 @@
                 } catch (err) {}
             }
             
-            var localCount = parseInt(localStorage.getItem("count_presenca_" + id) || "0");
+            var localCount = parseInt(localStorage.getItem("count_presenca_" + idNorm) || "0");
             countElem.innerText = localCount > 0 ? localCount : '0';
         }
 
@@ -1173,8 +1181,9 @@
                 });
             }
             idsParaCarregar.forEach(function(id) { 
+                var idNorm = normalizarEventoId(id);
                 buscarContadorPresenca(id); 
-                if (localStorage.getItem("confirmado_gira_" + id)) {
+                if (localStorage.getItem("confirmado_gira_" + idNorm) || localStorage.getItem("confirmado_gira_" + id)) {
                     atualizarUIConfirmado(id); 
                 }
             });
@@ -1183,7 +1192,7 @@
         function escutarPresencasEmTempoReal() {
             if (!supabaseClient) return;
             supabaseClient
-                .channel('mudancas_presencas_global')
+                .channel('mudancas_presencas_global_v2')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'presencas' }, function(payload) {
                     if (payload.new && payload.new.evento_id) {
                         buscarContadorPresenca(payload.new.evento_id);
@@ -1197,7 +1206,7 @@
         function escutarEventosEmTempoReal() {
             if (!supabaseClient) return;
             supabaseClient
-                .channel('mudancas_eventos_global')
+                .channel('mudancas_eventos_global_v2')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, function(payload) {
                     carregarCalendarioDoSupabase();
                     if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
@@ -1207,35 +1216,39 @@
 
         async function confirmarPresencaGira(id, categoriaCor) {
             var cor = categoriaCor || 'emerald';
+            var idNorm = normalizarEventoId(id);
 
-            if (localStorage.getItem("confirmado_gira_" + id)) { 
+            if (localStorage.getItem("confirmado_gira_" + idNorm) || localStorage.getItem("confirmado_gira_" + id)) { 
                 fecharModalDetalhesEvento(); 
                 openSucessoModal(cor); 
                 return; 
             }
-
-            var idEventoStr = String(id);
 
             if (supabaseClient) {
                 try {
                     const { error } = await supabaseClient
                         .from('presencas')
                         .insert([{ 
-                            evento_id: idEventoStr,
+                            evento_id: idNorm,
                             user_id: DEVICE_ID 
                         }]);
 
                     if (error) {
-                        console.warn("Erro RLS ou estrutura Supabase ao gravar presenca, chave local assumida:", error);
+                        console.warn("Erro ao gravar presenca no Supabase:", error);
                     }
                 } catch (e) {
                     console.warn("Erro ao comunicar com Supabase:", e);
                 }
             }
 
+            localStorage.setItem("confirmado_gira_" + idNorm, "true");
             localStorage.setItem("confirmado_gira_" + id, "true");
+            
+            var localCount = parseInt(localStorage.getItem("count_presenca_" + idNorm) || "0") + 1;
+            localStorage.setItem("count_presenca_" + idNorm, localCount.toString());
+
             atualizarUIConfirmado(id); 
-            await buscarContadorPresenca(id);
+            await buscarContadorPresenca(idNorm);
             
             fecharModalDetalhesEvento(); 
             openSucessoModal(cor);
