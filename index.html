@@ -976,7 +976,8 @@
             var custom = JSON.parse(localStorage.getItem("custom_categorias") || "[]");
             custom.push({ id: Date.now(), nome: nome.trim(), cor: corMap[cor] || 'emerald', corNome: corNomeMap[cor] || 'Verde' });
             localStorage.setItem("custom_categorias", JSON.stringify(custom));
-            carregarCategoriasCustomizadas(); alert("Categoria adicionada!");
+            carregarCategoriasCustomizadas(); 
+            renderizarListaCategoriasModal();
         }
 
         function openSucessoModal(cor) {
@@ -1104,6 +1105,17 @@
                     } else {
                         carregarContadoresPresenca();
                     }
+                })
+                .subscribe();
+        }
+
+        function escutarEventosEmTempoReal() {
+            if (!supabaseClient) return;
+            supabaseClient
+                .channel('mudancas_eventos')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, payload => {
+                    carregarCalendarioDoSupabase();
+                    if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
                 })
                 .subscribe();
         }
@@ -1372,7 +1384,7 @@
             cancelarEdicaoAtividade();
             
             alert("Atividade salva com sucesso!");
-            mudarMesAtivo(mesAno);
+            carregarCalendarioDoSupabase();
         }
 
         async function carregarListaAtividadesAdmin() {
@@ -1556,6 +1568,7 @@
             mudarMesAtivo(mesAtualAtivo);
             carregarCalendarioDoSupabase(); 
             escutarPresencasEmTempoReal();
+            escutarEventosEmTempoReal();
         });
 
         function fetchRealGoatCounterData() {
