@@ -10,7 +10,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,500;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -144,7 +144,6 @@
             if (inputBusca) inputBusca.value = "";
             var modal = document.getElementById("seletor-titulo-modal");
             if (modal) modal.classList.remove("hidden");
-            // CORREÇÃO: Removida a chamada automatica de focus() para que o teclado do celular NÃO abra sozinho ao abrir o modal.
         }
 
         function fecharModalTitulo() {
@@ -378,7 +377,7 @@
             var inputFimModal = document.getElementById("modal-horario-fim");
 
             var valInicio = inputInicioModal ? ajustarFormatacaoFinal(inputInicioModal.value) : "";
-            var valFim = inputFimModal ? ajustarFormatacaoFinal(inputFimModal.value) : "";
+            var valFim = inputFimModal ? meajustarFormatacaoFinal(inputFimModal.value) : "";
 
             var targetInicio = document.getElementById("input-horario-inicio");
 
@@ -497,8 +496,11 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { umbanda: { green: '#0D472B', lightgreen: '#15673E', gold: '#C59B27', goldlight: '#E6C665', cream: '#FCFAF5', cardBg: '#FFFFFF', dark: '#1C2822' } },
-                    fontFamily: { serif: ['Playfair Display', 'serif'], cinzel: ['Cinzel', 'serif'], sans: ['Plus Jakarta Sans', 'sans-serif'] }
+                    colors: { 
+                        umbanda: { green: '#0D472B', lightgreen: '#15673E', gold: '#C59B27', goldlight: '#E6C665', cream: '#FCFAF5', cardBg: '#FFFFFF', dark: '#1C2822' },
+                        whatsapp: { DEFAULT: '#3e9366', dark: '#2e724e', hover: '#347e53' }
+                    },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], cinzel: ['Cinzel', 'serif'], decorative: ['Cinzel Decorative', 'serif'], sans: ['Plus Jakarta Sans', 'sans-serif'] }
                 }
             }
         };
@@ -563,111 +565,101 @@
 
             if (tLow.includes("exu") || tLow.includes("pombagira") || tLow.includes("caveira") || corBase === 'red' || corBase === 'joaocaveira') {
                 return {
-                    bgGradient: 'bg-gradient-to-b from-[#1c0303] via-[#0d0101] to-[#080000]',
-                    radialGlow: 'radial-glow-red',
-                    borderColor: 'border-red-600/40',
-                    borderGlow: 'shadow-[0_0_35px_rgba(220,38,38,0.25)]',
-                    iconBg: 'bg-gradient-to-b from-red-900/80 to-red-950/90 border-red-500/50 text-red-400 shadow-[0_0_15px_rgba(220,38,38,0.4)]',
-                    titleColor: 'text-stone-100',
-                    subTitleColor: 'text-red-400',
-                    accentColor: 'text-red-500',
-                    badgeBorder: 'border-red-500/40 bg-red-950/50 text-red-200',
-                    cardBoxBg: 'bg-[#120303]/90 border-red-900/40 shadow-inner',
-                    iconSimbolo: '🔱',
-                    decorLeft: '<i class="fa-solid fa-trident text-red-600/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"></i>',
-                    decorRight: '<i class="fa-solid fa-trident text-red-600/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"></i>',
-                    btnGradient: 'bg-gradient-to-r from-red-900 via-red-600 to-red-900 border-red-500/60 hover:from-red-800 hover:to-red-800 text-white drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]',
-                    saudacao: 'Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.'
+                    linhaTag: 'ESQUERDA / EXU',
+                    bgCardStyle: 'bg-gradient-to-b from-[#1a0202] via-[#0d0101] to-[#050000] border-2 border-red-500/60 shadow-[0_0_50px_rgba(220,38,38,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-red-950 to-stone-950 shadow-[0_0_20px_rgba(220,38,38,0.6)]',
+                    topIcon: '<img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" alt="Sr. João Caveira" class="w-full h-full object-cover rounded-full p-0.5" onerror="this.onerror=null; this.src=\'https://drive.google.com/thumbnail?id=18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH&sz=w1000\';">',
+                    boxTituloBg: 'plate-red-gold',
+                    symbolEmblem: '<i class="fa-solid fa-trident text-red-500 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(220,38,38,0.9)]"></i>',
+                    symbolLeft: '<i class="fa-solid fa-trident text-amber-400 text-lg"></i>',
+                    symbolRight: '<i class="fa-solid fa-trident text-amber-400 text-lg"></i>',
+                    accentText: 'text-red-400 font-cinzel font-bold',
+                    saudacao: 'Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.',
+                    btnStyle: 'bg-gradient-to-r from-red-950 via-red-600 to-red-950 border border-amber-400/60 hover:from-red-900 hover:to-red-700 text-white drop-shadow-[0_0_20px_rgba(220,38,38,0.7)]'
                 };
             } else if (tLow.includes("caboclo") || tLow.includes("oxóssi") || tLow.includes("jurema") || corBase === 'emerald' || corBase === 'jurema') {
                 return {
-                    bgGradient: 'bg-gradient-to-b from-[#021c0e] via-[#010e07] to-[#000804]',
-                    radialGlow: 'radial-glow-emerald',
-                    borderColor: 'border-emerald-500/40',
-                    borderGlow: 'shadow-[0_0_35px_rgba(16,185,129,0.25)]',
-                    iconBg: 'bg-gradient-to-b from-emerald-900/80 to-emerald-950/90 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.4)]',
-                    titleColor: 'text-stone-100',
-                    subTitleColor: 'text-emerald-400',
-                    accentColor: 'text-emerald-500',
-                    badgeBorder: 'border-emerald-500/40 bg-emerald-950/50 text-emerald-200',
-                    cardBoxBg: 'bg-[#03140a]/90 border-emerald-900/40 shadow-inner',
-                    iconSimbolo: '🏹',
-                    decorLeft: '<i class="fa-solid fa-feather-pointed text-emerald-500/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]"></i>',
-                    decorRight: '<i class="fa-solid fa-feather-pointed text-emerald-500/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]"></i>',
-                    btnGradient: 'bg-gradient-to-r from-emerald-900 via-emerald-600 to-emerald-900 border-emerald-500/60 hover:from-emerald-800 hover:to-emerald-800 text-white drop-shadow-[0_0_12px_rgba(16,185,129,0.5)]',
-                    saudacao: 'Okê Arô! Salve as forças das matas sagradas e da fartura.'
+                    linhaTag: 'CABOCLO',
+                    bgCardStyle: 'bg-gradient-to-b from-[#021d12] via-[#01100b] to-[#000805] border-2 border-emerald-500/60 shadow-[0_0_50px_rgba(16,185,129,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-emerald-950 to-stone-950 shadow-[0_0_20px_rgba(16,185,129,0.6)]',
+                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(16,185,129,0.9)]"><i class="fa-solid fa-leaf"></i></div>',
+                    boxTituloBg: 'plate-emerald-gold',
+                    symbolEmblem: '<i class="fa-solid fa-feather-pointed text-emerald-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(16,185,129,0.9)]"></i>',
+                    symbolLeft: '<i class="fa-solid fa-feather-pointed text-amber-400 text-lg"></i>',
+                    symbolRight: '<i class="fa-solid fa-feather-pointed text-amber-400 text-lg"></i>',
+                    accentText: 'text-emerald-400 font-cinzel font-bold',
+                    saudacao: 'Okê Arô! Salve as forças das matas sagradas e da fartura.',
+                    btnStyle: 'bg-gradient-to-r from-emerald-950 via-emerald-600 to-emerald-950 border border-amber-400/60 hover:from-emerald-900 hover:to-emerald-700 text-white drop-shadow-[0_0_20px_rgba(16,185,129,0.7)]'
+                };
+            } else if (tLow.includes("boiadeiro")) {
+                return {
+                    linhaTag: 'BOIADEIRO',
+                    bgCardStyle: 'bg-gradient-to-b from-[#1c1405] via-[#0e0a02] to-[#050300] border-2 border-amber-600/60 shadow-[0_0_50px_rgba(245,158,11,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-amber-950 to-stone-950 shadow-[0_0_20px_rgba(245,158,11,0.6)]',
+                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(245,158,11,0.9)]"><i class="fa-solid fa-hat-cowboy"></i></div>',
+                    boxTituloBg: 'plate-amber-gold',
+                    symbolEmblem: '<i class="fa-solid fa-hat-cowboy-side text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(245,158,11,0.9)]"></i>',
+                    symbolLeft: '<i class="fa-solid fa-hat-cowboy text-amber-400 text-lg"></i>',
+                    symbolRight: '<i class="fa-solid fa-hat-cowboy text-amber-400 text-lg"></i>',
+                    accentText: 'text-amber-400 font-cinzel font-bold',
+                    saudacao: 'Xetruá Boiadeiro! Salve a força e a garra do sertão.',
+                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400/60 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(245,158,11,0.7)]'
                 };
             } else if (tLow.includes("marinheiro") || tLow.includes("iemanjá") || corBase === 'sky') {
                 return {
-                    bgGradient: 'bg-gradient-to-b from-[#031525] via-[#010a14] to-[#00050a]',
-                    radialGlow: 'radial-glow-sky',
-                    borderColor: 'border-sky-500/40',
-                    borderGlow: 'shadow-[0_0_35px_rgba(14,165,233,0.25)]',
-                    iconBg: 'bg-gradient-to-b from-sky-900/80 to-sky-950/90 border-sky-500/50 text-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.4)]',
-                    titleColor: 'text-stone-100',
-                    subTitleColor: 'text-sky-400',
-                    accentColor: 'text-sky-500',
-                    badgeBorder: 'border-sky-500/40 bg-sky-950/50 text-sky-200',
-                    cardBoxBg: 'bg-[#03111f]/90 border-sky-900/40 shadow-inner',
-                    iconSimbolo: '⚓',
-                    decorLeft: '<i class="fa-solid fa-anchor text-sky-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]"></i>',
-                    decorRight: '<i class="fa-solid fa-anchor text-sky-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]"></i>',
-                    btnGradient: 'bg-gradient-to-r from-sky-900 via-sky-600 to-sky-900 border-sky-500/60 hover:from-sky-800 hover:to-sky-800 text-white drop-shadow-[0_0_12px_rgba(14,165,233,0.5)]',
-                    saudacao: 'Émaribô! Salve o Povo do Mar e a limpeza das águas sagradas.'
+                    linhaTag: 'MARINHEIRO / POVO DO MAR',
+                    bgCardStyle: 'bg-gradient-to-b from-[#021629] via-[#010b14] to-[#00050a] border-2 border-sky-500/60 shadow-[0_0_50px_rgba(14,165,233,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-sky-950 to-stone-950 shadow-[0_0_20px_rgba(14,165,233,0.6)]',
+                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(14,165,233,0.9)]"><i class="fa-solid fa-anchor"></i></div>',
+                    boxTituloBg: 'plate-sky-gold',
+                    symbolEmblem: '<i class="fa-solid fa-water text-sky-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(14,165,233,0.9)]"></i>',
+                    symbolLeft: '<i class="fa-solid fa-anchor text-amber-400 text-lg"></i>',
+                    symbolRight: '<i class="fa-solid fa-anchor text-amber-400 text-lg"></i>',
+                    accentText: 'text-sky-400 font-cinzel font-bold',
+                    saudacao: 'Émaribô! Salve o Povo do Mar e a limpeza das águas sagradas.',
+                    btnStyle: 'bg-gradient-to-r from-sky-950 via-sky-600 to-sky-950 border border-amber-400/60 hover:from-sky-900 hover:to-sky-700 text-white drop-shadow-[0_0_20px_rgba(14,165,233,0.7)]'
                 };
             } else if (tLow.includes("preto") || tLow.includes("velho") || corBase === 'amber') {
                 return {
-                    bgGradient: 'bg-gradient-to-b from-[#1c1203] via-[#0e0901] to-[#080500]',
-                    radialGlow: 'radial-glow-amber',
-                    borderColor: 'border-amber-500/40',
-                    borderGlow: 'shadow-[0_0_35px_rgba(245,158,11,0.25)]',
-                    iconBg: 'bg-gradient-to-b from-amber-900/80 to-amber-950/90 border-amber-500/50 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)]',
-                    titleColor: 'text-stone-100',
-                    subTitleColor: 'text-amber-400',
-                    accentColor: 'text-amber-500',
-                    badgeBorder: 'border-amber-500/40 bg-amber-950/50 text-amber-200',
-                    cardBoxBg: 'bg-[#140c02]/90 border-amber-900/40 shadow-inner',
-                    iconSimbolo: '📿',
-                    decorLeft: '<i class="fa-solid fa-hands-praying text-amber-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"></i>',
-                    decorRight: '<i class="fa-solid fa-hands-praying text-amber-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"></i>',
-                    btnGradient: 'bg-gradient-to-r from-amber-900 via-amber-600 to-amber-900 border-amber-500/60 hover:from-amber-800 hover:to-amber-800 text-white drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]',
-                    saudacao: 'Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos.'
+                    linhaTag: 'PRETO-VELHO',
+                    bgCardStyle: 'bg-gradient-to-b from-[#1f1203] via-[#0f0901] to-[#060400] border-2 border-amber-500/60 shadow-[0_0_50px_rgba(245,158,11,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-amber-950 to-stone-950 shadow-[0_0_20px_rgba(245,158,11,0.6)]',
+                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(245,158,11,0.9)]"><i class="fa-solid fa-hands-praying"></i></div>',
+                    boxTituloBg: 'plate-amber-gold',
+                    symbolEmblem: '<i class="fa-solid fa-hands-holding text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(245,158,11,0.9)]"></i>',
+                    symbolLeft: '<i class="fa-solid fa-hands-praying text-amber-400 text-lg"></i>',
+                    symbolRight: '<i class="fa-solid fa-hands-praying text-amber-400 text-lg"></i>',
+                    accentText: 'text-amber-400 font-cinzel font-bold',
+                    saudacao: 'Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos.',
+                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400/60 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(245,158,11,0.7)]'
                 };
             } else if (tLow.includes("erê") || tLow.includes("criança") || corBase === 'pink') {
                 return {
-                    bgGradient: 'bg-gradient-to-b from-[#240315] via-[#12010a] to-[#090005]',
-                    radialGlow: 'radial-glow-pink',
-                    borderColor: 'border-pink-500/40',
-                    borderGlow: 'shadow-[0_0_35px_rgba(236,72,153,0.25)]',
-                    iconBg: 'bg-gradient-to-b from-pink-900/80 to-pink-950/90 border-pink-500/50 text-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.4)]',
-                    titleColor: 'text-stone-100',
-                    subTitleColor: 'text-pink-400',
-                    accentColor: 'text-pink-500',
-                    badgeBorder: 'border-pink-500/40 bg-pink-950/50 text-pink-200',
-                    cardBoxBg: 'bg-[#18020e]/90 border-pink-900/40 shadow-inner',
-                    iconSimbolo: '🍬',
-                    decorLeft: '<i class="fa-solid fa-candy-cane text-pink-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(236,72,153,0.8)]"></i>',
-                    decorRight: '<i class="fa-solid fa-candy-cane text-pink-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(236,72,153,0.8)]"></i>',
-                    btnGradient: 'bg-gradient-to-r from-pink-900 via-pink-600 to-pink-900 border-pink-500/60 hover:from-pink-800 hover:to-pink-800 text-white drop-shadow-[0_0_12px_rgba(236,72,153,0.5)]',
-                    saudacao: 'Onibejada! Salve a alegria e a doçura da linha infantil.'
+                    linhaTag: 'IBEJI / ERÊ',
+                    bgCardStyle: 'bg-gradient-to-b from-[#26031b] via-[#12010d] to-[#060005] border-2 border-pink-500/60 shadow-[0_0_50px_rgba(236,72,153,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-pink-950 to-stone-950 shadow-[0_0_20px_rgba(236,72,153,0.6)]',
+                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(236,72,153,0.9)]"><i class="fa-solid fa-candy-cane"></i></div>',
+                    boxTituloBg: 'plate-pink-gold',
+                    symbolEmblem: '<i class="fa-solid fa-cookie-bite text-pink-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(236,72,153,0.9)]"></i>',
+                    symbolLeft: '<i class="fa-solid fa-candy-cane text-amber-400 text-lg"></i>',
+                    symbolRight: '<i class="fa-solid fa-candy-cane text-amber-400 text-lg"></i>',
+                    accentText: 'text-pink-400 font-cinzel font-bold',
+                    saudacao: 'Onibejada! Salve a alegria e a doçura da linha infantil.',
+                    btnStyle: 'bg-gradient-to-r from-pink-950 via-pink-600 to-pink-950 border border-amber-400/60 hover:from-pink-900 hover:to-pink-700 text-white drop-shadow-[0_0_20px_rgba(236,72,153,0.7)]'
                 };
             } else {
                 return {
-                    bgGradient: 'bg-gradient-to-b from-[#140324] via-[#090112] to-[#040008]',
-                    radialGlow: 'radial-glow-purple',
-                    borderColor: 'border-purple-500/40',
-                    borderGlow: 'shadow-[0_0_35px_rgba(168,85,247,0.25)]',
-                    iconBg: 'bg-gradient-to-b from-purple-900/80 to-purple-950/90 border-purple-500/50 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.4)]',
-                    titleColor: 'text-stone-100',
-                    subTitleColor: 'text-purple-400',
-                    accentColor: 'text-purple-500',
-                    badgeBorder: 'border-purple-500/40 bg-purple-950/50 text-purple-200',
-                    cardBoxBg: 'bg-[#0e021a]/90 border-purple-900/40 shadow-inner',
-                    iconSimbolo: '🦅',
-                    decorLeft: '<i class="fa-solid fa-spa text-purple-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"></i>',
-                    decorRight: '<i class="fa-solid fa-spa text-purple-400/80 text-xl sm:text-2xl drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"></i>',
-                    btnGradient: 'bg-gradient-to-r from-purple-900 via-purple-600 to-purple-900 border-purple-500/60 hover:from-purple-800 hover:to-purple-800 text-white drop-shadow-[0_0_12px_rgba(168,85,247,0.5)]',
-                    saudacao: 'Haux Haux! Que as forças sagradas tragam cura e firmeza.'
+                    linhaTag: 'TRABALHO ESPIRITUAL',
+                    bgCardStyle: 'bg-gradient-to-b from-[#18032b] via-[#0b0117] to-[#04000a] border-2 border-purple-500/60 shadow-[0_0_50px_rgba(168,85,247,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400/80 bg-gradient-to-b from-purple-950 to-stone-950 shadow-[0_0_20px_rgba(168,85,247,0.6)]',
+                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(168,85,247,0.9)]"><i class="fa-solid fa-spa"></i></div>',
+                    boxTituloBg: 'plate-purple-gold',
+                    symbolEmblem: '<i class="fa-solid fa-cross text-purple-400 text-3xl sm:text-4xl drop-shadow-[0_0_12px_rgba(168,85,247,0.9)]"></i>',
+                    symbolLeft: '<i class="fa-solid fa-spa text-amber-400 text-lg"></i>',
+                    symbolRight: '<i class="fa-solid fa-spa text-amber-400 text-lg"></i>',
+                    accentText: 'text-purple-400 font-cinzel font-bold',
+                    saudacao: 'Haux Haux! Que as forças sagradas tragam cura e firmeza.',
+                    btnStyle: 'bg-gradient-to-r from-purple-950 via-purple-600 to-purple-950 border border-amber-400/60 hover:from-purple-900 hover:to-purple-700 text-white drop-shadow-[0_0_20px_rgba(168,85,247,0.7)]'
                 };
             }
         }
@@ -697,62 +689,65 @@
             if (eMutiraoOuPresenca) {
                 var estaConfirmadoModal = localStorage.getItem("confirmado_gira_" + ev.id);
                 if (estaConfirmadoModal) {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-3.5 bg-stone-900/90 border border-emerald-500/50 text-emerald-400 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-wider uppercase font-cinzel">' +
-                                        '<i class="fa-solid fa-circle-check text-emerald-400"></i> PRESENÇA CONFIRMADA' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-4 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_25px_rgba(16,185,129,0.3)]">' +
+                                        '<i class="fa-solid fa-circle-check text-emerald-400 text-base"></i> PRESENÇA CONFIRMADA' +
                                    '</button>';
                 } else {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-3.5 ' + estilo.btnGradient + ' border active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-widest uppercase font-cinzel shadow-lg">' +
-                                        '<i class="fa-solid fa-check text-sm"></i> CONFIRMAR PRESENÇA' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-4 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer">' +
+                                        '<i class="fa-solid fa-check text-base"></i> CONFIRMAR PRESENÇA' +
                                    '</button>';
                 }
             } else {
-                acaoBtnHtml = '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="w-full py-3.5 ' + estilo.btnGradient + ' border active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-widest uppercase font-cinzel shadow-lg">' +
-                                    '<i class="fa-brands fa-whatsapp text-lg"></i> AGENDAR PELO WHATSAPP' +
-                               '</button>';
+                acaoBtnHtml = '<div class="flex justify-center pt-1">' +
+                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="btn-zap-exact active:scale-95 transition-all duration-200 cursor-pointer shadow-md">' +
+                                    '<i class="fa-brands fa-whatsapp text-sm"></i>' +
+                                    '<span>Agendar</span>' +
+                                '</button>' +
+                               '</div>';
             }
-
-            var badgesTopoHtml = "";
-            if (ev.horario && ev.horario.trim() !== '') {
-                badgesTopoHtml += `<span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full border ${estilo.badgeBorder} text-xs font-semibold backdrop-blur-md shadow-inner">
-                                    <i class="fa-regular fa-clock ${estilo.accentColor}"></i> ${ev.horario.trim()}
-                                </span>`;
-            }
-            if (ev.valor && ev.valor.trim() !== '') {
-                badgesTopoHtml += `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border ${estilo.badgeBorder} text-xs font-semibold backdrop-blur-md">
-                                    <i class="fa-solid fa-sack-dollar ${estilo.accentColor}"></i> ${ev.valor.trim()}
-                                </span>`;
-            }
-
-            var topoBadgesContainer = badgesTopoHtml !== "" ? `<div class="flex items-center justify-center gap-2 pt-2 flex-wrap">${badgesTopoHtml}</div>` : "";
 
             var infoBoxRows = [];
             if (ev.publico && ev.publico.trim() !== '') {
                 infoBoxRows.push(`
                     <div class="flex items-center gap-3">
-                        <div class="w-7 h-7 rounded-full bg-red-950/80 border border-red-800/60 flex items-center justify-center text-amber-400 text-xs">
+                        <div class="w-8 h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs shadow-inner">
                             <i class="fa-solid fa-users"></i>
                         </div>
                         <div>
-                            <span class="text-stone-400 font-medium text-xs block">Público</span>
-                            <strong class="text-stone-200 font-semibold text-xs sm:text-sm">${ev.publico.trim()}</strong>
+                            <span class="text-stone-400 font-medium text-[10px] uppercase tracking-widest font-cinzel block">Público Alvo</span>
+                            <strong class="text-stone-100 font-bold text-xs sm:text-sm font-sans">${ev.publico.trim()}</strong>
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (ev.horario && ev.horario.trim() !== '') {
+                infoBoxRows.push(`
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs shadow-inner">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                            <span class="text-stone-400 font-medium text-[10px] uppercase tracking-widest font-cinzel block">Horário de Início</span>
+                            <strong class="text-amber-300 font-bold text-xs sm:text-sm font-sans">${ev.horario.trim()}</strong>
                         </div>
                     </div>
                 `);
             }
 
             if (ev.status && ev.status.trim() !== '') {
-                var statusColorClass = "text-emerald-400 bg-emerald-950/60 border-emerald-800/60";
-                if (ev.status.toLowerCase().includes("cancel")) statusColorClass = "text-red-400 bg-red-950/60 border-red-800/60";
-                else if (ev.status.toLowerCase().includes("confirmar")) statusColorClass = "text-amber-400 bg-amber-950/60 border-amber-800/60";
+                var statusColorClass = "text-emerald-400 bg-emerald-950/80 border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.3)]";
+                if (ev.status.toLowerCase().includes("cancel")) statusColorClass = "text-red-400 bg-red-950/80 border-red-500/50 shadow-[0_0_10px_rgba(220,38,38,0.3)]";
+                else if (ev.status.toLowerCase().includes("confirmar")) statusColorClass = "text-amber-400 bg-amber-950/80 border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.3)]";
 
                 infoBoxRows.push(`
                     <div class="flex items-center gap-3">
-                        <div class="w-7 h-7 rounded-full bg-red-950/80 border border-red-800/60 flex items-center justify-center text-emerald-400 text-xs">
+                        <div class="w-8 h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-emerald-400 text-xs shadow-inner">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
                         <div>
-                            <span class="text-stone-400 font-medium text-xs block">Status</span>
-                            <span class="inline-flex items-center gap-1 font-bold text-xs px-2.5 py-0.5 rounded-full border mt-0.5 ${statusColorClass}">
+                            <span class="text-stone-400 font-medium text-[10px] uppercase tracking-widest font-cinzel block">Situação do Trabalho</span>
+                            <span class="inline-flex items-center gap-1.5 font-bold text-xs px-3 py-0.5 rounded-full border mt-0.5 ${statusColorClass}">
                                 ${ev.status.trim()}
                             </span>
                         </div>
@@ -760,72 +755,51 @@
                 `);
             }
 
-            if (ev.responsavel && ev.responsavel.trim() !== '') {
-                infoBoxRows.push(`
-                    <div class="flex items-center gap-3">
-                        <div class="w-7 h-7 rounded-full bg-red-950/80 border border-red-800/60 flex items-center justify-center text-purple-400 text-xs">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <div>
-                            <span class="text-stone-400 font-medium text-xs block">Responsável</span>
-                            <strong class="text-stone-200 font-semibold text-xs sm:text-sm">${ev.responsavel.trim()}</strong>
-                        </div>
-                    </div>
-                `);
-            }
-
             var cardInfoBoxHtml = "";
             if (infoBoxRows.length > 0) {
-                cardInfoBoxHtml = `<div class="${estilo.cardBoxBg} rounded-2xl p-4 border text-left space-y-2.5 text-xs sm:text-sm z-10 relative">` +
-                                    infoBoxRows.join('<div class="h-[1px] bg-stone-800/60 w-full"></div>') +
+                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/30 rounded-2xl p-4 text-left space-y-3 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
+                                    infoBoxRows.join('<div class="h-[1px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full"></div>') +
                                   `</div>`;
             }
 
             var descTexto = (ev.descricao && ev.descricao.trim() !== '') ? ev.descricao.trim() : estilo.saudacao;
-            var descHtml = descTexto ? `
-                <div class="pt-1 text-center text-xs sm:text-sm text-stone-300 font-medium italic space-y-2 z-10 relative">
-                    <p class="text-stone-300/90 leading-relaxed font-serif"><span class="text-amber-400 text-lg font-serif font-bold">“</span> ${descTexto} <span class="text-amber-400 text-lg font-serif font-bold">”</span></p>
-                    
-                    <div class="w-10 h-10 rounded-full border ${estilo.badgeBorder} flex items-center justify-center mx-auto text-xl shadow-md">
-                        ${estilo.iconSimbolo}
-                    </div>
-                </div>` : "";
 
             var containerModal = document.getElementById("evento-detalhe-modal-content");
             if (containerModal) {
                 containerModal.innerHTML = `
-                    <div class="${estilo.bgGradient} ${estilo.radialGlow} rounded-[28px] p-5 sm:p-7 border ${estilo.borderColor} ${estilo.borderGlow} text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-2xl">
-                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-4 right-4 text-stone-300 hover:text-white text-base font-bold w-8 h-8 rounded-full bg-black/60 border border-stone-700/80 flex items-center justify-center transition shadow-md z-30">&times;</button>
-
-                        <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-full ${estilo.iconBg} flex items-center justify-center text-2xl sm:text-3xl mx-auto border relative z-10">
-                            <i class="fa-regular fa-calendar-days"></i>
-                        </div>
-
-                        <div class="space-y-1 z-10 relative">
-                            <span class="text-[11px] sm:text-xs font-extrabold text-red-500 uppercase tracking-[0.2em] font-cinzel block">${nomeDiaSemana.toUpperCase()}</span>
-                            <h3 class="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-stone-100 to-amber-200/90 tracking-tight mt-0.5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">${diaFmt}/${mesNum}/${details.ano}</h3>
-                            ${topoBadgesContainer}
-                        </div>
-
-                        <div class="pt-2 pb-1 relative z-10">
-                            <div class="inline-flex items-center justify-center gap-3 w-full px-2 py-2 rounded-2xl bg-black/40 border border-stone-800/80 backdrop-blur-sm">
-                                ${estilo.decorLeft}
-                                <div class="text-center px-2">
-                                    <span class="text-[9px] sm:text-[10px] uppercase font-cinzel font-bold text-amber-300/80 tracking-widest block">Gira de</span>
-                                    <h4 class="font-cinzel font-black text-stone-100 text-2xl sm:text-3xl tracking-widest uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">${ev.titulo.replace('Gira de ', '')}</h4>
-                                </div>
-                                ${estilo.decorRight}
+                    <div class="${estilo.bgCardStyle} rounded-[36px] p-6 sm:p-8 text-stone-200 text-center space-y-5 relative overflow-hidden shadow-2xl backdrop-blur-3xl">
+                        <div class="absolute inset-2 border border-amber-500/30 rounded-[30px] pointer-events-none"></div>
+                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-5 right-5 text-amber-400 hover:text-white text-base font-bold w-10 h-10 rounded-full bg-black/80 border border-amber-500/40 flex items-center justify-center transition shadow-2xl z-30 cursor-pointer hover:scale-110 active:scale-95">&times;</button>
+                        <span class="text-[10px] sm:text-xs uppercase tracking-[0.35em] font-cinzel text-amber-300 font-bold block pt-1">${estilo.linhaTag}</span>
+                        <div class="relative w-22 h-22 sm:w-24 sm:h-24 mx-auto z-10">
+                            <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
+                                ${estilo.topIcon}
                             </div>
                         </div>
-
+                        <div class="space-y-1 z-10 relative">
+                            <span class="${estilo.accentText} uppercase block font-cinzel text-xs sm:text-sm tracking-[0.25em]">${nomeDiaSemana.toUpperCase()}</span>
+                            <h3 class="text-4xl sm:text-5xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+                        </div>
+                        <div class="relative z-10 my-2">
+                            <div class="${estilo.boxTituloBg} p-4 sm:p-5 rounded-2xl relative shadow-2xl">
+                                <span class="text-[9px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.3em] block mb-1">GIRA DE</span>
+                                <h4 class="font-serif font-extrabold text-stone-100 text-xl sm:text-2xl md:text-3xl tracking-wider uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">${ev.titulo.replace('Gira de ', '')}</h4>
+                            </div>
+                        </div>
                         ${cardInfoBoxHtml}
-
-                        ${descHtml}
-
-                        <div class="pt-2 space-y-2.5 z-10 relative">
+                        <div class="z-10 relative pt-1">
+                            <div class="bg-amber-100/90 text-stone-900 p-3.5 rounded-xl border border-amber-300 shadow-xl font-serif italic text-xs sm:text-sm relative">
+                                <span class="text-amber-700 font-bold text-lg leading-none">“</span>
+                                <span>${descTexto}</span>
+                                <span class="text-amber-700 font-bold text-lg leading-none">”</span>
+                            </div>
+                            <div class="mt-3 text-center">
+                                ${estilo.symbolEmblem}
+                            </div>
+                        </div>
+                        <div class="pt-2 space-y-3 z-10 relative">
                             ${acaoBtnHtml}
-                            
-                            <button onclick="fecharModalDetalhesEvento()" class="w-full py-2.5 bg-black/60 hover:bg-stone-900 text-stone-400 hover:text-white font-bold rounded-xl text-xs border border-stone-800/80 transition flex items-center justify-center gap-1 uppercase tracking-wider font-cinzel">
+                            <button onclick="fecharModalDetalhesEvento()" class="w-full py-3 bg-black/80 hover:bg-stone-900 text-stone-400 hover:text-white font-bold rounded-2xl text-xs border border-amber-500/20 transition flex items-center justify-center gap-1 uppercase tracking-[0.2em] font-cinzel cursor-pointer">
                                 &times; FECHAR
                             </button>
                         </div>
@@ -1009,14 +983,14 @@
         function atualizarUIConfirmado(id) {
             var btnElem = document.getElementById("btn-presenca-" + id);
             if (btnElem) {
-                btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-sm mr-1"></i> Confirmado';
-                btnElem.className = 'inline-flex items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-[11px] py-1 px-3 rounded-full cursor-default shadow-2xs';
+                btnElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-xs mr-1"></i> Confirmado';
+                btnElem.className = 'inline-flex items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold text-[11px] py-1 px-3 rounded-full cursor-default shadow-2xs';
                 btnElem.disabled = true; btnElem.title = 'Presença Confirmada';
             }
             var btnModalElem = document.getElementById("btn-presenca-modal-" + id);
             if (btnModalElem) {
                 btnModalElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> PRESENÇA CONFIRMADA';
-                btnModalElem.className = 'w-full py-3.5 bg-stone-900/90 border border-emerald-500/50 text-emerald-400 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 font-cinzel tracking-wider';
+                btnModalElem.className = 'w-full py-4 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 font-cinzel tracking-[0.2em]';
                 btnModalElem.disabled = true;
             }
         }
@@ -1135,89 +1109,38 @@
 
             var estilo = obterEstiloPremiumPorCategoria(categoria, titulo);
 
-            var badgesTopoHtml = "";
-            if (horarioTexto !== "") {
-                badgesTopoHtml += `<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full border ${estilo.badgeBorder} text-[11px] font-semibold">
-                                    <i class="fa-regular fa-clock ${estilo.accentColor}"></i> ${horarioTexto}
-                               </span>`;
-            }
-            if (valorDigitado !== "") {
-                badgesTopoHtml += `<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full border ${estilo.badgeBorder} text-[11px] font-semibold">
-                                    <i class="fa-solid fa-sack-dollar ${estilo.accentColor}"></i> ${valorDigitado}
-                               </span>`;
-            }
-
-            var topoBadgesContainer = badgesTopoHtml !== "" ? `<div class="flex items-center justify-center gap-2 pt-1 flex-wrap">${badgesTopoHtml}</div>` : "";
-
-            var infoBoxRows = [];
-            if (publicoDigitado !== "") {
-                infoBoxRows.push(`
-                    <div class="flex items-center gap-2.5">
-                        <i class="fa-solid fa-users ${estilo.accentColor}"></i>
-                        <span class="text-stone-300">Público: <strong class="text-white">${publicoDigitado}</strong></span>
-                    </div>
-                `);
-            }
-            if (statusDigitado !== "") {
-                infoBoxRows.push(`
-                    <div class="flex items-center gap-2.5">
-                        <i class="fa-solid fa-shield-halved text-emerald-400"></i>
-                        <span class="text-stone-300">Status: <strong class="text-emerald-400">${statusDigitado}</strong></span>
-                    </div>
-                `);
-            }
-            if (responsavelDigitado !== "") {
-                infoBoxRows.push(`
-                    <div class="flex items-center gap-2.5">
-                        <i class="fa-solid fa-user text-purple-400"></i>
-                        <span class="text-stone-300">Responsável: <strong class="text-white">${responsavelDigitado}</strong></span>
-                    </div>
-                `);
-            }
-
-            var cardInfoBoxHtml = "";
-            if (infoBoxRows.length > 0) {
-                cardInfoBoxHtml = `<div class="${estilo.cardBoxBg} rounded-xl p-3 border text-left space-y-2 text-xs z-10 relative">` +
-                                    infoBoxRows.join('') +
-                                  `</div>`;
-            }
-
             var descTextoPrev = descricaoDigitada !== "" ? descricaoDigitada : estilo.saudacao;
-            var descHtmlPrev = descTextoPrev ? `
-                <div class="pt-1 text-center text-xs text-stone-300 font-medium italic space-y-1.5 z-10 relative">
-                    <p class="text-stone-300/90 font-serif"><span class="text-amber-400 font-bold">“</span> ${descTextoPrev} <span class="text-amber-400 font-bold">”</span></p>
-                    <div class="w-8 h-8 rounded-full border ${estilo.badgeBorder} flex items-center justify-center mx-auto text-base">
-                        ${estilo.iconSimbolo}
-                    </div>
-                </div>` : "";
 
             prevBox.innerHTML = `
-                <div class="${estilo.bgGradient} ${estilo.radialGlow} rounded-[24px] p-5 border ${estilo.borderColor} ${estilo.borderGlow} text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-md">
-                    
-                    <div class="w-14 h-14 rounded-full ${estilo.iconBg} flex items-center justify-center text-2xl mx-auto border relative z-10">
-                        <i class="fa-regular fa-calendar-days"></i>
-                    </div>
+                <div class="${estilo.bgCardStyle} rounded-[32px] p-6 text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-3xl">
+                    <span class="text-[10px] uppercase tracking-[0.3em] font-cinzel text-amber-300 font-bold block pt-1">${estilo.linhaTag}</span>
 
-                    <div class="space-y-1 z-10 relative">
-                        <span class="text-[11px] font-extrabold text-red-500 uppercase tracking-[0.2em] font-cinzel block">${nomeDiaSemana.toUpperCase()}</span>
-                        <h3 class="text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 to-stone-100 tracking-tight mt-0.5">${diaFmt}/${mesNum}/${details.ano}</h3>
-                        ${topoBadgesContainer}
-                    </div>
-
-                    <div class="pt-1 pb-1 relative z-10">
-                        <div class="inline-flex items-center justify-center gap-2.5 w-full px-2 py-2 rounded-2xl bg-black/40 border border-stone-800/80">
-                            ${estilo.decorLeft}
-                            <div class="text-center px-1">
-                                <span class="text-[9px] uppercase font-cinzel font-bold text-amber-300/80 tracking-widest block">Gira de</span>
-                                <h4 class="font-cinzel font-black text-stone-100 text-xl tracking-widest uppercase">${titulo.replace('Gira de ', '')}</h4>
-                            </div>
-                            ${estilo.decorRight}
+                    <div class="relative w-20 h-20 mx-auto z-10">
+                        <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
+                            ${estilo.topIcon}
                         </div>
                     </div>
 
-                    ${cardInfoBoxHtml}
+                    <div class="space-y-1 z-10 relative">
+                        <span class="${estilo.accentText} uppercase block font-cinzel text-xs tracking-[0.25em]">${nomeDiaSemana.toUpperCase()}</span>
+                        <h3 class="text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+                    </div>
 
-                    ${descHtmlPrev}
+                    <div class="relative z-10 my-2">
+                        <div class="${estilo.boxTituloBg} p-3.5 rounded-xl relative shadow-xl">
+                            <span class="text-[8px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.25em] block mb-0.5">GIRA DE</span>
+                            <h4 class="font-serif font-extrabold text-stone-100 text-lg tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-tight">${titulo.replace('Gira de ', '')}</h4>
+                        </div>
+                    </div>
+
+                    <div class="z-10 relative pt-1">
+                        <div class="bg-amber-100/90 text-stone-900 p-3 rounded-xl border border-amber-300 shadow-lg font-serif italic text-xs relative">
+                            “${descTextoPrev}”
+                        </div>
+                        <div class="mt-2 text-center">
+                            ${estilo.symbolEmblem}
+                        </div>
+                    </div>
                 </div>
             `;
         }
@@ -1550,11 +1473,12 @@
                     html += '</div>' +
                             '<div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">' +
                                 '<div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">' +
-                                    '<i class="fa-solid fa-calendar-check text-umbanda-green text-xs"></i>' +
+                                    '<i class="fa-solid fa-calendar-check text-[#3e9366] text-xs"></i>' +
                                     '<span>Agendamento</span>' +
                                 '</div>' +
-                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="inline-flex items-center gap-1.5 ' + st.btnBg + ' active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">' +
-                                    '<i class="fa-brands fa-whatsapp text-xs"></i> Agendar' +
+                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="btn-zap-exact active:scale-95 transition-all duration-200 cursor-pointer shadow-2xs">' +
+                                    '<i class="fa-brands fa-whatsapp text-xs"></i>' +
+                                    '<span>Agendar</span>' +
                                 '</button>' +
                             '</div>' +
                         '</div>';
@@ -1565,7 +1489,7 @@
                                     '<i class="fa-solid fa-users text-amber-600 text-sm"></i>' +
                                     '<span><strong id="count-' + ev.id + '" class="font-bold text-stone-900 text-sm">--</strong> confirmados</span>' +
                                 '</div>' +
-                                '<button id="btn-presenca-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="inline-flex items-center gap-1.5 ' + st.btnBg + ' active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs">' +
+                                '<button id="btn-presenca-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="inline-flex items-center gap-1.5 ' + st.btnBg + ' active:scale-95 text-white font-semibold text-[11px] py-1 px-3 rounded-full transition-all duration-200 shadow-xs cursor-pointer">' +
                                     '<i class="fa-solid fa-check text-[10px]"></i> Confirmar' +
                                 '</button>' +
                             '</div>' +
@@ -1627,23 +1551,55 @@
             transform: skewX(-25deg); animation: shineSweep 4s infinite ease-in-out; pointer-events: none;
         }
 
-        .radial-glow-red {
-            background-image: radial-gradient(circle at 50% 20%, rgba(220, 38, 38, 0.35) 0%, rgba(13, 1, 1, 0.95) 75%);
+        /* BOTÃO WHATSAPP AJUSTADO PARA FICAR PROPORCIONAL E EM HARMONIA COM O BOTÃO CONFIRMAR */
+        .btn-zap-exact {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background-color: #3e9366;
+            color: #ffffff;
+            border-radius: 9999px;
+            padding: 4px 12px;
+            font-weight: 600;
+            font-size: 11px;
+            line-height: 1;
+            transition: all 0.2s ease;
         }
-        .radial-glow-emerald {
-            background-image: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.35) 0%, rgba(1, 14, 7, 0.95) 75%);
+        .btn-zap-exact:hover {
+            background-color: #347e53;
+            transform: translateY(-1px);
         }
-        .radial-glow-sky {
-            background-image: radial-gradient(circle at 50% 20%, rgba(14, 165, 233, 0.35) 0%, rgba(1, 10, 20, 0.95) 75%);
+
+        .plate-red-gold {
+            background: linear-gradient(180deg, #3d0707 0%, #1a0202 100%);
+            border: 2px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(220,38,38,0.4);
         }
-        .radial-glow-amber {
-            background-image: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.35) 0%, rgba(14, 9, 1, 0.95) 75%);
+        .plate-emerald-gold {
+            background: linear-gradient(180deg, #073820 0%, #021a0f 100%);
+            border: 2px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(16,185,129,0.4);
         }
-        .radial-glow-pink {
-            background-image: radial-gradient(circle at 50% 20%, rgba(236, 72, 153, 0.35) 0%, rgba(18, 1, 10, 0.95) 75%);
+        .plate-sky-gold {
+            background: linear-gradient(180deg, #072a40 0%, #021421 100%);
+            border: 2px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(14,165,233,0.4);
         }
-        .radial-glow-purple {
-            background-image: radial-gradient(circle at 50% 20%, rgba(168, 85, 247, 0.35) 0%, rgba(9, 1, 18, 0.95) 75%);
+        .plate-amber-gold {
+            background: linear-gradient(180deg, #3d2207 0%, #1c0e02 100%);
+            border: 2px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(245,158,11,0.4);
+        }
+        .plate-pink-gold {
+            background: linear-gradient(180deg, #42072f 0%, #1f0216 100%);
+            border: 2px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(236,72,153,0.4);
+        }
+        .plate-purple-gold {
+            background: linear-gradient(180deg, #2c0742 0%, #13021f 100%);
+            border: 2px solid #f59e0b;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 15px rgba(168,85,247,0.4);
         }
 
         .admin-modal-card {
@@ -1655,17 +1611,23 @@
 </head>
 <body class="bg-stone-100 font-sans text-stone-800 antialiased min-h-screen py-2 px-1.5 sm:py-6 sm:px-6">
 
-    <div class="max-w-5xl mx-auto mb-3 sm:mb-6 flex flex-wrap justify-between items-center gap-3 no-print bg-white p-3 sm:p-4 rounded-xl shadow-md border border-stone-200">
-        <div class="flex items-center gap-2">
-            <span class="inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-umbanda-green"></span>
-            <h1 class="font-semibold text-stone-700 text-xs sm:text-base">Painel do Calendário - <span id="texto-mes-topbar">Agosto de 2026</span></h1>
+    <!-- TOP BAR DISCRETA E ELEGANTE -->
+    <div class="max-w-5xl mx-auto mb-3 sm:mb-6 no-print bg-[#181818] p-2.5 sm:p-3.5 rounded-xl shadow-lg border border-amber-500/30 flex flex-wrap justify-between items-center gap-2.5 text-stone-100 relative overflow-hidden">
+        
+        <div class="flex items-center gap-2.5 z-10">
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <div>
+                <span class="text-[8.5px] uppercase font-cinzel font-bold text-amber-400/90 tracking-widest block leading-none">STATUS DO SISTEMA</span>
+                <h1 class="font-serif font-bold text-white text-xs sm:text-sm tracking-wide mt-0.5">Painel do Calendário — <span id="texto-mes-topbar" class="text-amber-200">Agosto de 2026</span></h1>
+            </div>
         </div>
-        <div class="flex flex-wrap gap-2">
-            <button onclick="showAdminModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
-                <i class="fa-solid fa-chart-line"></i> Acessos (ADM)
-            </button>
-            <button onclick="window.print()" class="bg-umbanda-green hover:bg-umbanda-lightgreen text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition duration-200 flex items-center gap-1.5 shadow-sm text-xs sm:text-sm">
-                <i class="fa-solid fa-print"></i> Imprimir / Salvar PDF
+
+        <div class="flex items-center gap-2 z-10">
+            <button onclick="showAdminModal()" class="bg-umbanda-green hover:bg-umbanda-lightgreen text-stone-100 font-bold px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-lg transition duration-200 flex items-center gap-1.5 border border-amber-400/40 text-xs shadow-sm cursor-pointer active:scale-95">
+                <i class="fa-solid fa-chart-line text-amber-400 text-xs"></i> Acessos (ADM)
             </button>
         </div>
     </div>
@@ -1734,7 +1696,6 @@
                 <button type="button" onclick="fecharModalTitulo()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
             </div>
 
-            <!-- CAMPO DE BUSCA: Teclado só abre se o usuário clicar/tocar no input -->
             <div class="relative pt-1 flex-shrink-0">
                 <label for="modal-titulo-busca" class="cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></i>
@@ -2161,7 +2122,7 @@
                             <div class="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-200 text-center space-y-2">
                                 <span class="text-xs font-bold text-stone-700 block">Melhor momento para</span>
                                 <span class="text-xs sm:text-sm font-extrabold text-emerald-950 block">Enviar mensagens no WhatsApp</span>
-                                <button onclick="abrirWhatsAppDivulgacao()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-xs !mt-3.5">
+                                <button onclick="abrirWhatsAppDivulgacao()" class="w-full py-2 bg-[#3e9366] hover:bg-[#347e53] text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-xs !mt-3.5 cursor-pointer">
                                     <i class="fa-brands fa-whatsapp text-sm"></i> Enviar agora
                                 </button>
                             </div>
@@ -2203,7 +2164,7 @@
                         <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-2xs flex items-center justify-between">
                             <div>
                                 <h4 class="font-bold text-stone-900 mb-2 flex items-center gap-2">
-                                    <i class="fa-brands fa-whatsapp text-emerald-600"></i> ORIGEM DOS CLIQUES
+                                    <i class="fa-brands fa-whatsapp text-[#3e9366]"></i> ORIGEM DOS CLIQUES
                                 </h4>
                                 <span class="text-stone-800 block font-bold">WhatsApp / Links Diretos</span>
                                 <span class="text-2xl font-serif font-black text-stone-900 block mt-1">100%</span>
@@ -2215,7 +2176,7 @@
                             <div class="w-16 h-16 flex-shrink-0">
                                 <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                                     <path class="text-stone-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                    <path class="text-emerald-600" stroke-dasharray="100, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="text-[#3e9366]" stroke-dasharray="100, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                                 </svg>
                             </div>
                         </div>
@@ -2288,7 +2249,6 @@
                         <div class="lg:col-span-2 space-y-4">
                             <div id="form-cadastro-container" class="bg-white p-4 sm:p-6 rounded-2xl border border-stone-200/90 shadow-sm space-y-5">
                                 
-                                <!-- CABEÇALHO DA SEÇÃO -->
                                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-800/80 flex items-center justify-center text-lg font-bold shadow-xs">
@@ -2305,8 +2265,6 @@
                                 </div>
 
                                 <div class="space-y-5 text-xs">
-                                    
-                                    <!-- 1. DATA DA ATIVIDADE -->
                                     <div class="space-y-2">
                                         <div class="flex items-center gap-2">
                                             <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">1</span>
@@ -2342,7 +2300,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- 2. EVENTO / TÍTULO -->
                                     <div class="space-y-2 pt-1 border-t border-stone-100">
                                         <div class="flex items-center gap-2 pt-2">
                                             <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">2</span>
@@ -2358,7 +2315,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- 3. CATEGORIA / TIPO -->
                                     <div class="space-y-2 pt-1 border-t border-stone-100">
                                         <div class="flex items-center justify-between pt-2">
                                             <div class="flex items-center gap-2">
@@ -2394,7 +2350,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- 4. HORÁRIOS -->
                                     <div class="space-y-2 pt-1 border-t border-stone-100">
                                         <div class="flex items-center gap-2 pt-2">
                                             <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">4</span>
@@ -2423,7 +2378,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- OPÇÕES AVANÇADAS / COMPLEMENTARES -->
                                     <div id="container-opcoes-avancadas" class="space-y-4 pt-1">
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-7">
                                             <div>
@@ -2466,7 +2420,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- 5. OBSERVAÇÕES -->
                                     <div class="space-y-2 pt-1 border-t border-stone-100">
                                         <div class="flex items-center gap-2 pt-2">
                                             <span class="w-5 h-5 rounded-full bg-emerald-800 text-white font-extrabold flex items-center justify-center text-[11px]">5</span>
@@ -2481,7 +2434,6 @@
 
                                 </div>
 
-                                <!-- BOTÕES DE AÇÃO RODAPÉ -->
                                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-stone-100">
                                     <button id="btn-cancelar-edicao" type="button" onclick="cancelarEdicaoAtividade()" class="w-full sm:w-auto px-5 py-2.5 border border-stone-300 hover:bg-stone-100 text-stone-700 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2">
                                         <i class="fa-solid fa-xmark text-stone-500"></i> Cancelar
@@ -2495,7 +2447,6 @@
                             </div>
                         </div>
 
-                        <!-- PRÉ-VISUALIZAÇÃO AO VIVO -->
                         <div class="space-y-4">
                             <div class="sticky top-2 space-y-2">
                                 <div class="flex items-center gap-2 text-umbanda-green font-bold text-xs uppercase tracking-wider pb-1">
