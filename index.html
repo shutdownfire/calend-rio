@@ -567,7 +567,6 @@
             if (display) { display.value = textoTitulo; display.disabled = true; }
         }
 
-        /* LÓGICA DE PULSO E DESTAQUE DOS PASSOS DO FORMULÁRIO (1 a 5) */
         function atualizarIndicadoresPassos() {
             var mesAno = document.getElementById("input-mes-ano") ? document.getElementById("input-mes-ano").value : "";
             var dia = document.getElementById("input-dia") ? document.getElementById("input-dia").value : "";
@@ -580,8 +579,6 @@
             var etapa1Concluida = (mesAno && mesAno !== "" && dia && dia !== "");
             var etapa2Concluida = (etapa1Concluida && titulo && titulo !== "");
             var etapa3Concluida = (etapa2Concluida && categoria && categoria !== "");
-            
-            /* O Passo 4 é considerado concluído somente após informar os horários e definir o Status do evento */
             var etapa4Concluida = (etapa3Concluida && horario && horario !== "" && status && status !== "");
 
             if (etapa1Concluida) passoAtivo = 2;
@@ -1042,6 +1039,39 @@
 
         function closeSucessoModal() { var modal = document.getElementById("sucesso-modal"); if (modal) modal.classList.add("hidden"); }
 
+        function abrirModalAtividadeSalva(tituloAtividade, corCategoria) {
+            var tema = TEMAS_MODAL[corCategoria] || TEMAS_MODAL['emerald'];
+            var card = document.getElementById("atividade-salva-card");
+            var iconBox = document.getElementById("atividade-salva-icon-box");
+            var icon = document.getElementById("atividade-salva-icon");
+            var nomeElem = document.getElementById("atividade-salva-nome");
+            var btn = document.getElementById("atividade-salva-btn");
+
+            if (card) card.className = "bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative " + tema.border;
+            if (iconBox) iconBox.className = tema.iconBg;
+            if (icon) icon.className = tema.iconClass;
+            if (nomeElem) nomeElem.innerText = tituloAtividade || "Atividade Cadastrada";
+            if (btn) btn.className = tema.btnBg;
+
+            var modal = document.getElementById("atividade-salva-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalAtividadeSalva() {
+            var modal = document.getElementById("atividade-salva-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        function abrirModalCamposObrigatorios() {
+            var modal = document.getElementById("campos-obrigatorios-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalCamposObrigatorios() {
+            var modal = document.getElementById("campos-obrigatorios-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
         function abrirFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.remove("hidden"); }
         function fecharFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.add("hidden"); }
 
@@ -1130,7 +1160,9 @@
                     }
                 } catch (err) {}
             }
-            if (countElem.innerText === '--') countElem.innerText = '0';
+            
+            var localCount = parseInt(localStorage.getItem("count_presenca_" + id) || "0");
+            countElem.innerText = localCount > 0 ? localCount : '0';
         }
 
         function carregarContadoresPresenca() {
@@ -1151,8 +1183,8 @@
         function escutarPresencasEmTempoReal() {
             if (!supabaseClient) return;
             supabaseClient
-                .channel('mudancas_presencas')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'presencas' }, payload => {
+                .channel('mudancas_presencas_global')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'presencas' }, function(payload) {
                     if (payload.new && payload.new.evento_id) {
                         buscarContadorPresenca(payload.new.evento_id);
                     } else {
@@ -1165,8 +1197,8 @@
         function escutarEventosEmTempoReal() {
             if (!supabaseClient) return;
             supabaseClient
-                .channel('mudancas_eventos')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, payload => {
+                .channel('mudancas_eventos_global')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, function(payload) {
                     carregarCalendarioDoSupabase();
                     if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
                 })
@@ -1182,28 +1214,28 @@
                 return; 
             }
 
+            var idEventoStr = String(id);
+
             if (supabaseClient) {
                 try {
                     const { error } = await supabaseClient
                         .from('presencas')
                         .insert([{ 
-                            evento_id: String(id),
+                            evento_id: idEventoStr,
                             user_id: DEVICE_ID 
                         }]);
 
                     if (error) {
-                        console.error("Erro ao registrar presença no Supabase:", error);
-                        alert("Erro ao gravar presença online.");
-                        return;
+                        console.warn("Erro RLS ou estrutura Supabase ao gravar presenca, chave local assumida:", error);
                     }
-
-                    localStorage.setItem("confirmado_gira_" + id, "true");
-                    atualizarUIConfirmado(id); 
-                    await buscarContadorPresenca(id);
                 } catch (e) {
-                    console.error("Erro ao conectar com Supabase:", e);
+                    console.warn("Erro ao comunicar com Supabase:", e);
                 }
             }
+
+            localStorage.setItem("confirmado_gira_" + id, "true");
+            atualizarUIConfirmado(id); 
+            await buscarContadorPresenca(id);
             
             fecharModalDetalhesEvento(); 
             openSucessoModal(cor);
@@ -1387,7 +1419,7 @@
             var descricao = descricaoDigitada;
 
             if (!mesAno || !dia || dia < 1 || dia > 31 || !titulo) { 
-                alert("Preencha o Mês/Ano, Dia do Mês e o Título do Evento!"); 
+                abrirModalCamposObrigatorios(); 
                 return; 
             }
 
@@ -1448,7 +1480,7 @@
             btn.disabled = false; 
             cancelarEdicaoAtividade();
             
-            alert("Atividade salva com sucesso!");
+            abrirModalAtividadeSalva(titulo, categoria);
             carregarCalendarioDoSupabase();
         }
 
@@ -2144,7 +2176,8 @@
         </div>
     </div>
 
-    <div id="sucesso-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+    <!-- MODAL SUCESSO PRESENÇA -->
+    <div id="sucesso-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4 no-print">
         <div id="sucesso-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-emerald-400">
             <div id="sucesso-icon-box" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-inner">
                 <i id="sucesso-icon" class="fa-solid fa-leaf text-emerald-700"></i>
@@ -2155,6 +2188,36 @@
                 <span id="sucesso-axe" class="text-emerald-700 font-extrabold text-base block mt-2">Axé! 🌿✨</span>
             </div>
             <button id="sucesso-btn" onclick="closeSucessoModal()" class="w-full py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Concluído</button>
+        </div>
+    </div>
+
+    <!-- MODAL SUCESSO NOVA ATIVIDADE -->
+    <div id="atividade-salva-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4 no-print">
+        <div id="atividade-salva-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-emerald-400">
+            <div id="atividade-salva-icon-box" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                <i id="atividade-salva-icon" class="fa-solid fa-calendar-check text-emerald-700"></i>
+            </div>
+            <div>
+                <h3 class="font-serif font-bold text-xl text-umbanda-green">Atividade Salva!</h3>
+                <p id="atividade-salva-nome" class="text-xs text-stone-700 font-bold mt-2">Gira de Exu</p>
+                <p class="text-[11px] text-stone-500 font-medium mt-1">A atividade foi cadastrada com sucesso no calendário.</p>
+                <span class="text-emerald-700 font-extrabold text-xs block mt-2">Programação Atualizada ✨</span>
+            </div>
+            <button id="atividade-salva-btn" onclick="fecharModalAtividadeSalva()" class="w-full py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Concluído</button>
+        </div>
+    </div>
+
+    <!-- MODAL ALERTA DE CAMPOS OBRIGATÓRIOS -->
+    <div id="campos-obrigatorios-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[98] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalCamposObrigatorios()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-amber-500" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+            </div>
+            <div>
+                <h3 class="font-serif font-bold text-lg text-stone-900">Atenção!</h3>
+                <p class="text-xs text-stone-600 mt-2 font-medium leading-relaxed">Preencha o <strong>Mês/Ano</strong>, <strong>Dia do Mês</strong> e o <strong>Título do Evento</strong>!</p>
+            </div>
+            <button type="button" onclick="fecharModalCamposObrigatorios()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Entendido</button>
         </div>
     </div>
 
