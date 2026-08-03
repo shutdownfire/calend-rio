@@ -57,6 +57,15 @@
             "Gira de Passes", "Gira de Esquerda", "Gira de Direita"
         ];
 
+        function obterNumeroMesDeTexto(mesAnoTexto) {
+            for (var i = 0; i < NORM_MESES.length; i++) {
+                if (mesAnoTexto && mesAnoTexto.includes(NORM_MESES[i])) {
+                    return (i + 1) < 10 ? '0' + (i + 1) : String(i + 1);
+                }
+            }
+            return "01";
+        }
+
         function normalizarEventoId(id) {
             if (!id) return "";
             return String(id).replace(/^supa-/, '').replace(/^loc-/, '');
@@ -1587,7 +1596,7 @@
                 return; 
             }
 
-            var mesNum = mesExibicao.includes("Junho") ? "06" : (mesExibicao.includes("Julho") ? "07" : (mesExibicao.includes("Agosto") ? "08" : (mesExibicao.includes("Setembro") ? "09" : (mesExibicao.includes("Outubro") ? "10" : (mesExibicao.includes("Novembro") ? "11" : "12")))));
+            var mesNum = obterNumeroMesDeTexto(mesExibicao);
             var html = '<div class="space-y-2">';
             eventosDoMes.forEach(function(ev) {
                 var diaFmt = (ev.dia < 10 ? '0' + ev.dia : ev.dia) + '/' + mesNum;
@@ -1624,7 +1633,7 @@
         }
 
         async function carregarCalendarioDoSupabase() {
-            var listaEventos = (mesAtualAtivo === "Agosto de 2026") ? [...EVENTOS_PADRAO] : [];
+            var listaEventos = [];
 
             if (supabaseClient) {
                 try {
@@ -1634,7 +1643,7 @@
                             var idString = 'supa-' + ev.id;
                             var indexExistente = listaEventos.findIndex(e => e.dia === ev.dia && e.titulo === ev.titulo);
                             var diaStr = ev.dia < 10 ? '0' + ev.dia : '' + ev.dia;
-                            var mesNum = mesAtualAtivo.includes("Junho") ? "06" : (mesAtualAtivo.includes("Julho") ? "07" : (mesAtualAtivo.includes("Agosto") ? "08" : (mesAtualAtivo.includes("Setembro") ? "09" : (mesAtualAtivo.includes("Outubro") ? "10" : (mesAtualAtivo.includes("Novembro") ? "11" : "12")))));
+                            var mesNum = obterNumeroMesDeTexto(mesAtualAtivo);
                             
                             var eventoObj = {
                                 id: idString, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: ev.descricao || '', publico: ev.publico || '', status: ev.status || '', responsavel: ev.responsavel || '', tipo: 'whatsapp', mes_ano: ev.mes_ano
