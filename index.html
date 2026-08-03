@@ -628,14 +628,14 @@
         }
 
         var CATEGORIA_STYLES = {
-            'red': { border: 'border-l-red-600', badge: 'bg-red-100 text-red-900', btnBg: 'bg-red-600 hover:bg-red-700', icon: 'fa-fire' },
-            'amber': { border: 'border-l-amber-500', badge: 'bg-amber-100 text-amber-900', btnBg: 'bg-amber-600 hover:bg-amber-700', icon: 'fa-hand-holding-heart' },
-            'emerald': { border: 'border-l-emerald-600', badge: 'bg-emerald-100 text-emerald-900', btnBg: 'bg-emerald-600 hover:bg-emerald-700', icon: 'fa-leaf' },
-            'purple': { border: 'border-l-purple-600', badge: 'bg-purple-100 text-purple-900', btnBg: 'bg-purple-600 hover:bg-purple-700', icon: 'fa-spa' },
-            'sky': { border: 'border-l-sky-500', badge: 'bg-sky-100 text-sky-900', btnBg: 'bg-sky-600 hover:bg-sky-700', icon: 'fa-hands-holding' },
-            'pink': { border: 'border-l-pink-400', badge: 'bg-pink-100 text-pink-900', btnBg: 'bg-pink-600 hover:bg-pink-700', icon: 'fa-candy-cane' },
-            'jurema': { border: 'border-l-emerald-600', badge: 'bg-emerald-100 text-emerald-900', btnBg: 'bg-emerald-600 hover:bg-emerald-700', icon: 'fa-leaf' },
-            'joaocaveira': { border: 'border-l-red-600', badge: 'bg-red-100 text-red-900', btnBg: 'bg-red-600 hover:bg-red-700', icon: 'fa-fire' }
+            'red': { border: 'border-l-red-600', badge: 'bg-red-100 text-red-900', btnBg: 'bg-red-600 hover:bg-red-700', icon: 'fa-fire', bar: 'bg-red-600', iconBg: 'bg-red-100', iconColor: 'text-red-700', descBg: 'bg-red-50/80 border-red-100', descText: 'text-red-900', descIcon: 'text-red-500' },
+            'amber': { border: 'border-l-amber-500', badge: 'bg-amber-100 text-amber-900', btnBg: 'bg-amber-600 hover:bg-amber-700', icon: 'fa-hand-holding-heart', bar: 'bg-amber-500', iconBg: 'bg-amber-100', iconColor: 'text-amber-700', descBg: 'bg-amber-50/80 border-amber-100', descText: 'text-amber-900', descIcon: 'text-amber-500' },
+            'emerald': { border: 'border-l-emerald-600', badge: 'bg-emerald-100 text-emerald-900', btnBg: 'bg-emerald-600 hover:bg-emerald-700', icon: 'fa-leaf', bar: 'bg-emerald-600', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-700', descBg: 'bg-emerald-50/80 border-emerald-100', descText: 'text-emerald-900', descIcon: 'text-emerald-500' },
+            'purple': { border: 'border-l-purple-600', badge: 'bg-purple-100 text-purple-900', btnBg: 'bg-purple-600 hover:bg-purple-700', icon: 'fa-spa', bar: 'bg-purple-600', iconBg: 'bg-purple-100', iconColor: 'text-purple-700', descBg: 'bg-purple-50/80 border-purple-100', descText: 'text-purple-900', descIcon: 'text-purple-500' },
+            'sky': { border: 'border-l-sky-500', badge: 'bg-sky-100 text-sky-900', btnBg: 'bg-sky-600 hover:bg-sky-700', icon: 'fa-hands-holding', bar: 'bg-sky-500', iconBg: 'bg-sky-100', iconColor: 'text-sky-700', descBg: 'bg-sky-50/80 border-sky-100', descText: 'text-sky-900', descIcon: 'text-sky-500' },
+            'pink': { border: 'border-l-pink-400', badge: 'bg-pink-100 text-pink-900', btnBg: 'bg-pink-600 hover:bg-pink-700', icon: 'fa-candy-cane', bar: 'bg-pink-400', iconBg: 'bg-pink-100', iconColor: 'text-pink-700', descBg: 'bg-pink-50/80 border-pink-100', descText: 'text-pink-900', descIcon: 'text-pink-500' },
+            'jurema': { border: 'border-l-emerald-600', badge: 'bg-emerald-100 text-emerald-900', btnBg: 'bg-emerald-600 hover:bg-emerald-700', icon: 'fa-leaf', bar: 'bg-emerald-600', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-700', descBg: 'bg-emerald-50/80 border-emerald-100', descText: 'text-emerald-900', descIcon: 'text-emerald-500' },
+            'joaocaveira': { border: 'border-l-red-600', badge: 'bg-red-100 text-red-900', btnBg: 'bg-red-600 hover:bg-red-700', icon: 'fa-fire', bar: 'bg-red-600', iconBg: 'bg-red-100', iconColor: 'text-red-700', descBg: 'bg-red-50/80 border-red-100', descText: 'text-red-900', descIcon: 'text-red-500' }
         };
 
         var TEMAS_MODAL = {
@@ -841,11 +841,11 @@
                 var idNorm = normalizarEventoId(ev.id);
                 var estaConfirmadoModal = localStorage.getItem("confirmado_gira_" + idNorm) || localStorage.getItem("confirmado_gira_" + ev.id);
                 if (estaConfirmadoModal) {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-2.5 sm:py-4 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_25px_rgba(16,185,129,0.3)]">' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-2.5 sm:py-3 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_25px_rgba(16,185,129,0.3)]">' +
                                         '<i class="fa-solid fa-circle-check text-emerald-400 text-sm sm:text-base"></i> PRESENÇA CONFIRMADA' +
                                    '</button>';
                 } else {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-2.5 sm:py-4 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer">' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-2.5 sm:py-3 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer">' +
                                         '<i class="fa-solid fa-check text-sm sm:text-base"></i> CONFIRMAR PRESENÇA' +
                                    '</button>';
                 }
@@ -909,7 +909,7 @@
 
             var cardInfoBoxHtml = "";
             if (infoBoxRows.length > 0) {
-                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/30 rounded-2xl p-2.5 sm:p-4 text-left space-y-2 sm:space-y-3 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
+                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/30 rounded-2xl p-2.5 sm:p-3 text-left space-y-2 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
                                     infoBoxRows.join('<div class="h-[1px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full"></div>') +
                                   `</div>`;
             }
@@ -917,7 +917,7 @@
             var temObservacaoCustom = ev.descricao && ev.descricao.trim() !== '';
             var descTexto = temObservacaoCustom ? ev.descricao.trim() : estilo.saudacao;
             var fraseAutomaticaExtraHtml = temObservacaoCustom
-                ? `<div class="bg-black/50 text-amber-100 p-3 sm:p-4 rounded-2xl border border-amber-400/30 shadow-xl font-serif italic text-xs sm:text-sm relative backdrop-blur-md mt-2.5">
+                ? `<div class="bg-black/50 text-amber-100 p-2.5 sm:p-3.5 rounded-2xl border border-amber-400/30 shadow-xl font-serif italic text-xs sm:text-sm relative backdrop-blur-md mt-2">
                         <span class="text-amber-400 font-bold text-sm leading-none">“</span>
                         <span>${estilo.saudacao}</span>
                         <span class="text-amber-400 font-bold text-sm leading-none">”</span>
@@ -927,42 +927,36 @@
             var containerModal = document.getElementById("evento-detalhe-modal-content");
             if (containerModal) {
                 containerModal.innerHTML = `
-                    <div class="${estilo.bgCardStyle} rounded-[24px] sm:rounded-[36px] p-3.5 sm:p-8 text-stone-200 text-center space-y-2.5 sm:space-y-5 relative overflow-hidden shadow-2xl backdrop-blur-3xl max-h-[92vh] max-h-[92dvh] overflow-y-auto">
-                        <div class="absolute inset-1.5 sm:inset-2 border border-amber-500/40 rounded-[22px] sm:rounded-[30px] pointer-events-none"></div>
-                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3 right-3 sm:top-5 sm:right-5 text-amber-400 hover:text-white text-base font-bold w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/80 border border-amber-500/40 flex items-center justify-center transition shadow-2xl z-30 cursor-pointer hover:scale-110 active:scale-95">&times;</button>
-                        <span class="text-[9px] sm:text-xs uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.25em] sm:tracking-[0.35em]">${estilo.linhaTag}</span>
-                        <div class="relative w-12 h-12 sm:w-24 sm:h-24 mx-auto z-10">
+                    <div class="${estilo.bgCardStyle} rounded-[24px] sm:rounded-[28px] p-3.5 sm:p-5 text-stone-200 text-center space-y-2 sm:space-y-2.5 relative overflow-hidden shadow-2xl backdrop-blur-3xl max-h-[92vh] max-h-[92dvh] overflow-y-auto">
+                        <div class="absolute inset-1.5 sm:inset-2 border border-amber-500/40 rounded-[22px] sm:rounded-[24px] pointer-events-none"></div>
+                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-amber-400 hover:text-white text-base font-bold w-8 h-8 rounded-full bg-black/80 border border-amber-500/40 flex items-center justify-center transition shadow-2xl z-30 cursor-pointer hover:scale-110 active:scale-95">&times;</button>
+                        <span class="text-[9px] sm:text-[11px] uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.25em] sm:tracking-[0.3em]">${estilo.linhaTag}</span>
+                        <div class="relative w-12 h-12 sm:w-14 sm:h-14 mx-auto z-10">
                             <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
                                 ${estilo.topIcon}
                             </div>
                         </div>
-                        <div class="space-y-0.5 sm:space-y-1 z-10 relative">
-                            <span class="${estilo.accentText} uppercase block font-cinzel text-[11px] sm:text-sm tracking-[0.2em] sm:tracking-[0.25em]">${nomeDiaSemana.toUpperCase()}</span>
-                            <h3 class="text-2xl sm:text-5xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+                        <div class="space-y-0.5 z-10 relative">
+                            <span class="${estilo.accentText} uppercase block font-cinzel text-[11px] sm:text-xs tracking-[0.2em]">${nomeDiaSemana.toUpperCase()}</span>
+                            <h3 class="text-2xl sm:text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
                         </div>
-                        <div class="relative z-10 my-1 sm:my-2">
-                            <div class="${estilo.boxTituloBg} p-2.5 sm:p-5 rounded-2xl relative shadow-2xl">
+                        <div class="relative z-10 my-1">
+                            <div class="${estilo.boxTituloBg} p-2.5 sm:p-3 rounded-2xl relative shadow-2xl">
                                 <span class="text-[8px] sm:text-[9px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.2em] sm:tracking-[0.3em] block mb-0.5">GIRA DE</span>
-                                <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-2xl md:text-3xl tracking-wider uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">${ev.titulo.replace('Gira de ', '')}</h4>
+                                <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">${ev.titulo.replace('Gira de ', '')}</h4>
                             </div>
                         </div>
                         ${cardInfoBoxHtml}
                         <div class="z-10 relative pt-0.5">
-                            <div class="bg-black/70 text-amber-50 p-2.5 sm:p-4 rounded-2xl border border-amber-400/40 shadow-2xl font-serif font-semibold not-italic text-sm sm:text-base relative backdrop-blur-md">
-                                <span class="text-amber-400 font-bold text-base sm:text-lg leading-none">“</span>
+                            <div class="bg-black/70 text-amber-50 p-2.5 sm:p-3 rounded-2xl border border-amber-400/40 shadow-2xl font-serif font-semibold not-italic text-sm relative backdrop-blur-md">
+                                <span class="text-amber-400 font-bold text-base leading-none">“</span>
                                 <span>${descTexto}</span>
-                                <span class="text-amber-400 font-bold text-base sm:text-lg leading-none">”</span>
+                                <span class="text-amber-400 font-bold text-base leading-none">”</span>
                             </div>
                             ${fraseAutomaticaExtraHtml}
-                            <div class="mt-2 text-center">
-                                ${estilo.symbolEmblem}
-                            </div>
                         </div>
-                        <div class="pt-0.5 space-y-2 sm:space-y-3 z-10 relative">
+                        <div class="pt-0.5 z-10 relative">
                             ${acaoBtnHtml}
-                            <button onclick="fecharModalDetalhesEvento()" class="w-full py-2 sm:py-3 bg-black/80 hover:bg-stone-900 text-stone-400 hover:text-white font-bold rounded-2xl text-[11px] sm:text-xs border border-amber-500/20 transition flex items-center justify-center gap-1 uppercase tracking-[0.2em] font-cinzel cursor-pointer">
-                                &times; FECHAR
-                            </button>
                         </div>
                     </div>
                 `;
@@ -1690,23 +1684,25 @@
                     badgeValorEspecial = '<span class="text-[11px] sm:text-xs bg-umbanda-green text-white font-bold px-3 py-1 rounded-full shadow-2xs">' + ev.valor + '</span>';
                 }
 
-                html += '<div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 ' + st.border + ' border border-stone-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">' +
-                            '<div>' +
-                                '<div class="flex justify-between items-start mb-1.5 sm:mb-2">' +
-                                    '<span class="' + st.badge + ' font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md">' + ev.diaTexto + '</span>' +
+                html += '<div class="group bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-stone-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col">' +
+                            '<div class="h-1.5 w-full ' + st.bar + '"></div>' +
+                            '<div class="p-3 sm:p-4 flex flex-col flex-1">' +
+                                '<div class="flex justify-between items-start gap-2 mb-2 sm:mb-2.5">' +
+                                    '<div class="flex items-center gap-1.5 sm:gap-2">' +
+                                        '<span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg ' + st.iconBg + ' flex items-center justify-center flex-shrink-0"><i class="fa-solid ' + st.icon + ' text-[10px] sm:text-xs ' + st.iconColor + '"></i></span>' +
+                                        '<span class="' + st.badge + ' font-extrabold text-xs sm:text-sm px-2.5 py-0.5 sm:py-1 rounded-md">' + ev.diaTexto + '</span>' +
+                                    '</div>' +
                                     (ev.categoria === 'amber' ?
                                         '<span class="text-[11px] sm:text-xs bg-amber-100 text-amber-900 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-solid fa-hand-holding-heart mr-1"></i> Mutirão</span>' :
                                         (badgeValorEspecial !== '' ? badgeValorEspecial :
                                         (ev.horario ? '<span class="text-[11px] sm:text-xs bg-stone-100 text-stone-600 font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full"><i class="fa-regular fa-clock"></i> ' + ev.horario + '</span>' : ''))
                                     ) +
                                 '</div>' +
-                                '<br>' +
-                                '<h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1">' + ev.titulo + '</h4>' +
-                                (descCard ? '<p class="text-xs text-stone-600 leading-relaxed mb-2">' + descCard + '</p>' : '');
+                                '<h4 class="font-bold text-stone-800 text-sm sm:text-base mb-1.5 sm:mb-2 leading-snug">' + ev.titulo + '</h4>' +
+                                (descCard ? '<div class="flex items-start gap-2 bg-stone-50 border-stone-200 border rounded-lg px-2.5 py-2 mb-1"><i class="fa-solid fa-circle-info text-amber-600 text-[11px] sm:text-xs mt-0.5 flex-shrink-0"></i><p class="text-[11px] sm:text-xs text-stone-700 leading-relaxed font-medium">' + descCard + '</p></div>' : '');
 
                 if (eAgendamentoWhatsApp) {
-                    html += '</div>' +
-                            '<div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">' +
+                    html += '<div class="mt-auto pt-2.5 sm:pt-3 border-t border-stone-100 flex items-center justify-between gap-2">' +
                                 '<div class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">' +
                                     '<i class="fa-solid fa-calendar-check text-[#3e9366] text-xs"></i>' +
                                     '<span>Agendamento</span>' +
@@ -1716,10 +1712,10 @@
                                     '<span>Agendar</span>' +
                                 '</button>' +
                             '</div>' +
-                        '</div>';
+                        '</div>' +
+                    '</div>';
                 } else {
-                    html += '</div>' +
-                            '<div class="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">' +
+                    html += '<div class="mt-auto pt-2.5 sm:pt-3 border-t border-stone-100 flex items-center justify-between gap-2">' +
                                 '<div class="inline-flex items-center gap-1.5 text-xs text-stone-600 font-medium">' +
                                     '<i class="fa-solid fa-users text-amber-600 text-sm"></i>' +
                                     '<span><strong id="count-' + ev.id + '" class="font-bold text-stone-900 text-sm">--</strong> confirmados</span>' +
@@ -1728,7 +1724,8 @@
                                     '<i class="fa-solid fa-check text-[10px]"></i> Confirmar' +
                                 '</button>' +
                             '</div>' +
-                        '</div>';
+                        '</div>' +
+                    '</div>';
                 }
             });
             container.innerHTML = html; 
