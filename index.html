@@ -1253,22 +1253,51 @@
             }
         }
 
+        var ULTIMO_ID_NOTIFICACAO_EXIBIDO = localStorage.getItem("ultimo_id_notificacao_exibido") || null;
+
+        function processarNovaNotificacao(notif) {
+            if (!notif || !notif.id) return;
+            var idStr = String(notif.id);
+            if (ULTIMO_ID_NOTIFICACAO_EXIBIDO === idStr) return;
+
+            ULTIMO_ID_NOTIFICACAO_EXIBIDO = idStr;
+            localStorage.setItem("ultimo_id_notificacao_exibido", idStr);
+
+            exibirToastNotificacaoCliente(notif);
+        }
+
         function escutarNotificacoesEmTempoReal() {
             if (!supabaseClient) return;
 
+            // 1. Escuta em Tempo Real via WebSocket (Broadcast + Postgres Changes)
             GLOBAL_PUSH_CHANNEL = supabaseClient.channel('global_push_broadcast');
             GLOBAL_PUSH_CHANNEL
                 .on('broadcast', { event: 'nova_notificacao' }, function(payload) {
                     if (payload && payload.payload) {
-                        exibirToastNotificacaoCliente(payload.payload);
+                        processarNovaNotificacao(payload.payload);
                     }
                 })
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, function(payload) {
                     if (payload && payload.new) {
-                        exibirToastNotificacaoCliente(payload.new);
+                        processarNovaNotificacao(payload.new);
                     }
                 })
                 .subscribe();
+
+            // 2. BUSCA AUTOMÁTICA A CADA 6 SEGUNDOS (Garante entrega em 100% dos celulares)
+            setInterval(async function() {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('notificacoes')
+                        .select('*')
+                        .order('id', { ascending: false })
+                        .limit(1);
+
+                    if (!error && data && data.length > 0) {
+                        processarNovaNotificacao(data[0]);
+                    }
+                } catch(e) {}
+            }, 6000);
         }
 
         function exibirToastNotificacaoCliente(notif) {
