@@ -1374,24 +1374,33 @@
                             titulo: titulo,
                             mensagem: mensagem,
                             categoria: categoria,
-                            link: linkAcao,
-                            criado_em: new Date().toISOString()
-                        }]);
+                            link: linkAcao
+                        }])
+                        .select();
 
                     if (error) {
-                        console.warn("Aviso ao salvar notificação no Supabase:", error);
-                        erroMsg = error.message;
-                    } else {
+                        console.error("Erro ao salvar notificação no Supabase:", error);
+                        erroMsg = error.message || JSON.stringify(error);
+                    } else if (data && data.length > 0) {
                         enviouComSucesso = true;
+                        var novaNotifSalva = data[0];
+
+                        if (GLOBAL_PUSH_CHANNEL) {
+                            try {
+                                GLOBAL_PUSH_CHANNEL.send({
+                                    type: 'broadcast',
+                                    event: 'nova_notificacao',
+                                    payload: novaNotifSalva
+                                });
+                            } catch(e) {}
+                        }
                     }
                 } catch (e) {
                     console.error("Erro na requisição Supabase Notificação:", e);
-                    erroMsg = e.message || "Erro de conexão";
+                    erroMsg = e.message || "Erro de conexão com o banco de dados";
                 }
-            }
-
-            if (!enviouComSucesso) {
-                enviouComSucesso = true; // Permite envio local simulado no app
+            } else {
+                erroMsg = "Supabase não inicializado.";
             }
 
             if (btn) {
@@ -1399,36 +1408,29 @@
                 btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-1.5"></i> Disparar Notificação para Todos';
             }
 
-            if (GLOBAL_PUSH_CHANNEL) {
-                try {
-                    GLOBAL_PUSH_CHANNEL.send({
-                        type: 'broadcast',
-                        event: 'nova_notificacao',
-                        payload: { titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao }
-                    });
-                } catch(e) {}
+            if (!enviouComSucesso) {
+                alert("⚠️ A notificação NÃO foi enviada para o banco de dados!\n\nMotivo do erro: " + erroMsg + "\n\nVerifique se rodou o comando SQL no Supabase para liberar a tabela 'notificacoes'.");
+                return;
             }
 
-            if (enviouComSucesso) {
-                var localNotifs = JSON.parse(localStorage.getItem("notificacoes_historico") || "[]");
-                localNotifs.unshift({
-                    id: Date.now(),
-                    titulo: titulo,
-                    mensagem: mensagem,
-                    categoria: categoria,
-                    data: new Date().toLocaleString('pt-BR')
-                });
-                localStorage.setItem("notificacoes_historico", JSON.stringify(localNotifs));
+            var localNotifs = JSON.parse(localStorage.getItem("notificacoes_historico") || "[]");
+            localNotifs.unshift({
+                id: Date.now(),
+                titulo: titulo,
+                mensagem: mensagem,
+                categoria: categoria,
+                data: new Date().toLocaleString('pt-BR')
+            });
+            localStorage.setItem("notificacoes_historico", JSON.stringify(localNotifs));
 
-                exibirToastNotificacaoCliente({ titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao });
+            processarNovaNotificacao({ id: Date.now(), titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao });
 
-                document.getElementById("notif-titulo").value = "";
-                document.getElementById("notif-mensagem").value = "";
-                atualizarPrevisualizacaoNotificacao();
-                carregarHistoricoNotificacoesAdmin();
+            document.getElementById("notif-titulo").value = "";
+            document.getElementById("notif-mensagem").value = "";
+            atualizarPrevisualizacaoNotificacao();
+            carregarHistoricoNotificacoesAdmin();
 
-                alert("🚀 Notificação disparada com sucesso para todos os celulares ativos!");
-            }
+            alert("🚀 Notificação gravada no Supabase e disparada com sucesso para TODOS os celulares!");
         }
 
         function aplicarTemplateNotificacao(tipo) {
