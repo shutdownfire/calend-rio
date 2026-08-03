@@ -2715,23 +2715,20 @@
     <div class="print-container max-w-5xl mx-auto bg-umbanda-cream rounded-xl sm:rounded-2xl shadow-xl border border-amber-900/10 overflow-hidden relative">
         <div class="h-1.5 sm:h-2 bg-gradient-to-r from-umbanda-green via-umbanda-gold to-umbanda-green"></div>
 
-        <header class="p-0 text-center relative border-b border-amber-900/10 bg-[#fdfaf3]">
+        <header class="p-0 text-center relative border-b border-amber-900/10 bg-[#fdfaf3] overflow-hidden">
             <div onclick="abrirModalZoomBanner()" title="Clique para ampliar o banner" class="w-full relative overflow-hidden cursor-zoom-in group flex items-center justify-center">
-                <picture class="w-full block">
+                <picture class="w-full block overflow-hidden">
                     <source media="(max-width: 639px)" srcset="https://lh3.googleusercontent.com/d/1LXksObs1j92C2sw3PhO2ZF_SCgMI0Yki">
                     <img id="drive-header-banner" 
                          src="https://lh3.googleusercontent.com/d/1ui9CS1TIpXVsOGomqIRrK8Z3Jt5M2WZE" 
                          alt="Banner Templo de Umbanda Vovó Maria Conga" 
-                         class="w-full h-auto object-cover object-center block transition duration-300 group-hover:scale-102"
+                         class="w-full h-auto object-cover sm:object-cover object-center block transition duration-300 group-hover:scale-102 scale-115 sm:scale-100 my-2 sm:my-0"
                          onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=1LXksObs1j92C2sw3PhO2ZF_SCgMI0Yki&sz=w1000';">
                 </picture>
                 <div class="shine-effect"></div>
-                <div class="absolute bottom-2 right-2 bg-black/60 text-amber-300 text-[10px] px-2 py-1 rounded-md border border-amber-400/40 backdrop-blur-sm sm:hidden flex items-center gap-1">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i> Toque para ampliar
-                </div>
             </div>
 
-            <div class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-full z-30">
+            <div class="absolute left-1/2 -translate-x-1/2 translate-y-3 sm:-translate-y-1/2 top-full z-30">
                 <button type="button" onclick="abrirModalSeletorMes()" class="flex items-center justify-center gap-2.5 bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green text-white px-5 py-2 rounded-full shadow-xl border border-amber-400/60 hover:scale-105 active:scale-95 transition whitespace-nowrap">
                     <i class="fa-regular fa-calendar-days text-umbanda-goldlight text-sm sm:text-base"></i>
                     <span id="btn-mes-principal-texto" class="font-serif font-bold text-xs sm:text-sm md:text-base text-white">Agosto de 2026</span>
@@ -2740,7 +2737,7 @@
             </div>
         </header>
 
-        <main class="p-2 sm:p-4 md:p-8 pt-8 sm:pt-10">
+        <main class="p-2 sm:p-4 md:p-8 pt-10 sm:pt-10">
             <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-stone-200/80 p-2 sm:p-4 md:p-6 mb-6 sm:mb-8">
                 <div class="bg-gradient-to-r from-amber-50/90 via-stone-50 to-amber-50/90 border border-amber-200/80 rounded-xl p-2.5 sm:p-3.5 mb-4 shadow-xs flex flex-wrap items-center justify-between gap-2.5">
                     <div class="flex items-center gap-1.5 font-bold text-umbanda-green uppercase tracking-wider text-[11px] sm:text-xs">
