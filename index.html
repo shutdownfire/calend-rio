@@ -1234,11 +1234,14 @@
             supabaseClient
                 .channel('public_eventos_realtime')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, function(payload) {
-                    if (payload.new && payload.new.mes_ano) {
-                        mudarMesAtivo(payload.new.mes_ano);
-                    } else {
+                    var mesAfetado = (payload.new && payload.new.mes_ano) || (payload.old && payload.old.mes_ano);
+
+                    // Só atualiza a grade do calendário se a mudança for do mês que a pessoa já está vendo.
+                    // Isso evita "teleportar" o visitante para outro mês quando o admin edita algo em outro período.
+                    if (!mesAfetado || mesAfetado === mesAtualAtivo) {
                         carregarCalendarioDoSupabase();
                     }
+
                     if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
                 })
                 .subscribe(function(status) {
@@ -1260,10 +1263,8 @@
                 return; 
             }
 
-            var countElem = document.getElementById("count-" + id) || document.getElementById("count-supa-" + idNorm);
-            if (countElem && !isNaN(parseInt(countElem.innerText))) {
-                countElem.innerText = (parseInt(countElem.innerText) + 1).toString();
-            }
+            var confirmouComSucesso = false;
+            var mensagemErroPresenca = "";
 
             if (supabaseClient) {
                 try {
@@ -1276,10 +1277,21 @@
 
                     if (error) {
                         console.warn("Erro RLS ou Supabase ao gravar presenca:", error);
+                        mensagemErroPresenca = error.message || JSON.stringify(error);
+                    } else {
+                        confirmouComSucesso = true;
                     }
                 } catch (e) {
                     console.warn("Erro ao comunicar com Supabase:", e);
+                    mensagemErroPresenca = (e && e.message) ? e.message : "Falha de conexão com o servidor.";
                 }
+            } else {
+                mensagemErroPresenca = "Conexão com o banco de dados não disponível.";
+            }
+
+            if (!confirmouComSucesso) {
+                alert("⚠️ Não foi possível confirmar sua presença agora.\n\nMotivo: " + mensagemErroPresenca + "\n\nTente novamente em instantes.");
+                return;
             }
 
             localStorage.setItem("confirmado_gira_" + idNorm, "true");
@@ -1478,6 +1490,9 @@
             btn.disabled = true; 
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Salvando no calendário...';
 
+            var salvouComSucesso = false;
+            var mensagemErro = "";
+
             if (supabaseClient) {
                 try {
                     if (eventoSendoEditadoId) {
@@ -1488,21 +1503,35 @@
                                 mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel
                             })
                             .eq('id', realSupaId);
-                        if (error) console.error("Erro Supabase Update:", error);
+                        if (error) { console.error("Erro Supabase Update:", error); mensagemErro = error.message || JSON.stringify(error); }
+                        else { salvouComSucesso = true; }
                     } else {
                         const { error } = await supabaseClient
                             .from('eventos')
                             .insert([{
                                 mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel
                             }]);
-                        if (error) console.error("Erro Supabase Insert:", error);
+                        if (error) { console.error("Erro Supabase Insert:", error); mensagemErro = error.message || JSON.stringify(error); }
+                        else { salvouComSucesso = true; }
                     }
                 } catch (e) {
                     console.error("Erro de requisição:", e);
+                    mensagemErro = (e && e.message) ? e.message : "Falha de conexão com o servidor.";
                 }
+            } else {
+                mensagemErro = "Conexão com o banco de dados (Supabase) não foi iniciada. Verifique a chave de acesso.";
             }
 
-            btn.disabled = false; 
+            btn.disabled = false;
+
+            if (!salvouComSucesso) {
+                btn.innerHTML = eventoSendoEditadoId
+                    ? '<i class="fa-solid fa-pen-to-square text-base"></i> Atualizar Atividade'
+                    : '<i class="fa-regular fa-circle-check text-base"></i> Salvar Atividade';
+                alert("⚠️ NÃO foi possível salvar a atividade no calendário.\n\nMotivo: " + mensagemErro + "\n\nOs dados do formulário foram mantidos. Corrija a conexão/configuração do banco de dados (RLS/Realtime) e tente salvar novamente.");
+                return;
+            }
+
             cancelarEdicaoAtividade();
             abrirModalAtividadeSalva(titulo, categoria);
             
