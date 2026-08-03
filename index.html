@@ -15,7 +15,7 @@
 
     <script>
         var SUPABASE_URL = "https://ndkooiyqhafsinxawzxe.supabase.co";
-        var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI62100945730s0.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
+        var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI6MjEwMDk0NTczMH0.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
         var supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
         if (!localStorage.getItem("user_device_id")) {
@@ -1219,7 +1219,13 @@
                         carregarContadoresPresenca();
                     }
                 })
-                .subscribe();
+                .subscribe(function(status) {
+                    if (status === 'SUBSCRIBED') {
+                        console.log("✅ Tempo real de PRESENÇAS conectado");
+                    } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                        console.error("❌ Tempo real de PRESENÇAS falhou ao conectar");
+                    }
+                });
         }
 
         function escutarEventosEmTempoReal() {
@@ -1235,7 +1241,13 @@
                     }
                     if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
                 })
-                .subscribe();
+                .subscribe(function(status) {
+                    if (status === 'SUBSCRIBED') {
+                        console.log("✅ Tempo real de EVENTOS conectado");
+                    } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                        console.error("❌ Tempo real de EVENTOS falhou ao conectar");
+                    }
+                });
         }
 
         async function confirmarPresencaGira(id, categoriaCor) {
