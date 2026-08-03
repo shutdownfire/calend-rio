@@ -1272,14 +1272,33 @@
         }
 
         function exibirToastNotificacaoCliente(notif) {
+            // NOTIFICAÇÃO DO SISTEMA ANDROID / APK / NAVEGADOR
             if ('Notification' in window && Notification.permission === 'granted') {
                 try {
-                    new Notification(notif.titulo || "Templo Vovó Maria Conga", {
-                        body: notif.mensagem,
-                        icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
-                        badge: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
-                    });
-                } catch(e) {}
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.ready.then(function(reg) {
+                            reg.showNotification(notif.titulo || "Templo Vovó Maria Conga", {
+                                body: notif.mensagem,
+                                icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
+                                badge: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
+                                vibrate: [200, 100, 200],
+                                tag: "notif-gira-" + Date.now()
+                            });
+                        }).catch(function() {
+                            new Notification(notif.titulo || "Templo Vovó Maria Conga", {
+                                body: notif.mensagem,
+                                icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
+                            });
+                        });
+                    } else {
+                        new Notification(notif.titulo || "Templo Vovó Maria Conga", {
+                            body: notif.mensagem,
+                            icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
+                        });
+                    }
+                } catch(e) {
+                    console.warn("Erro ao exibir notificação nativa:", e);
+                }
             }
 
             var toast = document.getElementById("toast-notificacao-cliente");
