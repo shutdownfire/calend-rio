@@ -831,6 +831,7 @@
             var eAgendamentoWhatsApp = tituloLow.includes("consulta") || 
                                        ev.categoria === 'jurema' || 
                                        ev.categoria === 'joaocaveira' || 
+                                       ev.categoria === 'purple' ||
                                        ev.tipo === 'whatsapp_ritual';
 
             var eMutiraoOuPresenca = !eAgendamentoWhatsApp;
@@ -840,11 +841,11 @@
                 var idNorm = normalizarEventoId(ev.id);
                 var estaConfirmadoModal = localStorage.getItem("confirmado_gira_" + idNorm) || localStorage.getItem("confirmado_gira_" + ev.id);
                 if (estaConfirmadoModal) {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-3 sm:py-4 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_25px_rgba(16,185,129,0.3)]">' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-2.5 sm:py-4 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_25px_rgba(16,185,129,0.3)]">' +
                                         '<i class="fa-solid fa-circle-check text-emerald-400 text-sm sm:text-base"></i> PRESENÇA CONFIRMADA' +
                                    '</button>';
                 } else {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-3 sm:py-4 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer">' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-2.5 sm:py-4 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer">' +
                                         '<i class="fa-solid fa-check text-sm sm:text-base"></i> CONFIRMAR PRESENÇA' +
                                    '</button>';
                 }
@@ -908,7 +909,7 @@
 
             var cardInfoBoxHtml = "";
             if (infoBoxRows.length > 0) {
-                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/30 rounded-2xl p-3 sm:p-4 text-left space-y-2.5 sm:space-y-3 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
+                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/30 rounded-2xl p-2.5 sm:p-4 text-left space-y-2 sm:space-y-3 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
                                     infoBoxRows.join('<div class="h-[1px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full"></div>') +
                                   `</div>`;
             }
@@ -926,28 +927,28 @@
             var containerModal = document.getElementById("evento-detalhe-modal-content");
             if (containerModal) {
                 containerModal.innerHTML = `
-                    <div class="${estilo.bgCardStyle} rounded-[28px] sm:rounded-[36px] p-4 sm:p-8 text-stone-200 text-center space-y-3.5 sm:space-y-5 relative overflow-hidden shadow-2xl backdrop-blur-3xl max-h-[90vh] overflow-y-auto">
+                    <div class="${estilo.bgCardStyle} rounded-[24px] sm:rounded-[36px] p-3.5 sm:p-8 text-stone-200 text-center space-y-2.5 sm:space-y-5 relative overflow-hidden shadow-2xl backdrop-blur-3xl max-h-[92vh] max-h-[92dvh] overflow-y-auto">
                         <div class="absolute inset-1.5 sm:inset-2 border border-amber-500/40 rounded-[22px] sm:rounded-[30px] pointer-events-none"></div>
                         <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3 right-3 sm:top-5 sm:right-5 text-amber-400 hover:text-white text-base font-bold w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/80 border border-amber-500/40 flex items-center justify-center transition shadow-2xl z-30 cursor-pointer hover:scale-110 active:scale-95">&times;</button>
                         <span class="text-[9px] sm:text-xs uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.25em] sm:tracking-[0.35em]">${estilo.linhaTag}</span>
-                        <div class="relative w-16 h-16 sm:w-24 sm:h-24 mx-auto z-10">
+                        <div class="relative w-12 h-12 sm:w-24 sm:h-24 mx-auto z-10">
                             <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
                                 ${estilo.topIcon}
                             </div>
                         </div>
                         <div class="space-y-0.5 sm:space-y-1 z-10 relative">
                             <span class="${estilo.accentText} uppercase block font-cinzel text-[11px] sm:text-sm tracking-[0.2em] sm:tracking-[0.25em]">${nomeDiaSemana.toUpperCase()}</span>
-                            <h3 class="text-3xl sm:text-5xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+                            <h3 class="text-2xl sm:text-5xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
                         </div>
                         <div class="relative z-10 my-1 sm:my-2">
-                            <div class="${estilo.boxTituloBg} p-3 sm:p-5 rounded-2xl relative shadow-2xl">
+                            <div class="${estilo.boxTituloBg} p-2.5 sm:p-5 rounded-2xl relative shadow-2xl">
                                 <span class="text-[8px] sm:text-[9px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.2em] sm:tracking-[0.3em] block mb-0.5">GIRA DE</span>
                                 <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-2xl md:text-3xl tracking-wider uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">${ev.titulo.replace('Gira de ', '')}</h4>
                             </div>
                         </div>
                         ${cardInfoBoxHtml}
                         <div class="z-10 relative pt-0.5">
-                            <div class="bg-black/70 text-amber-50 p-3 sm:p-4 rounded-2xl border border-amber-400/40 shadow-2xl font-serif font-semibold not-italic text-sm sm:text-base relative backdrop-blur-md">
+                            <div class="bg-black/70 text-amber-50 p-2.5 sm:p-4 rounded-2xl border border-amber-400/40 shadow-2xl font-serif font-semibold not-italic text-sm sm:text-base relative backdrop-blur-md">
                                 <span class="text-amber-400 font-bold text-base sm:text-lg leading-none">“</span>
                                 <span>${descTexto}</span>
                                 <span class="text-amber-400 font-bold text-base sm:text-lg leading-none">”</span>
@@ -957,9 +958,9 @@
                                 ${estilo.symbolEmblem}
                             </div>
                         </div>
-                        <div class="pt-1 space-y-2.5 sm:space-y-3 z-10 relative">
+                        <div class="pt-0.5 space-y-2 sm:space-y-3 z-10 relative">
                             ${acaoBtnHtml}
-                            <button onclick="fecharModalDetalhesEvento()" class="w-full py-2.5 sm:py-3 bg-black/80 hover:bg-stone-900 text-stone-400 hover:text-white font-bold rounded-2xl text-[11px] sm:text-xs border border-amber-500/20 transition flex items-center justify-center gap-1 uppercase tracking-[0.2em] font-cinzel cursor-pointer">
+                            <button onclick="fecharModalDetalhesEvento()" class="w-full py-2 sm:py-3 bg-black/80 hover:bg-stone-900 text-stone-400 hover:text-white font-bold rounded-2xl text-[11px] sm:text-xs border border-amber-500/20 transition flex items-center justify-center gap-1 uppercase tracking-[0.2em] font-cinzel cursor-pointer">
                                 &times; FECHAR
                             </button>
                         </div>
@@ -1681,6 +1682,7 @@
                 var eAgendamentoWhatsApp = tituloLow.includes("consulta") || 
                                            ev.categoria === 'jurema' || 
                                            ev.categoria === 'joaocaveira' || 
+                                           ev.categoria === 'purple' ||
                                            ev.tipo === 'whatsapp_ritual';
 
                 var badgeValorEspecial = "";
@@ -1742,6 +1744,22 @@
             setInterval(function() {
                 carregarContadoresPresenca();
             }, 4000);
+
+            function atualizarBloqueioScrollFundo() {
+                var modais = document.querySelectorAll('.fixed.inset-0');
+                var algumAberto = false;
+                for (var i = 0; i < modais.length; i++) {
+                    if (!modais[i].classList.contains('hidden')) { algumAberto = true; break; }
+                }
+                document.documentElement.style.overflow = algumAberto ? 'hidden' : '';
+                document.body.style.overflow = algumAberto ? 'hidden' : '';
+            }
+            var modaisParaObservar = document.querySelectorAll('.fixed.inset-0');
+            var scrollLockObserver = new MutationObserver(atualizarBloqueioScrollFundo);
+            modaisParaObservar.forEach(function(m) {
+                scrollLockObserver.observe(m, { attributes: true, attributeFilter: ['class'] });
+            });
+            atualizarBloqueioScrollFundo();
         });
 
         function fetchRealGoatCounterData() {
@@ -1843,6 +1861,10 @@
             height: 96vh;
             height: 96dvh;
             max-height: 96dvh;
+        }
+
+        .overflow-y-auto {
+            overscroll-behavior: contain;
         }
     </style>
 </head>
