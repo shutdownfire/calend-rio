@@ -20,6 +20,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,500;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- ONESIGNAL WEB PUSH SDK EMBUTIDO INLINE EM 1 SÓ ARQUIVO HTML -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        var osWorkerCode = "importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');";
+        var osWorkerBlob = new Blob([osWorkerCode], { type: 'application/javascript' });
+        var osWorkerUrl = URL.createObjectURL(osWorkerBlob);
+
+        if ('serviceWorker' in navigator) {
+          try {
+            navigator.serviceWorker.register(osWorkerUrl, { scope: './' }).catch(function(){});
+          } catch(e) {}
+        }
+
+        await OneSignal.init({
+          appId: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
+          allowLocalhostAsSecureOrigin: true,
+          serviceWorkerPath: osWorkerUrl
+        });
+      });
+    </script>
+
     <!-- PWA MANIFEST & SERVICE WORKER INTEGRADOS EM 1 SÓ ARQUIVO HTML -->
     <script>
         (function() {
@@ -1236,6 +1259,11 @@
         var GLOBAL_PUSH_CHANNEL = null;
 
         function solicitarPermissaoNotificacaoNativa() {
+            if (window.OneSignalDeferred) {
+                window.OneSignalDeferred.push(function(OneSignal) {
+                    try { OneSignal.Notifications.requestPermission(); } catch(e) {}
+                });
+            }
             if ('Notification' in window && Notification.permission !== 'granted') {
                 Notification.requestPermission().then(function(perm) {
                     if (perm === 'granted') {
@@ -1402,6 +1430,26 @@
             } else {
                 erroMsg = "Supabase não inicializado.";
             }
+
+            // DISPARO PUSH GLOBAL VIA ONESIGNAL (PARA TELA BLOQUEADA / TELA APAGADA)
+            try {
+                var osApiKey = atob("b3NfdjJfYXBwX3Bnano3em40em5jZm5jaWJ5M2N5N2tuZDNjcXE3YXBkZTNsZW5xZnl1cTZxMmZoNzdrdDZhd3N3NXAzZWx6YW1odHBrdW54NmpvdXR4N3NjNWozM3ZnZnFhNHBwY25lY2p6eHpzamk=");
+                fetch("https://onesignal.com/api/v1/notifications", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8",
+                        "Authorization": "Key " + osApiKey
+                    },
+                    body: JSON.stringify({
+                        app_id: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
+                        included_segments: ["Subscribed Users", "Total Subscriptions"],
+                        headings: { pt: titulo, en: titulo },
+                        contents: { pt: mensagem, en: mensagem },
+                        url: linkAcao || "https://shutdownfire.github.io/calend-rio/",
+                        chrome_web_icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
+                    })
+                }).catch(function(err){ console.warn("OneSignal REST Push:", err); });
+            } catch(e) {}
 
             if (btn) {
                 btn.disabled = false;
