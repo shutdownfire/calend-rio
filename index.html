@@ -991,7 +991,6 @@
                         rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="inline-flex items-center justify-center gap-0.5 text-[6.5px] sm:text-[10px] text-stone-600 font-medium"><i class="fa-regular fa-clock text-[6.5px] sm:text-[9.5px] text-stone-500"></i> ' + ev.horario + '</span></div>';
                     }
 
-                    /* REGRA ATUALIZADA: PALAVRA EM CIMA E PALAVRA EM BAIXO APENAS PARA ORGANIZAÇÃO E LIMPEZA */
                     var tituloHtml = '';
                     if (tituloGrid === 'Organização e Limpeza' || ev.categoria === 'amber') {
                         tituloHtml = '<p class="font-bold text-[6px] sm:text-[10px] text-stone-900 leading-tight text-center font-sans max-w-full"><span class="block">Organização</span><span class="block">Limpeza</span></p>';
@@ -1229,7 +1228,11 @@
             supabaseClient
                 .channel('public_eventos_realtime')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, function(payload) {
-                    carregarCalendarioDoSupabase();
+                    if (payload.new && payload.new.mes_ano) {
+                        mudarMesAtivo(payload.new.mes_ano);
+                    } else {
+                        carregarCalendarioDoSupabase();
+                    }
                     if (document.getElementById("lista-atividades-admin")) carregarListaAtividadesAdmin();
                 })
                 .subscribe();
@@ -1467,29 +1470,33 @@
                 try {
                     if (eventoSendoEditadoId) {
                         var realSupaId = normalizarEventoId(eventoSendoEditadoId);
-                        await supabaseClient
+                        const { error } = await supabaseClient
                             .from('eventos')
                             .update({
                                 mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel
                             })
                             .eq('id', realSupaId);
+                        if (error) console.error("Erro Supabase Update:", error);
                     } else {
-                        await supabaseClient
+                        const { error } = await supabaseClient
                             .from('eventos')
                             .insert([{
                                 mes_ano: mesAno, dia: dia, titulo: titulo, categoria: categoria, horario: horario, valor: valor, descricao: descricao, publico: publico, status: status, responsavel: responsavel
                             }]);
+                        if (error) console.error("Erro Supabase Insert:", error);
                     }
                 } catch (e) {
-                    console.error("Erro no Supabase ao salvar evento:", e);
+                    console.error("Erro de requisição:", e);
                 }
             }
 
             btn.disabled = false; 
             cancelarEdicaoAtividade();
-            
             abrirModalAtividadeSalva(titulo, categoria);
-            carregarCalendarioDoSupabase();
+            
+            mudarMesAtivo(mesAno);
+            await carregarListaAtividadesAdmin();
+            await carregarCalendarioDoSupabase();
         }
 
         async function carregarListaAtividadesAdmin() {
@@ -1552,8 +1559,8 @@
                 }
             }
 
-            carregarListaAtividadesAdmin(); 
-            carregarCalendarioDoSupabase();
+            await carregarListaAtividadesAdmin(); 
+            await carregarCalendarioDoSupabase();
         }
 
         async function carregarCalendarioDoSupabase() {
@@ -1564,12 +1571,19 @@
                     const { data, error } = await supabaseClient.from('eventos').select('*').eq('mes_ano', mesAtualAtivo);
                     if (!error && data && data.length > 0) {
                         data.forEach(function(ev) {
-                            if (!listaEventos.some(e => e.dia === ev.dia && e.titulo === ev.titulo)) {
-                                var diaStr = ev.dia < 10 ? '0' + ev.dia : '' + ev.dia;
-                                var mesNum = mesAtualAtivo.includes("Junho") ? "06" : (mesAtualAtivo.includes("Julho") ? "07" : (mesAtualAtivo.includes("Agosto") ? "08" : (mesAtualAtivo.includes("Setembro") ? "09" : (mesAtualAtivo.includes("Outubro") ? "10" : (mesAtualAtivo.includes("Novembro") ? "11" : "12")))));
-                                listaEventos.push({
-                                    id: 'supa-' + ev.id, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: ev.descricao || '', publico: ev.publico || '', status: ev.status || '', responsavel: ev.responsavel || '', tipo: 'whatsapp'
-                                });
+                            var idString = 'supa-' + ev.id;
+                            var indexExistente = listaEventos.findIndex(e => e.dia === ev.dia && e.titulo === ev.titulo);
+                            var diaStr = ev.dia < 10 ? '0' + ev.dia : '' + ev.dia;
+                            var mesNum = mesAtualAtivo.includes("Junho") ? "06" : (mesAtualAtivo.includes("Julho") ? "07" : (mesAtualAtivo.includes("Agosto") ? "08" : (mesAtualAtivo.includes("Setembro") ? "09" : (mesAtualAtivo.includes("Outubro") ? "10" : (mesAtualAtivo.includes("Novembro") ? "11" : "12")))));
+                            
+                            var eventoObj = {
+                                id: idString, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: ev.descricao || '', publico: ev.publico || '', status: ev.status || '', responsavel: ev.responsavel || '', tipo: 'whatsapp', mes_ano: ev.mes_ano
+                            };
+
+                            if (indexExistente !== -1) {
+                                listaEventos[indexExistente] = eventoObj;
+                            } else {
+                                listaEventos.push(eventoObj);
                             }
                         });
                     }
