@@ -77,10 +77,13 @@
         }
 
         function obterDescricaoAutomatica(titulo, descExistente) {
-            if (descExistente && typeof descExistente === 'string' && descExistente.trim() !== "") return descExistente.trim();
-            if (!titulo || typeof titulo !== 'string') return "";
-            var tTrim = titulo.trim();
-            if (DESCRICOES_PADRAO[tTrim]) return DESCRICOES_PADRAO[tTrim];
+            var tTrim = (titulo && typeof titulo === 'string') ? titulo.trim() : "";
+            var padrao = (tTrim && DESCRICOES_PADRAO[tTrim]) ? DESCRICOES_PADRAO[tTrim] : "";
+            var customizada = (descExistente && typeof descExistente === 'string') ? descExistente.trim() : "";
+
+            if (padrao && customizada) return padrao + ' ' + customizada;
+            if (padrao) return padrao;
+            if (customizada) return customizada;
             return "";
         }
 
@@ -901,7 +904,15 @@
                                   `</div>`;
             }
 
-            var descTexto = (ev.descricao && ev.descricao.trim() !== '') ? ev.descricao.trim() : estilo.saudacao;
+            var temObservacaoCustom = ev.descricao && ev.descricao.trim() !== '';
+            var descTexto = temObservacaoCustom ? ev.descricao.trim() : estilo.saudacao;
+            var fraseAutomaticaExtraHtml = temObservacaoCustom
+                ? `<div class="bg-black/50 text-amber-100 p-3 sm:p-4 rounded-2xl border border-amber-400/30 shadow-xl font-serif italic text-xs sm:text-sm relative backdrop-blur-md mt-2.5">
+                        <span class="text-amber-400 font-bold text-sm leading-none">“</span>
+                        <span>${estilo.saudacao}</span>
+                        <span class="text-amber-400 font-bold text-sm leading-none">”</span>
+                   </div>`
+                : '';
 
             var containerModal = document.getElementById("evento-detalhe-modal-content");
             if (containerModal) {
@@ -927,11 +938,12 @@
                         </div>
                         ${cardInfoBoxHtml}
                         <div class="z-10 relative pt-0.5">
-                            <div class="bg-black/50 text-amber-100 p-3 sm:p-4 rounded-2xl border border-amber-400/40 shadow-2xl font-serif italic text-xs sm:text-sm relative backdrop-blur-md">
+                            <div class="bg-black/70 text-amber-50 p-3 sm:p-4 rounded-2xl border border-amber-400/40 shadow-2xl font-serif font-semibold not-italic text-sm sm:text-base relative backdrop-blur-md">
                                 <span class="text-amber-400 font-bold text-base sm:text-lg leading-none">“</span>
                                 <span>${descTexto}</span>
                                 <span class="text-amber-400 font-bold text-base sm:text-lg leading-none">”</span>
                             </div>
+                            ${fraseAutomaticaExtraHtml}
                             <div class="mt-2 text-center">
                                 ${estilo.symbolEmblem}
                             </div>
@@ -1333,7 +1345,13 @@
 
             var estilo = obterEstiloPremiumPorCategoria(categoria, titulo);
 
-            var descTextoPrev = descricaoDigitada !== "" ? descricaoDigitada : estilo.saudacao;
+            var temObservacaoCustomPrev = descricaoDigitada !== "";
+            var descTextoPrev = temObservacaoCustomPrev ? descricaoDigitada : estilo.saudacao;
+            var fraseAutomaticaExtraPrevHtml = temObservacaoCustomPrev
+                ? `<div class="bg-black/50 text-amber-100 p-2.5 rounded-2xl border border-amber-400/30 shadow-lg font-serif italic text-xs relative backdrop-blur-md mt-2">
+                        “${estilo.saudacao}”
+                   </div>`
+                : '';
 
             prevBox.innerHTML = `
                 <div class="${estilo.bgCardStyle} rounded-[36px] p-6 text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-3xl">
@@ -1360,9 +1378,10 @@
                     </div>
 
                     <div class="z-10 relative pt-1">
-                        <div class="bg-black/50 text-amber-100 p-3 rounded-2xl border border-amber-400/40 shadow-xl font-serif italic text-xs relative backdrop-blur-md">
+                        <div class="bg-black/70 text-amber-50 p-3 rounded-2xl border border-amber-400/40 shadow-xl font-serif font-semibold not-italic text-sm relative backdrop-blur-md">
                             “${descTextoPrev}”
                         </div>
+                        ${fraseAutomaticaExtraPrevHtml}
                         <div class="mt-2.5 text-center">
                             ${estilo.symbolEmblem}
                         </div>
