@@ -991,10 +991,10 @@
                         rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="inline-flex items-center justify-center gap-0.5 text-[6.5px] sm:text-[10px] text-stone-600 font-medium"><i class="fa-regular fa-clock text-[6.5px] sm:text-[9.5px] text-stone-500"></i> ' + ev.horario + '</span></div>';
                     }
 
-                    /* REGRA ESPECÍFICA SOLICITADA PARA ORGANIZAÇÃO E LIMPEZA CABER EM UMA LINHA NO MOBILE */
+                    /* REGRA ATUALIZADA: PALAVRA EM CIMA E PALAVRA EM BAIXO APENAS PARA ORGANIZAÇÃO E LIMPEZA */
                     var tituloHtml = '';
-                    if (tituloGrid === 'Organização e Limpeza') {
-                        tituloHtml = '<p class="font-bold text-[5.5px] sm:text-[10px] text-stone-900 leading-none tracking-tighter block whitespace-nowrap font-sans max-w-full">Organização e Limpeza</p>';
+                    if (tituloGrid === 'Organização e Limpeza' || ev.categoria === 'amber') {
+                        tituloHtml = '<p class="font-bold text-[6px] sm:text-[10px] text-stone-900 leading-tight text-center font-sans max-w-full"><span class="block">Organização</span><span class="block">Limpeza</span></p>';
                     } else {
                         tituloHtml = '<p class="font-bold text-[6.5px] sm:text-[11.5px] text-stone-900 leading-tight sm:leading-snug tracking-tight break-words text-center font-sans max-w-full">' + tituloGrid + '</p>';
                     }
@@ -2724,7 +2724,7 @@
     <div class="print-container max-w-5xl mx-auto bg-umbanda-cream rounded-xl sm:rounded-2xl shadow-xl border border-amber-900/10 relative">
         <div class="h-1.5 sm:h-2 bg-gradient-to-r from-umbanda-green via-umbanda-gold to-umbanda-green rounded-t-xl sm:rounded-t-2xl"></div>
 
-        <header class="p-0 text-center relative border-b border-amber-900/10 bg-[#fdfaf3]">
+        <header class="p-0 text-center relative border-b border-amber-900/10 bg-[#fdfaf3] overflow-hidden">
             <div onclick="abrirModalZoomBanner()" title="Clique para ampliar o banner" class="w-full relative overflow-hidden cursor-zoom-in group flex items-center justify-center p-1 sm:p-0">
                 <picture class="w-full block overflow-hidden">
                     <source media="(max-width: 639px)" srcset="https://lh3.googleusercontent.com/d/1LXksObs1j92C2sw3PhO2ZF_SCgMI0Yki">
@@ -2737,8 +2737,8 @@
                 <div class="shine-effect"></div>
             </div>
 
-            <!-- BOTÃO PARA VERSÃO DESKTOP (PC) - VISÍVEL NO PC -->
-            <div class="hidden sm:flex justify-center -mb-5 relative z-30">
+            <!-- BOTÃO PARA VERSÃO DESKTOP (PC) - POSICIONADO NO ESPAÇO ENTRE BANNER E CONTEÚDO -->
+            <div class="hidden sm:flex justify-center my-3 relative z-30">
                 <button type="button" onclick="abrirModalSeletorMes()" class="flex items-center justify-center gap-2.5 bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green text-white px-5 py-2 rounded-full shadow-xl border border-amber-400/60 hover:scale-105 active:scale-95 transition whitespace-nowrap">
                     <i class="fa-regular fa-calendar-days text-umbanda-goldlight text-sm sm:text-base"></i>
                     <span id="btn-mes-principal-texto" class="font-serif font-bold text-xs sm:text-sm md:text-base text-white">Agosto de 2026</span>
@@ -2747,7 +2747,7 @@
             </div>
         </header>
 
-        <main class="p-2 sm:p-4 md:p-8 pt-6 sm:pt-10">
+        <main class="p-2 sm:p-4 md:p-8 pt-4 sm:pt-6">
             <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-stone-200/80 p-2 sm:p-4 md:p-6 mb-6 sm:mb-8">
                 
                 <!-- BOTÃO REPOSICIONADO PARA VERSÃO MOBILE (EXCLUSIVO CELULAR) -->
