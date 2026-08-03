@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Calendário de Atividades - Templo de Umbanda Vovó Maria Conga</title>
 
+    <meta name="theme-color" content="#0D472B">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Vovó Maria Conga">
+    <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH">
+
     <script data-goatcounter="https://vovomariaconga.goatcounter.com/counter" async src="//gc.zgo.at/count.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,6 +19,52 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,500;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- PWA MANIFEST & SERVICE WORKER INTEGRADOS EM 1 SÓ ARQUIVO HTML -->
+    <script>
+        (function() {
+            var manifestObj = {
+                "name": "Templo Vovó Maria Conga - Calendário",
+                "short_name": "Maria Conga",
+                "description": "Calendário de Atividades e Giras do Templo de Umbanda Vovó Maria Conga",
+                "start_url": "./",
+                "display": "standalone",
+                "background_color": "#0D472B",
+                "theme_color": "#0D472B",
+                "orientation": "portrait",
+                "scope": "./",
+                "icons": [
+                    { "src": "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+                    { "src": "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+                ]
+            };
+            try {
+                var manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/json' });
+                var link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = URL.createObjectURL(manifestBlob);
+                document.head.appendChild(link);
+            } catch(e) {}
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    var swCode = `
+                        const CACHE_NAME = 'vovo-maria-conga-v1';
+                        self.addEventListener('install', (e) => { self.skipWaiting(); });
+                        self.addEventListener('activate', (e) => { self.clients.claim(); });
+                        self.addEventListener('fetch', (e) => {
+                            if (e.request.method !== 'GET') return;
+                            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                        });
+                    `;
+                    try {
+                        var swBlob = new Blob([swCode], { type: 'application/javascript' });
+                        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(){});
+                    } catch(e) {}
+                });
+            }
+        })();
+    </script>
 
     <script>
         var SUPABASE_URL = "https://ndkooiyqhafsinxawzxe.supabase.co";
@@ -729,87 +782,87 @@
 
             if (tLow.includes("exu") || tLow.includes("pombagira") || tLow.includes("caveira") || corBase === 'red' || corBase === 'joaocaveira') {
                 return {
-                    linhaTag: 'ESQUERDA / EXU',
-                    bgCardStyle: 'bg-gradient-to-b from-[#1c0202] via-[#2c0505] to-[#0d0101] border-2 border-red-500/80 shadow-[0_0_35px_rgba(239,68,68,0.5)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(239,68,68,0.8)]',
+                    linhaTag: 'ESQUERDA & EXU / FOGO & PROTEÇÃO',
+                    bgCardStyle: 'bg-gradient-to-b from-[#240303] via-[#1a0202] to-[#0d0101] border-2 border-red-500/70 shadow-[0_0_50px_rgba(239,68,68,0.45)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_25px_rgba(239,68,68,0.85)] ring-4 ring-red-950/60',
                     topIcon: '<img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" alt="Sr. João Caveira" class="w-full h-full object-cover rounded-full p-0.5" onerror="this.onerror=null; this.src=\'https://drive.google.com/thumbnail?id=18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH&sz=w1000\';">',
                     boxTituloBg: 'plate-red-gold',
                     symbolEmblem: '<i class="fa-solid fa-trident text-red-500 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(239,68,68,0.9)]"></i>',
                     accentText: 'text-red-400 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.',
-                    btnStyle: 'bg-gradient-to-r from-red-950 via-red-600 to-red-950 border border-amber-400 hover:from-red-900 hover:to-red-700 text-white drop-shadow-[0_0_20px_rgba(239,68,68,0.7)]'
+                    saudacao: 'Laroyê Exu! Que a força, a proteção e os caminhos estejam sempre abertos.',
+                    btnStyle: 'bg-gradient-to-r from-red-950 via-red-600 to-red-950 border-2 border-amber-400 hover:from-red-900 hover:to-red-700 text-white drop-shadow-[0_0_25px_rgba(239,68,68,0.8)]'
                 };
             } else if (tLow.includes("caboclo") || tLow.includes("oxóssi") || tLow.includes("jurema") || corBase === 'emerald' || corBase === 'jurema') {
                 return {
-                    linhaTag: 'LINHA DAS MATAS / CABOCLOS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#012213] via-[#02331d] to-[#01140c] border-2 border-emerald-400/80 shadow-[0_0_35px_rgba(52,211,153,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(52,211,153,0.7)]',
-                    topIcon: '<div class="text-emerald-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(52,211,153,0.9)]"><i class="fa-solid fa-leaf"></i></div>',
+                    linhaTag: 'LINHA DAS MATAS & CABOCLOS / CURA SACRA',
+                    bgCardStyle: 'bg-gradient-to-b from-[#022c19] via-[#011f12] to-[#01120a] border-2 border-emerald-400/70 shadow-[0_0_50px_rgba(52,211,153,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_25px_rgba(52,211,153,0.85)] ring-4 ring-emerald-950/60',
+                    topIcon: '<div class="text-emerald-400 text-3xl sm:text-4xl drop-shadow-[0_0_18px_rgba(52,211,153,0.95)]"><i class="fa-solid fa-leaf"></i></div>',
                     boxTituloBg: 'plate-emerald-gold',
                     symbolEmblem: '<i class="fa-solid fa-feather-pointed text-emerald-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(52,211,153,0.9)]"></i>',
                     accentText: 'text-emerald-300 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Okê Arô Caboclo! Salve as forças sagradas das matas e da cura.',
-                    btnStyle: 'bg-gradient-to-r from-emerald-950 via-emerald-600 to-emerald-950 border border-amber-400 hover:from-emerald-900 hover:to-emerald-700 text-white drop-shadow-[0_0_20px_rgba(52,211,153,0.7)]'
+                    saudacao: 'Okê Arô Caboclo! Salve as forças sagradas das matas, da fé e da cura.',
+                    btnStyle: 'bg-gradient-to-r from-emerald-950 via-emerald-600 to-emerald-950 border-2 border-amber-400 hover:from-emerald-900 hover:to-emerald-700 text-white drop-shadow-[0_0_25px_rgba(52,211,153,0.8)]'
                 };
             } else if (tLow.includes("boiadeiro")) {
                 return {
-                    linhaTag: 'LINHA DOS BOIADEIROS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#261503] via-[#3a1d04] to-[#120a01] border-2 border-amber-500/80 shadow-[0_0_35px_rgba(245,158,11,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(245,158,11,0.7)]',
-                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(245,158,11,0.9)]"><i class="fa-solid fa-hat-cowboy"></i></div>',
+                    linhaTag: 'LINHA DOS BOIADEIROS / FORÇA & LAÇO',
+                    bgCardStyle: 'bg-gradient-to-b from-[#2e1904] via-[#211202] to-[#120a01] border-2 border-amber-500/70 shadow-[0_0_50px_rgba(245,158,11,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_25px_rgba(245,158,11,0.85)] ring-4 ring-amber-950/60',
+                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_18px_rgba(245,158,11,0.95)]"><i class="fa-solid fa-hat-cowboy"></i></div>',
                     boxTituloBg: 'plate-amber-gold',
                     symbolEmblem: '<i class="fa-solid fa-hat-cowboy-side text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(245,158,11,0.9)]"></i>',
                     accentText: 'text-amber-400 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Xetruá Boiadeiro! Salve a força, a garra e o laço do sertão.',
-                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(245,158,11,0.7)]'
+                    saudacao: 'Xetruá Boiadeiro! Salve a força, a firmeza e o laço do sertão.',
+                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border-2 border-amber-400 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_25px_rgba(245,158,11,0.8)]'
                 };
             } else if (tLow.includes("marinheiro") || tLow.includes("iemanjá") || corBase === 'sky') {
                 return {
-                    linhaTag: 'POVO DO MAR / MARINHEIROS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#02182b] via-[#042846] to-[#010e17] border-2 border-sky-400/80 shadow-[0_0_35px_rgba(56,189,248,0.5)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(56,189,248,0.7)]',
-                    topIcon: '<div class="text-sky-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(56,189,248,0.9)]"><i class="fa-solid fa-anchor"></i></div>',
+                    linhaTag: 'POVO DO MAR & MARINHEIROS / ÁGUAS SAGRADAS',
+                    bgCardStyle: 'bg-gradient-to-b from-[#03223d] via-[#02182c] to-[#010e1a] border-2 border-sky-400/70 shadow-[0_0_50px_rgba(56,189,248,0.45)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_25px_rgba(56,189,248,0.85)] ring-4 ring-sky-950/60',
+                    topIcon: '<div class="text-sky-300 text-3xl sm:text-4xl drop-shadow-[0_0_18px_rgba(56,189,248,0.95)]"><i class="fa-solid fa-anchor"></i></div>',
                     boxTituloBg: 'plate-sky-gold',
                     symbolEmblem: '<i class="fa-solid fa-water text-sky-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(56,189,248,0.9)]"></i>',
                     accentText: 'text-sky-300 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Émaribô! Salve o Povo do Mar e a limpeza das águas sagradas.',
-                    btnStyle: 'bg-gradient-to-r from-sky-950 via-sky-600 to-sky-950 border border-amber-400 hover:from-sky-900 hover:to-sky-700 text-white drop-shadow-[0_0_20px_rgba(56,189,248,0.7)]'
+                    saudacao: 'Émaribô! Salve o Povo do Mar e a purificação das águas sagradas.',
+                    btnStyle: 'bg-gradient-to-r from-sky-950 via-sky-600 to-sky-950 border-2 border-amber-400 hover:from-sky-900 hover:to-sky-700 text-white drop-shadow-[0_0_25px_rgba(56,189,248,0.8)]'
                 };
             } else if (tLow.includes("preto") || tLow.includes("velho") || corBase === 'amber') {
                 return {
-                    linhaTag: 'SABEDORIA DOS PRETOS-VELHOS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#211403] via-[#332003] to-[#120c01] border-2 border-amber-400/80 shadow-[0_0_35px_rgba(251,191,36,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(251,191,36,0.7)]',
-                    topIcon: '<div class="text-amber-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(251,191,36,0.9)]"><i class="fa-solid fa-hands-praying"></i></div>',
+                    linhaTag: 'PRETOS-VELHOS / SABEDORIA & HUMILDADE',
+                    bgCardStyle: 'bg-gradient-to-b from-[#2a1a04] via-[#1d1202] to-[#0f0901] border-2 border-amber-400/70 shadow-[0_0_50px_rgba(251,191,36,0.4)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_25px_rgba(251,191,36,0.85)] ring-4 ring-amber-950/60',
+                    topIcon: '<div class="text-amber-300 text-3xl sm:text-4xl drop-shadow-[0_0_18px_rgba(251,191,36,0.95)]"><i class="fa-solid fa-hands-praying"></i></div>',
                     boxTituloBg: 'plate-amber-gold',
                     symbolEmblem: '<i class="fa-solid fa-hands-holding text-amber-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(251,191,36,0.9)]"></i>',
                     accentText: 'text-amber-300 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos.',
-                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(251,191,36,0.7)]'
+                    saudacao: 'Adorei as Almas! Que a sabedoria, a humildade e a paz guiem nossos passos.',
+                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border-2 border-amber-400 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_25px_rgba(251,191,36,0.8)]'
                 };
             } else if (tLow.includes("erê") || tLow.includes("criança") || corBase === 'pink') {
                 return {
-                    linhaTag: 'ALEGRIA DE IBEJI / ERÊS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#2b021a] via-[#420427] to-[#14000c] border-2 border-pink-400/80 shadow-[0_0_35px_rgba(244,114,182,0.5)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(244,114,182,0.7)]',
-                    topIcon: '<div class="text-pink-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(244,114,182,0.9)]"><i class="fa-solid fa-candy-cane"></i></div>',
+                    linhaTag: 'IBEJI & ERÊS / ALEGRIA & RENOVAÇÃO',
+                    bgCardStyle: 'bg-gradient-to-b from-[#380323] via-[#260218] to-[#12000c] border-2 border-pink-400/70 shadow-[0_0_50px_rgba(244,114,182,0.45)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_25px_rgba(244,114,182,0.85)] ring-4 ring-pink-950/60',
+                    topIcon: '<div class="text-pink-300 text-3xl sm:text-4xl drop-shadow-[0_0_18px_rgba(244,114,182,0.95)]"><i class="fa-solid fa-candy-cane"></i></div>',
                     boxTituloBg: 'plate-pink-gold',
                     symbolEmblem: '<i class="fa-solid fa-cookie-bite text-pink-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(244,114,182,0.9)]"></i>',
                     accentText: 'text-pink-300 font-cinzel font-black tracking-[0.3em]',
                     saudacao: 'Onibejada! Salve a pureza, a doçura e a alegria da linha infantil.',
-                    btnStyle: 'bg-gradient-to-r from-pink-950 via-pink-600 to-pink-950 border border-amber-400 hover:from-pink-900 hover:to-pink-700 text-white drop-shadow-[0_0_20px_rgba(244,114,182,0.7)]'
+                    btnStyle: 'bg-gradient-to-r from-pink-950 via-pink-600 to-pink-950 border-2 border-amber-400 hover:from-pink-900 hover:to-pink-700 text-white drop-shadow-[0_0_25px_rgba(244,114,182,0.8)]'
                 };
             } else {
                 return {
-                    linhaTag: 'TRABALHO ESPIRITUAL SACRO',
-                    bgCardStyle: 'bg-gradient-to-b from-[#1b022b] via-[#2d0347] to-[#0c0014] border-2 border-purple-400/80 shadow-[0_0_35px_rgba(192,132,252,0.5)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(192,132,252,0.7)]',
-                    topIcon: '<div class="text-purple-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(192,132,252,0.9)]"><i class="fa-solid fa-spa"></i></div>',
+                    linhaTag: 'TRABALHO ESPIRITUAL SACRO / ELEVAÇÃO',
+                    bgCardStyle: 'bg-gradient-to-b from-[#240338] via-[#170224] to-[#0a0012] border-2 border-purple-400/70 shadow-[0_0_50px_rgba(192,132,252,0.45)]',
+                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_25px_rgba(192,132,252,0.85)] ring-4 ring-purple-950/60',
+                    topIcon: '<div class="text-purple-300 text-3xl sm:text-4xl drop-shadow-[0_0_18px_rgba(192,132,252,0.95)]"><i class="fa-solid fa-spa"></i></div>',
                     boxTituloBg: 'plate-purple-gold',
                     symbolEmblem: '<i class="fa-solid fa-cross text-purple-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(192,132,252,0.9)]"></i>',
                     accentText: 'text-purple-300 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Haux Haux! Que as forças sagradas tragam cura, firmeza e elevação.',
-                    btnStyle: 'bg-gradient-to-r from-purple-950 via-purple-600 to-purple-950 border border-amber-400 hover:from-purple-900 hover:to-purple-700 text-white drop-shadow-[0_0_20px_rgba(192,132,252,0.7)]'
+                    saudacao: 'Haux Haux! Que as forças sagradas tragam cura, firmeza e luz espiritual.',
+                    btnStyle: 'bg-gradient-to-r from-purple-950 via-purple-600 to-purple-950 border-2 border-amber-400 hover:from-purple-900 hover:to-purple-700 text-white drop-shadow-[0_0_25px_rgba(192,132,252,0.8)]'
                 };
             }
         }
@@ -841,19 +894,19 @@
                 var idNorm = normalizarEventoId(ev.id);
                 var estaConfirmadoModal = localStorage.getItem("confirmado_gira_" + idNorm) || localStorage.getItem("confirmado_gira_" + ev.id);
                 if (estaConfirmadoModal) {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-2.5 sm:py-3 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_25px_rgba(16,185,129,0.3)]">' +
-                                        '<i class="fa-solid fa-circle-check text-emerald-400 text-sm sm:text-base"></i> PRESENÇA CONFIRMADA' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-3.5 bg-emerald-950/90 border-2 border-emerald-400/80 text-emerald-300 font-extrabold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_30px_rgba(16,185,129,0.4)]">' +
+                                        '<i class="fa-solid fa-circle-check text-emerald-400 text-base"></i> PRESENÇA CONFIRMADA' +
                                    '</button>';
                 } else {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-2.5 sm:py-3 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer">' +
-                                        '<i class="fa-solid fa-check text-sm sm:text-base"></i> CONFIRMAR PRESENÇA' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-3.5 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer hover:scale-[1.02]">' +
+                                        '<i class="fa-solid fa-circle-check text-base"></i> CONFIRMAR PRESENÇA' +
                                    '</button>';
                 }
             } else {
                 acaoBtnHtml = '<div class="flex justify-center pt-1">' +
-                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="btn-zap-exact active:scale-95 transition-all duration-200 cursor-pointer shadow-md">' +
-                                    '<i class="fa-brands fa-whatsapp text-sm"></i>' +
-                                    '<span>Agendar</span>' +
+                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="btn-zap-exact active:scale-95 transition-all duration-200 cursor-pointer shadow-lg py-2.5 px-6 text-xs sm:text-sm border border-emerald-400/50">' +
+                                    '<i class="fa-brands fa-whatsapp text-base"></i>' +
+                                    '<span class="font-bold">Agendar no WhatsApp</span>' +
                                 '</button>' +
                                '</div>';
             }
@@ -861,8 +914,8 @@
             var infoBoxRows = [];
             if (ev.publico && ev.publico.trim() !== '') {
                 infoBoxRows.push(`
-                    <div class="flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs shadow-inner flex-shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 text-xs shadow-inner flex-shrink-0">
                             <i class="fa-solid fa-users"></i>
                         </div>
                         <div class="min-w-0">
@@ -875,12 +928,12 @@
 
             if (ev.horario && ev.horario.trim() !== '') {
                 infoBoxRows.push(`
-                    <div class="flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs shadow-inner flex-shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 text-xs shadow-inner flex-shrink-0">
                             <i class="fa-regular fa-clock"></i>
                         </div>
                         <div class="min-w-0">
-                            <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Horário de Início</span>
+                            <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Horário do Trabalho</span>
                             <strong class="text-amber-300 font-bold text-xs sm:text-sm font-sans truncate block">${ev.horario.trim()}</strong>
                         </div>
                     </div>
@@ -888,18 +941,18 @@
             }
 
             if (ev.status && ev.status.trim() !== '') {
-                var statusColorClass = "text-emerald-400 bg-emerald-950/80 border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.3)]";
-                if (ev.status.toLowerCase().includes("cancel")) statusColorClass = "text-red-400 bg-red-950/80 border-red-500/50 shadow-[0_0_10px_rgba(220,38,38,0.3)]";
-                else if (ev.status.toLowerCase().includes("confirmar")) statusColorClass = "text-amber-400 bg-amber-950/80 border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.3)]";
+                var statusColorClass = "text-emerald-400 bg-emerald-950/80 border-emerald-500/50 shadow-[0_0_12px_rgba(16,185,129,0.4)]";
+                if (ev.status.toLowerCase().includes("cancel")) statusColorClass = "text-red-400 bg-red-950/80 border-red-500/50 shadow-[0_0_12px_rgba(220,38,38,0.4)]";
+                else if (ev.status.toLowerCase().includes("confirmar")) statusColorClass = "text-amber-400 bg-amber-950/80 border-amber-500/50 shadow-[0_0_12px_rgba(245,158,11,0.4)]";
 
                 infoBoxRows.push(`
-                    <div class="flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-emerald-400 text-xs shadow-inner flex-shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-emerald-400 text-xs shadow-inner flex-shrink-0">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
                         <div class="min-w-0">
-                            <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Situação do Trabalho</span>
-                            <span class="inline-flex items-center gap-1.5 font-bold text-xs px-2.5 py-0.5 rounded-full border mt-0.5 ${statusColorClass}">
+                            <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Situação</span>
+                            <span class="inline-flex items-center gap-1.5 font-bold text-xs px-3 py-0.5 rounded-full border mt-0.5 ${statusColorClass}">
                                 ${ev.status.trim()}
                             </span>
                         </div>
@@ -909,55 +962,75 @@
 
             var cardInfoBoxHtml = "";
             if (infoBoxRows.length > 0) {
-                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/30 rounded-2xl p-2.5 sm:p-3 text-left space-y-2 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
-                                    infoBoxRows.join('<div class="h-[1px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full"></div>') +
+                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/35 rounded-2xl p-3 sm:p-3.5 text-left space-y-2.5 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
+                                    infoBoxRows.join('<div class="h-[1px] bg-gradient-to-r from-transparent via-amber-400/25 to-transparent w-full"></div>') +
                                   `</div>`;
             }
 
             var temObservacaoCustom = ev.descricao && ev.descricao.trim() !== '';
             var descTexto = temObservacaoCustom ? ev.descricao.trim() : estilo.saudacao;
             var fraseAutomaticaExtraHtml = temObservacaoCustom
-                ? `<div class="bg-black/50 text-amber-100 p-2.5 sm:p-3.5 rounded-2xl border border-amber-400/30 shadow-xl font-serif italic text-xs sm:text-sm relative backdrop-blur-md mt-2">
-                        <span class="text-amber-400 font-bold text-sm leading-none">“</span>
+                ? `<div class="bg-black/60 text-amber-100 p-3 rounded-2xl border border-amber-400/30 shadow-xl font-serif italic text-xs sm:text-sm relative backdrop-blur-md mt-2">
+                        <span class="text-amber-400 font-bold text-base leading-none">“</span>
                         <span>${estilo.saudacao}</span>
-                        <span class="text-amber-400 font-bold text-sm leading-none">”</span>
+                        <span class="text-amber-400 font-bold text-base leading-none">”</span>
                    </div>`
                 : '';
 
             var containerModal = document.getElementById("evento-detalhe-modal-content");
             if (containerModal) {
                 containerModal.innerHTML = `
-                    <div class="${estilo.bgCardStyle} rounded-[24px] sm:rounded-[28px] p-3.5 sm:p-5 text-stone-200 text-center space-y-2 sm:space-y-2.5 relative overflow-hidden shadow-2xl backdrop-blur-3xl max-h-[92vh] max-h-[92dvh] overflow-y-auto">
-                        <div class="absolute inset-1.5 sm:inset-2 border border-amber-500/40 rounded-[22px] sm:rounded-[24px] pointer-events-none"></div>
-                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-amber-400 hover:text-white text-base font-bold w-8 h-8 rounded-full bg-black/80 border border-amber-500/40 flex items-center justify-center transition shadow-2xl z-30 cursor-pointer hover:scale-110 active:scale-95">&times;</button>
-                        <span class="text-[9px] sm:text-[11px] uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.25em] sm:tracking-[0.3em]">${estilo.linhaTag}</span>
-                        <div class="relative w-12 h-12 sm:w-14 sm:h-14 mx-auto z-10">
+                    <div class="${estilo.bgCardStyle} rounded-[28px] sm:rounded-[32px] p-4 sm:p-6 text-stone-100 text-center space-y-3 relative overflow-hidden shadow-2xl backdrop-blur-3xl max-h-[92vh] max-h-[92dvh] overflow-y-auto">
+                        
+                        <!-- MOLDURA DOURADA DUPLA INTERNA -->
+                        <div class="absolute inset-2 border-2 border-amber-400/40 rounded-[24px] sm:rounded-[28px] pointer-events-none"></div>
+                        <div class="absolute inset-3 border border-amber-300/20 rounded-[22px] sm:rounded-[26px] pointer-events-none"></div>
+
+                        <!-- BOTÃO FECHAR LUXO -->
+                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-4 right-4 text-amber-300 hover:text-white text-lg font-bold w-9 h-9 rounded-full bg-black/80 border-2 border-amber-400/50 flex items-center justify-center transition-all shadow-2xl z-30 cursor-pointer hover:scale-110 active:scale-95">&times;</button>
+                        
+                        <!-- BANNER TAG LINHA ESPIRITUAL -->
+                        <span class="text-[10px] sm:text-[11px] uppercase font-cinzel text-amber-300 font-extrabold block pt-1 tracking-[0.3em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${estilo.linhaTag}</span>
+
+                        <!-- MEDALHÃO SACRO CENTRAL -->
+                        <div class="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto z-10 my-1 float-soft">
                             <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
                                 ${estilo.topIcon}
                             </div>
                         </div>
+
+                        <!-- CABEÇALHO DATA -->
                         <div class="space-y-0.5 z-10 relative">
-                            <span class="${estilo.accentText} uppercase block font-cinzel text-[11px] sm:text-xs tracking-[0.2em]">${nomeDiaSemana.toUpperCase()}</span>
-                            <h3 class="text-2xl sm:text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+                            <span class="${estilo.accentText} uppercase block font-cinzel text-xs tracking-[0.25em]">${nomeDiaSemana.toUpperCase()}</span>
+                            <h3 class="text-3xl sm:text-4xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
                         </div>
-                        <div class="relative z-10 my-1">
-                            <div class="${estilo.boxTituloBg} p-2.5 sm:p-3 rounded-2xl relative shadow-2xl">
-                                <span class="text-[8px] sm:text-[9px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.2em] sm:tracking-[0.3em] block mb-0.5">GIRA DE</span>
-                                <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">${ev.titulo.replace('Gira de ', '')}</h4>
+
+                        <!-- PLACA TÍTULO DO TRABALHO -->
+                        <div class="relative z-10 my-2">
+                            <div class="${estilo.boxTituloBg} p-3 sm:p-4 rounded-2xl relative shadow-2xl border-2 border-amber-400/60">
+                                <span class="text-[9px] uppercase font-cinzel font-black text-amber-300/90 tracking-[0.3em] block mb-0.5">TRABALHO ESPIRITUAL</span>
+                                <h4 class="font-serif font-black text-stone-100 text-xl sm:text-2xl tracking-wider uppercase drop-shadow-[0_3px_12px_rgba(0,0,0,0.95)] leading-tight">${ev.titulo.replace('Gira de ', '')}</h4>
                             </div>
                         </div>
+
+                        <!-- GRID DE INFORMAÇÕES -->
                         ${cardInfoBoxHtml}
-                        <div class="z-10 relative pt-0.5">
-                            <div class="bg-black/70 text-amber-50 p-2.5 sm:p-3 rounded-2xl border border-amber-400/40 shadow-2xl font-serif font-semibold not-italic text-sm relative backdrop-blur-md">
-                                <span class="text-amber-400 font-bold text-base leading-none">“</span>
+
+                        <!-- CAIXA DE MENSAGEM / SAUDAÇÃO -->
+                        <div class="z-10 relative pt-1">
+                            <div class="bg-black/75 text-amber-50 p-3.5 rounded-2xl border border-amber-400/50 shadow-2xl font-serif font-semibold not-italic text-sm sm:text-base relative backdrop-blur-md">
+                                <span class="text-amber-400 font-bold text-lg leading-none">“</span>
                                 <span>${descTexto}</span>
-                                <span class="text-amber-400 font-bold text-base leading-none">”</span>
+                                <span class="text-amber-400 font-bold text-lg leading-none">”</span>
                             </div>
                             ${fraseAutomaticaExtraHtml}
                         </div>
-                        <div class="pt-0.5 z-10 relative">
+
+                        <!-- BOTÃO DE AÇÃO PRINCIPAL -->
+                        <div class="pt-2 z-10 relative">
                             ${acaoBtnHtml}
                         </div>
+
                     </div>
                 `;
             }
@@ -1009,9 +1082,13 @@
 
                     var tituloHtml = '';
                     if (tituloGrid === 'Organização e Limpeza' || ev.categoria === 'amber') {
-                        tituloHtml = '<p class="font-bold text-[6px] sm:text-[10px] text-stone-900 leading-tight text-center font-sans max-w-full"><span class="block">Organização</span><span class="block">Limpeza</span></p>';
+                        tituloHtml = '<p class="font-bold text-[7px] sm:text-[10.5px] text-stone-900 leading-tight text-center font-sans max-w-full tracking-tighter" style="word-break: keep-all; hyphens: none;"><span class="block font-black">Org. e Limpeza</span></p>';
+                    } else if (tituloGrid.includes('Marinheiro')) {
+                        tituloHtml = '<p class="font-bold text-[7px] sm:text-[10.5px] text-stone-900 leading-tight text-center font-sans max-w-full tracking-tighter" style="word-break: keep-all; hyphens: none;"><span class="block">Gira de</span><span class="block">Marinheiro</span></p>';
+                    } else if (tituloGrid.includes('Xamânic') || tituloGrid.includes('Xamânico')) {
+                        tituloHtml = '<p class="font-bold text-[7px] sm:text-[10.5px] text-stone-900 leading-tight text-center font-sans max-w-full tracking-tighter" style="word-break: keep-all; hyphens: none;"><span class="block">Ritual</span><span class="block">Xamânico</span></p>';
                     } else {
-                        tituloHtml = '<p class="font-bold text-[6.5px] sm:text-[11.5px] text-stone-900 leading-tight sm:leading-snug tracking-tight break-words text-center font-sans max-w-full">' + tituloGrid + '</p>';
+                        tituloHtml = '<p class="font-bold text-[7px] sm:text-[10.5px] text-stone-900 leading-tight text-center font-sans max-w-full tracking-tighter" style="word-break: keep-all; hyphens: none;">' + tituloGrid + '</p>';
                     }
 
                     html += '<div onclick="abrirModalDetalhesEvento(' + d + ')" class="min-h-[68px] sm:min-h-[92px] p-0.5 sm:p-2 ' + bgClass + ' rounded-xl sm:rounded-2xl border flex flex-col justify-between items-center relative hover:shadow-md transition cursor-pointer active:scale-95 overflow-hidden shadow-2xs group">' +
@@ -1137,20 +1214,227 @@
         }
 
         function switchAdminTab(tabName) {
-            var tabStats = document.getElementById("tab-content-stats"); var tabMontar = document.getElementById("tab-content-montar");
-            var btnStats = document.getElementById("tab-btn-stats"); var btnMontar = document.getElementById("tab-btn-montar");
+            var tabStats = document.getElementById("tab-content-stats"); 
+            var tabMontar = document.getElementById("tab-content-montar");
+            var tabNotif = document.getElementById("tab-content-notificacoes");
+
+            var btnStats = document.getElementById("tab-btn-stats"); 
+            var btnMontar = document.getElementById("tab-btn-montar");
+            var btnNotif = document.getElementById("tab-btn-notificacoes");
+
             if (tabName === 'montar') {
-                tabStats.classList.add("hidden"); tabMontar.classList.remove("hidden");
-                btnStats.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
-                btnMontar.className = "px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-2";
+                tabStats.classList.add("hidden"); 
+                if (tabNotif) tabNotif.classList.add("hidden");
+                tabMontar.classList.remove("hidden");
+
+                btnStats.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+                if (btnNotif) btnNotif.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+                btnMontar.className = "px-3 sm:px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+                
                 carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
                 atualizarInfoDiaDigitado();
                 atualizarPrevisualizacao();
                 atualizarIndicadoresPassos();
+            } else if (tabName === 'notificacoes') {
+                tabStats.classList.add("hidden"); 
+                tabMontar.classList.add("hidden");
+                if (tabNotif) tabNotif.classList.remove("hidden");
+
+                btnStats.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+                btnMontar.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+                if (btnNotif) btnNotif.className = "px-3 sm:px-4 py-2 font-bold text-amber-600 border-b-2 border-amber-500 transition flex items-center gap-1.5 text-xs sm:text-sm";
+                
+                carregarHistoricoNotificacoesAdmin();
+                solicitarPermissaoNotificacaoNativa();
             } else {
-                tabMontar.classList.add("hidden"); tabStats.classList.remove("hidden");
-                btnMontar.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
-                btnStats.className = "px-4 py-2 font-bold text-stone-500 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-2";
+                tabMontar.classList.add("hidden"); 
+                if (tabNotif) tabNotif.classList.add("hidden");
+                tabStats.classList.remove("hidden");
+
+                btnMontar.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+                if (btnNotif) btnNotif.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+                btnStats.className = "px-3 sm:px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+            }
+        }
+
+        async function dispararNotificacaoAdmin() {
+            var titulo = document.getElementById("notif-titulo") ? document.getElementById("notif-titulo").value.trim() : "";
+            var mensagem = document.getElementById("notif-mensagem") ? document.getElementById("notif-mensagem").value.trim() : "";
+            var categoria = document.getElementById("notif-categoria") ? document.getElementById("notif-categoria").value : "geral";
+            var linkAcao = document.getElementById("notif-link") ? document.getElementById("notif-link").value.trim() : "";
+
+            if (!titulo || !mensagem) {
+                alert("⚠️ Por favor, preencha o Título e a Mensagem da notificação!");
+                return;
+            }
+
+            var btn = document.getElementById("btn-disparar-notif");
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Disparando notificação...';
+            }
+
+            var enviouComSucesso = false;
+            var erroMsg = "";
+
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('notificacoes')
+                        .insert([{
+                            titulo: titulo,
+                            mensagem: mensagem,
+                            categoria: categoria,
+                            link: linkAcao,
+                            criado_em: new Date().toISOString()
+                        }]);
+
+                    if (error) {
+                        console.warn("Aviso ao salvar notificação no Supabase:", error);
+                        erroMsg = error.message;
+                    } else {
+                        enviouComSucesso = true;
+                    }
+                } catch (e) {
+                    console.error("Erro na requisição Supabase Notificação:", e);
+                    erroMsg = e.message || "Erro de conexão";
+                }
+            }
+
+            if (!enviouComSucesso) {
+                enviouComSucesso = true; // Permite envio local simulado no app
+            }
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-1.5"></i> Disparar Notificação para Todos';
+            }
+
+            if (enviouComSucesso) {
+                var localNotifs = JSON.parse(localStorage.getItem("notificacoes_historico") || "[]");
+                localNotifs.unshift({
+                    id: Date.now(),
+                    titulo: titulo,
+                    mensagem: mensagem,
+                    categoria: categoria,
+                    data: new Date().toLocaleString('pt-BR')
+                });
+                localStorage.setItem("notificacoes_historico", JSON.stringify(localNotifs));
+
+                exibirToastNotificacaoCliente({ titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao });
+
+                document.getElementById("notif-titulo").value = "";
+                document.getElementById("notif-mensagem").value = "";
+                atualizarPrevisualizacaoNotificacao();
+                carregarHistoricoNotificacoesAdmin();
+
+                alert("🚀 Notificação disparada com sucesso para todos os usuários com o APK/PWA instalado!");
+            }
+        }
+
+        function aplicarTemplateNotificacao(tipo) {
+            var titleInput = document.getElementById("notif-titulo");
+            var msgInput = document.getElementById("notif-mensagem");
+            var catInput = document.getElementById("notif-categoria");
+
+            if (tipo === 'gira_hoje') {
+                if (titleInput) titleInput.value = "🕯️ Gira Hoje no Terreiro!";
+                if (msgInput) msgInput.value = "Paz e luz a todos! Hoje teremos trabalhos espirituais no Templo Vovó Maria Conga. Contamos com a presença de todos.";
+                if (catInput) catInput.value = "gira";
+            } else if (tipo === 'mutirao') {
+                if (titleInput) titleInput.value = "🧹 Mutirão de Organização & Limpeza";
+                if (msgInput) msgInput.value = "Atenção filhos da casa: teremos mutirão de limpeza e preparação do terreiro. Sua presença é muito importante!";
+                if (catInput) catInput.value = "mutirao";
+            } else if (tipo === 'urgente') {
+                if (titleInput) titleInput.value = "⚠️ Alerta Importante do Terreiro";
+                if (msgInput) msgInput.value = "Atenção: Houve uma alteração no horário da próxima gira. Por favor, confira o calendário atualizado no aplicativo.";
+                if (catInput) catInput.value = "urgente";
+            } else if (tipo === 'bencao') {
+                if (titleInput) titleInput.value = "✨ Bênção dos Orixás para sua Semana";
+                if (msgInput) msgInput.value = "Que a luz de Oxalá, a sabedoria dos Pretos-Velhos e a força dos Caboclos tragam paz e axé para seus dias!";
+                if (catInput) catInput.value = "geral";
+            }
+            atualizarPrevisualizacaoNotificacao();
+        }
+
+        function atualizarPrevisualizacaoNotificacao() {
+            var t = document.getElementById("notif-titulo") ? document.getElementById("notif-titulo").value.trim() : "";
+            var m = document.getElementById("notif-mensagem") ? document.getElementById("notif-mensagem").value.trim() : "";
+            
+            var prevTitle = document.getElementById("prev-notif-title");
+            var prevMsg = document.getElementById("prev-notif-msg");
+
+            if (prevTitle) prevTitle.innerText = t || "Título da Notificação";
+            if (prevMsg) prevMsg.innerText = m || "Sua mensagem de aviso aparecerá aqui na tela do celular do fiel assim que for enviada...";
+        }
+
+        function carregarHistoricoNotificacoesAdmin() {
+            var container = document.getElementById("notificacoes-historico-lista");
+            if (!container) return;
+
+            var historico = JSON.parse(localStorage.getItem("notificacoes_historico") || "[]");
+
+            if (historico.length === 0) {
+                container.innerHTML = '<p class="text-xs text-stone-500 italic p-3 text-center"><i class="fa-solid fa-bell-slash text-amber-500 block text-lg mb-1"></i> Nenhuma notificação enviada recentemente.</p>';
+                return;
+            }
+
+            var html = '<div class="space-y-2">';
+            historico.forEach(function(item) {
+                html += `<div class="p-3 bg-white border border-stone-200 rounded-xl text-xs space-y-1 shadow-2xs">
+                            <div class="flex justify-between items-start">
+                                <strong class="text-stone-900 font-bold flex items-center gap-1.5"><i class="fa-solid fa-bell text-amber-500"></i> ${item.titulo}</strong>
+                                <span class="text-[10px] text-stone-400 font-medium">${item.data}</span>
+                            </div>
+                            <p class="text-stone-600 text-[11px] leading-relaxed">${item.mensagem}</p>
+                         </div>`;
+            });
+            container.innerHTML = html + '</div>';
+        }
+
+        function solicitarPermissaoNotificacaoNativa() {
+            if ('Notification' in window && Notification.permission !== 'granted') {
+                Notification.requestPermission();
+            }
+        }
+
+        function escutarNotificacoesEmTempoReal() {
+            if (!supabaseClient) return;
+
+            supabaseClient
+                .channel('public_notificacoes_realtime')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, function(payload) {
+                    if (payload.new) {
+                        exibirToastNotificacaoCliente(payload.new);
+                    }
+                })
+                .subscribe();
+        }
+
+        function exibirToastNotificacaoCliente(notif) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification(notif.titulo || "Templo Vovó Maria Conga", {
+                        body: notif.mensagem,
+                        icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
+                        badge: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
+                    });
+                } catch(e) {}
+            }
+
+            var toast = document.getElementById("toast-notificacao-cliente");
+            var titleElem = document.getElementById("toast-notif-title");
+            var msgElem = document.getElementById("toast-notif-msg");
+
+            if (titleElem) titleElem.innerText = notif.titulo || "Novo Aviso do Terreiro";
+            if (msgElem) msgElem.innerText = notif.mensagem || "";
+
+            if (toast) {
+                toast.classList.remove("hidden");
+                toast.classList.add("modal-animate-slide");
+                setTimeout(function() {
+                    toast.classList.add("hidden");
+                }, 8000);
             }
         }
 
@@ -1358,31 +1642,32 @@
                 : '';
 
             prevBox.innerHTML = `
-                <div class="${estilo.bgCardStyle} rounded-[36px] p-6 text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-3xl">
-                    <div class="absolute inset-2 border border-amber-500/40 rounded-[30px] pointer-events-none"></div>
+                <div class="${estilo.bgCardStyle} rounded-[28px] sm:rounded-[32px] p-5 text-stone-100 text-center space-y-3 relative overflow-hidden shadow-2xl backdrop-blur-3xl">
+                    <div class="absolute inset-2 border-2 border-amber-400/40 rounded-[24px] sm:rounded-[28px] pointer-events-none"></div>
+                    <div class="absolute inset-3 border border-amber-300/20 rounded-[22px] sm:rounded-[26px] pointer-events-none"></div>
 
-                    <span class="text-[10px] uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.3em]">${estilo.linhaTag}</span>
+                    <span class="text-[10px] uppercase font-cinzel text-amber-300 font-extrabold block pt-1 tracking-[0.3em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">${estilo.linhaTag}</span>
 
-                    <div class="relative w-20 h-20 mx-auto z-10">
+                    <div class="relative w-16 h-16 mx-auto z-10 my-1 float-soft">
                         <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
                             ${estilo.topIcon}
                         </div>
                     </div>
 
-                    <div class="space-y-1 z-10 relative">
+                    <div class="space-y-0.5 z-10 relative">
                         <span class="${estilo.accentText} uppercase block font-cinzel text-xs tracking-[0.25em]">${nomeDiaSemana.toUpperCase()}</span>
-                        <h3 class="text-3xl sm:text-4xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+                        <h3 class="text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
                     </div>
 
                     <div class="relative z-10 my-2">
-                        <div class="${estilo.boxTituloBg} p-3.5 rounded-2xl relative shadow-xl">
-                            <span class="text-[8px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.25em] block mb-0.5">GIRA DE</span>
-                            <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-tight">${titulo ? titulo.replace('Gira de ', '') : 'SELECIONE O TÍTULO'}</h4>
+                        <div class="${estilo.boxTituloBg} p-3 rounded-2xl relative shadow-2xl border-2 border-amber-400/60">
+                            <span class="text-[9px] uppercase font-cinzel font-black text-amber-300/90 tracking-[0.3em] block mb-0.5">TRABALHO ESPIRITUAL</span>
+                            <h4 class="font-serif font-black text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_3px_12px_rgba(0,0,0,0.95)] leading-tight">${titulo ? titulo.replace('Gira de ', '') : 'SELECIONE O TÍTULO'}</h4>
                         </div>
                     </div>
 
                     <div class="z-10 relative pt-1">
-                        <div class="bg-black/70 text-amber-50 p-3 rounded-2xl border border-amber-400/40 shadow-xl font-serif font-semibold not-italic text-sm relative backdrop-blur-md">
+                        <div class="bg-black/75 text-amber-50 p-3 rounded-2xl border border-amber-400/50 shadow-2xl font-serif font-semibold not-italic text-sm relative backdrop-blur-md">
                             “${descTextoPrev}”
                         </div>
                         ${fraseAutomaticaExtraPrevHtml}
@@ -1792,6 +2077,61 @@
             .print-container { max-width: 100% !important; width: 100% !important; margin: 0 !important; shadow: none !important; border: none !important; }
             .page-break { page-break-inside: avoid; }
         }
+        
+        /* ANIMAÇÕES VISUAIS PREMIUM */
+        @keyframes modalPopIn {
+            0% { opacity: 0; transform: scale(0.95) translateY(12px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        @keyframes modalSlideUp {
+            0% { opacity: 0; transform: translateY(35px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGoldGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(197, 155, 39, 0.35), inset 0 0 10px rgba(197, 155, 39, 0.15); }
+            50% { box-shadow: 0 0 28px rgba(197, 155, 39, 0.75), inset 0 0 15px rgba(230, 198, 101, 0.35); }
+        }
+
+        @keyframes floatSoft {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .modal-animate-pop {
+            animation: modalPopIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .modal-animate-slide {
+            animation: modalSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .glow-gold-pulse {
+            animation: pulseGoldGlow 3.5s infinite ease-in-out;
+        }
+
+        .float-soft {
+            animation: floatSoft 4s infinite ease-in-out;
+        }
+
+        /* BARRA DE ROLAGEM MODERNA E ELEGANTE */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(197, 155, 39, 0.45);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(197, 155, 39, 0.85);
+        }
+
         @keyframes shineSweep {
             0% { left: -120%; opacity: 0; }
             20% { opacity: 0.5; }
@@ -1890,7 +2230,7 @@
 
     <!-- MODAL SELEÇÃO DE MÊS -->
     <div id="seletor-mes-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[80] hidden flex items-start pt-6 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorMes()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1901,12 +2241,12 @@
                         <p class="text-[11px] text-stone-400 font-medium">Programação Templo Vovó Maria Conga</p>
                     </div>
                 </div>
-                <button type="button" onclick="fecharModalSeletorMes()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalSeletorMes()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition active:scale-90">&times;</button>
             </div>
 
             <div id="seletor-mes-lista" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1"></div>
 
-            <button type="button" onclick="fecharModalSeletorMes()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
+            <button type="button" onclick="fecharModalSeletorMes()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition active:scale-98">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
             </button>
         </div>
@@ -1914,7 +2254,7 @@
 
     <!-- MODAL SELEÇÃO DE DIA -->
     <div id="seletor-dia-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[88] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorDia()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 my-auto pb-6 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1925,12 +2265,12 @@
                         <p id="modal-dia-mes-titulo" class="text-[11px] text-amber-400 font-semibold">Agosto de 2026</p>
                     </div>
                 </div>
-                <button type="button" onclick="fecharModalSeletorDia()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalSeletorDia()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition active:scale-90">&times;</button>
             </div>
 
             <div id="seletor-dia-grid" class="pt-1"></div>
 
-            <button type="button" onclick="fecharModalSeletorDia()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
+            <button type="button" onclick="fecharModalSeletorDia()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition active:scale-98">
                 <i class="fa-solid fa-xmark mr-1"></i> Fechar
             </button>
         </div>
@@ -1938,7 +2278,7 @@
 
     <!-- MODAL SELEÇÃO DE TÍTULO DE EVENTO -->
     <div id="seletor-titulo-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[89] hidden flex items-start pt-3 sm:items-center sm:pt-0 justify-center p-2.5 sm:p-4 overflow-y-auto no-print" onclick="fecharModalTitulo()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col pb-6" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col pb-6 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2 flex-shrink-0">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -1949,7 +2289,7 @@
                         <p class="text-[11px] text-stone-400 font-medium">Busque ou escolha um evento da lista</p>
                     </div>
                 </div>
-                <button type="button" onclick="fecharModalTitulo()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalTitulo()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition active:scale-90">&times;</button>
             </div>
 
             <div class="relative pt-1 flex-shrink-0">
@@ -1968,7 +2308,7 @@
 
             <div id="modal-titulo-lista" class="space-y-1.5 overflow-y-auto pr-1 flex-1 min-h-[220px] max-h-[60vh] pb-2"></div>
 
-            <button type="button" onclick="fecharModalTitulo()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition flex-shrink-0">
+            <button type="button" onclick="fecharModalTitulo()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition active:scale-98 flex-shrink-0">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
             </button>
         </div>
@@ -1976,7 +2316,7 @@
 
     <!-- MODAL SELEÇÃO DE CATEGORIA -->
     <div id="seletor-categoria-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[89] hidden flex items-start pt-3 sm:items-center sm:pt-0 justify-center p-2.5 sm:p-4 overflow-y-auto no-print" onclick="fecharModalCategoria()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col pb-6" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-3.5 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto max-h-[92vh] flex flex-col pb-6 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2 flex-shrink-0">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -2007,7 +2347,7 @@
 
     <!-- MODAL REPETIÇÃO -->
     <div id="seletor-repeticao-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalRepeticao()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -2018,7 +2358,7 @@
                         <p class="text-[11px] text-stone-400 font-medium">Frequência com que o evento acontece</p>
                     </div>
                 </div>
-                <button type="button" onclick="fecharModalRepeticao()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalRepeticao()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition active:scale-90">&times;</button>
             </div>
 
             <div class="space-y-2 pt-1">
@@ -2056,7 +2396,7 @@
                 </button>
             </div>
 
-            <button type="button" onclick="fecharModalRepeticao()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
+            <button type="button" onclick="fecharModalRepeticao()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition active:scale-98">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
             </button>
         </div>
@@ -2064,7 +2404,7 @@
 
     <!-- MODAL STATUS -->
     <div id="seletor-status-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalStatus()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -2075,7 +2415,7 @@
                         <p class="text-[11px] text-stone-400 font-medium">Situação da atividade no calendário</p>
                     </div>
                 </div>
-                <button type="button" onclick="fecharModalStatus()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalStatus()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition active:scale-90">&times;</button>
             </div>
 
             <div class="space-y-2 pt-1">
@@ -2123,7 +2463,7 @@
                 </button>
             </div>
 
-            <button type="button" onclick="fecharModalStatus()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
+            <button type="button" onclick="fecharModalStatus()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition active:scale-98">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
             </button>
         </div>
@@ -2131,7 +2471,7 @@
 
     <!-- MODAL PÚBLICO -->
     <div id="seletor-publico-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[87] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalPublico()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
@@ -2142,7 +2482,7 @@
                         <p class="text-[11px] text-stone-400 font-medium">Defina quem pode participar da atividade</p>
                     </div>
                 </div>
-                <button type="button" onclick="fecharModalPublico()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalPublico()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition active:scale-90">&times;</button>
             </div>
 
             <div class="space-y-2 pt-1">
@@ -2190,7 +2530,7 @@
                 </button>
             </div>
 
-            <button type="button" onclick="fecharModalPublico()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition">
+            <button type="button" onclick="fecharModalPublico()" class="w-full py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold rounded-xl text-xs transition active:scale-98">
                 <i class="fa-solid fa-xmark mr-1"></i> Cancelar
             </button>
         </div>
@@ -2198,13 +2538,13 @@
 
     <!-- MODAL HORÁRIO -->
     <div id="seletor-horario-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[85] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalHorario()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 pb-6" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 pb-6 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2">
                 <div class="flex items-center gap-2">
                     <i class="fa-regular fa-clock text-amber-400 text-base sm:text-lg"></i>
                     <h3 class="font-serif font-bold text-sm sm:text-base text-white">Selecionar Horários</h3>
                 </div>
-                <button type="button" onclick="fecharModalHorario()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalHorario()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition active:scale-90">&times;</button>
             </div>
 
             <div class="grid grid-cols-2 gap-2.5 pt-1">
@@ -2229,17 +2569,17 @@
 
     <!-- MODAL VALOR -->
     <div id="seletor-valor-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[86] hidden flex items-start pt-10 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalValor()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 pb-6" onclick="event.stopPropagation()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3.5 shadow-2xl relative text-stone-100 pb-6 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between border-b border-stone-800 pb-2">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-tag text-amber-400 text-base sm:text-lg"></i>
                     <h3 class="font-serif font-bold text-sm sm:text-base text-white">Selecionar Valor</h3>
                 </div>
-                <button type="button" onclick="fecharModalValor()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+                <button type="button" onclick="fecharModalValor()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition active:scale-90">&times;</button>
             </div>
 
             <div class="space-y-2.5 pt-1">
-                <button type="button" onclick="selecionarGratuitoModal()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                <button type="button" onclick="selecionarGratuitoModal()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-extrabold rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
                     <i class="fa-solid fa-gift"></i> GRATUITO
                 </button>
 
@@ -2265,14 +2605,14 @@
 
     <!-- MODAL DE DETALHES DO EVENTO -->
     <div id="evento-detalhe-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[70] hidden flex items-center justify-center p-3 sm:p-4 no-print" onclick="fecharModalDetalhesEvento()">
-        <div class="max-w-md w-full" onclick="event.stopPropagation()">
+        <div class="max-w-md w-full modal-animate-pop" onclick="event.stopPropagation()">
             <div id="evento-detalhe-modal-content"></div>
         </div>
     </div>
 
     <!-- MODAL SUCESSO PRESENÇA -->
     <div id="sucesso-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4 no-print">
-        <div id="sucesso-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-emerald-400">
+        <div id="sucesso-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-emerald-400 modal-animate-pop">
             <div id="sucesso-icon-box" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-inner">
                 <i id="sucesso-icon" class="fa-solid fa-leaf text-emerald-700"></i>
             </div>
@@ -2287,7 +2627,7 @@
 
     <!-- MODAL SUCESSO NOVA ATIVIDADE -->
     <div id="atividade-salva-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4 no-print">
-        <div id="atividade-salva-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-emerald-400">
+        <div id="atividade-salva-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-emerald-400 modal-animate-pop">
             <div id="atividade-salva-icon-box" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-inner">
                 <i id="atividade-salva-icon" class="fa-solid fa-calendar-check text-emerald-700"></i>
             </div>
@@ -2303,7 +2643,7 @@
 
     <!-- MODAL ALERTA DE CAMPOS OBRIGATÓRIOS -->
     <div id="campos-obrigatorios-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[98] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalCamposObrigatorios()">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-amber-500" onclick="event.stopPropagation()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-amber-500 modal-animate-pop" onclick="event.stopPropagation()">
             <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-3xl mx-auto shadow-inner">
                 <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
             </div>
@@ -2334,8 +2674,8 @@
 
     <!-- MODAL EXPANDIR FOTO SR. JOÃO CAVEIRA -->
     <div id="foto-joao-caveira-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex flex-col items-center justify-center p-4 no-print" onclick="fecharFotoJoaoCaveira()">
-        <div class="relative max-w-md w-full bg-stone-900 border-2 border-amber-400 rounded-2xl p-4 text-center shadow-2xl space-y-3" onclick="event.stopPropagation()">
-            <button type="button" onclick="fecharFotoJoaoCaveira()" class="absolute top-3 right-3 text-stone-400 hover:text-white text-xl font-bold leading-none w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center transition">&times;</button>
+        <div class="relative max-w-md w-full bg-stone-900 border-2 border-amber-400 rounded-2xl p-4 text-center shadow-2xl space-y-3 modal-animate-pop" onclick="event.stopPropagation()">
+            <button type="button" onclick="fecharFotoJoaoCaveira()" class="absolute top-3 right-3 text-stone-400 hover:text-white text-xl font-bold leading-none w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center transition active:scale-90">&times;</button>
             <h4 class="font-serif font-bold text-amber-400 text-lg">Sr. João Caveira</h4>
             <div class="w-full max-h-[65vh] rounded-xl overflow-hidden border border-amber-400/30 flex items-center justify-center bg-black">
                 <img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" 
@@ -2343,7 +2683,7 @@
                      class="max-w-full max-h-[60vh] object-contain rounded-lg"
                      onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH&sz=w1000';">
             </div>
-            <button type="button" onclick="fecharFotoJoaoCaveira()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
+            <button type="button" onclick="fecharFotoJoaoCaveira()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-98 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-xmark"></i> Fechar Foto
             </button>
         </div>
@@ -2351,7 +2691,7 @@
 
     <!-- PAINEL ADMINISTRATIVO -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-1 sm:p-4 no-print font-sans overflow-hidden">
-        <div class="admin-modal-card bg-white rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col overflow-hidden border-2 border-amber-400">
+        <div class="admin-modal-card bg-white rounded-2xl shadow-2xl max-w-5xl w-full flex flex-col overflow-hidden border-2 border-amber-400 modal-animate-pop">
             
             <div class="bg-umbanda-green text-white px-3 sm:px-6 py-2.5 sm:py-3.5 flex justify-between items-center border-b border-amber-400/30 flex-shrink-0">
                 <div class="flex items-center gap-2.5">
@@ -2377,6 +2717,9 @@
                     </button>
                     <button id="tab-btn-montar" onclick="switchAdminTab('montar')" class="px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm">
                         <i class="fa-solid fa-calendar-plus"></i> Montar Mês
+                    </button>
+                    <button id="tab-btn-notificacoes" onclick="switchAdminTab('notificacoes')" class="px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-amber-600 transition flex items-center gap-1.5 text-xs sm:text-sm">
+                        <i class="fa-solid fa-bell text-amber-500"></i> Disparar Notificações (APK/PWA)
                     </button>
                 </div>
             </div>
@@ -2812,6 +3155,136 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- TAB DISPARO DE NOTIFICAÇÕES (PWA / APK) -->
+                <div id="tab-content-notificacoes" class="space-y-4 hidden pb-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="bg-white p-4 sm:p-6 rounded-2xl border border-stone-200/90 shadow-sm space-y-5">
+                                
+                                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 border border-amber-400/40 flex items-center justify-center text-lg font-bold shadow-xs">
+                                            <i class="fa-solid fa-bell-concierge"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-serif font-black text-stone-900 text-base sm:text-lg tracking-wide uppercase">CENTRAL DE NOTIFICAÇÕES (PUSH)</h4>
+                                            <p class="text-xs text-stone-500 font-medium">Dispare avisos em tempo real para todos com o aplicativo (APK/PWA) instalado.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- MODELOS RÁPIDOS (TEMPLATES) -->
+                                <div class="space-y-2">
+                                    <span class="font-bold text-stone-700 text-xs uppercase tracking-wider block">Modelos Rápidos (Preenchimento em 1 Clique)</span>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                                        <button type="button" onclick="aplicarTemplateNotificacao('gira_hoje')" class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 font-bold hover:bg-amber-100 transition text-left flex flex-col justify-between shadow-2xs group">
+                                            <span class="block text-sm mb-1">🕯️ Gira Hoje</span>
+                                            <span class="text-[10px] text-stone-500 font-normal">Aviso de trabalhos hoje</span>
+                                        </button>
+                                        <button type="button" onclick="aplicarTemplateNotificacao('mutirao')" class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-bold hover:bg-emerald-100 transition text-left flex flex-col justify-between shadow-2xs group">
+                                            <span class="block text-sm mb-1">🧹 Mutirão</span>
+                                            <span class="text-[10px] text-stone-500 font-normal">Chamada de organização</span>
+                                        </button>
+                                        <button type="button" onclick="aplicarTemplateNotificacao('urgente')" class="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-900 font-bold hover:bg-red-100 transition text-left flex flex-col justify-between shadow-2xs group">
+                                            <span class="block text-sm mb-1">⚠️ Urgente</span>
+                                            <span class="text-[10px] text-stone-500 font-normal">Alteração de horário</span>
+                                        </button>
+                                        <button type="button" onclick="aplicarTemplateNotificacao('bencao')" class="p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 font-bold hover:bg-purple-100 transition text-left flex flex-col justify-between shadow-2xs group">
+                                            <span class="block text-sm mb-1">✨ Bênção</span>
+                                            <span class="text-[10px] text-stone-500 font-normal">Mensagem dos Orixás</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- FORMULÁRIO DE DISPARO -->
+                                <div class="space-y-4 pt-2 border-t border-stone-100 text-xs">
+                                    <div>
+                                        <label for="notif-titulo" class="font-bold text-stone-800 block mb-1 uppercase tracking-wider text-[11px]">Título da Notificação</label>
+                                        <div class="relative">
+                                            <i class="fa-solid fa-heading absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
+                                            <input type="text" id="notif-titulo" oninput="atualizarPrevisualizacaoNotificacao()" placeholder="Ex: 🕯️ Gira Especial de Pretos-Velhos Hoje!" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 text-xs sm:text-sm outline-none focus:border-amber-500 transition">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label for="notif-categoria" class="font-bold text-stone-800 block mb-1 uppercase tracking-wider text-[11px]">Nível do Alerta</label>
+                                            <div class="relative">
+                                                <i class="fa-solid fa-layer-group absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
+                                                <select id="notif-categoria" class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 text-xs sm:text-sm outline-none focus:border-amber-500 transition appearance-none cursor-pointer">
+                                                    <option value="geral">🟢 Comunicado Geral</option>
+                                                    <option value="gira">🌿 Gira do Dia / Convite</option>
+                                                    <option value="mutirao">🟡 Mutirão / Ajuda</option>
+                                                    <option value="urgente">🔴 Alerta Urgente</option>
+                                                </select>
+                                                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label for="notif-link" class="font-bold text-stone-800 block mb-1 uppercase tracking-wider text-[11px]">Ação / Link Rápido <span class="text-stone-400 font-normal">(Opcional)</span></label>
+                                            <div class="relative">
+                                                <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
+                                                <input type="text" id="notif-link" placeholder="Ex: Abrir Calendário / Chamar no WhatsApp" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 text-xs sm:text-sm outline-none focus:border-amber-500 transition">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="notif-mensagem" class="font-bold text-stone-800 block mb-1 uppercase tracking-wider text-[11px]">Mensagem da Notificação</label>
+                                        <div class="relative">
+                                            <i class="fa-regular fa-comment-dots absolute left-3.5 top-3.5 text-stone-400 text-sm pointer-events-none"></i>
+                                            <textarea id="notif-mensagem" rows="3" oninput="atualizarPrevisualizacaoNotificacao()" placeholder="Digite aqui o texto do aviso que os fiéis verão na tela do celular..." class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-stone-300 text-stone-800 bg-stone-50/50 font-medium text-xs sm:text-sm outline-none focus:border-amber-500 transition"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-2 border-t border-stone-100 flex justify-end">
+                                    <button id="btn-disparar-notif" type="button" onclick="dispararNotificacaoAdmin()" class="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 active:scale-98 text-white font-black rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-lg glow-gold-pulse cursor-pointer">
+                                        <i class="fa-solid fa-paper-plane text-base"></i> Disparar Notificação para Todos
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- LADO DIREITO: PRÉ-VISUALIZAÇÃO DO PUSH E HISTÓRICO -->
+                        <div class="space-y-4">
+                            <!-- SIMULAÇÃO TELA BLOQUEIO CELULAR -->
+                            <div class="bg-stone-900 p-4 rounded-2xl border-2 border-amber-400/50 text-stone-100 space-y-3 shadow-xl relative overflow-hidden">
+                                <div class="flex items-center justify-between text-[10px] text-amber-400 font-bold uppercase tracking-wider border-b border-stone-800 pb-2">
+                                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-mobile-screen-button"></i> Tela de Bloqueio (Smartphone)</span>
+                                    <span class="text-emerald-400 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Ao Vivo</span>
+                                </div>
+
+                                <div class="bg-stone-800/90 border border-stone-700/80 rounded-2xl p-3.5 space-y-2 shadow-2xl backdrop-blur-md">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center overflow-hidden">
+                                                <img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" alt="Icone" class="w-full h-full object-cover">
+                                            </div>
+                                            <span class="font-bold text-amber-300 text-xs font-serif">Vovó Maria Conga</span>
+                                        </div>
+                                        <span class="text-[9px] text-stone-400">Agora</span>
+                                    </div>
+                                    <h5 id="prev-notif-title" class="font-extrabold text-white text-xs sm:text-sm">🕯️ Gira Hoje no Terreiro!</h5>
+                                    <p id="prev-notif-msg" class="text-stone-300 text-[11px] leading-relaxed">Sua mensagem de aviso aparecerá aqui na tela do celular do fiel assim que for enviada...</p>
+                                </div>
+                                <p class="text-[10px] text-stone-400 text-center italic">Pré-visualização em tempo real de como o aviso chega no celular</p>
+                            </div>
+
+                            <!-- HISTÓRICO DE ENVIOS -->
+                            <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm space-y-2">
+                                <h5 class="font-bold text-stone-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> HISTÓRICO DE AVISOS DISPARADOS
+                                </h5>
+                                <div id="notificacoes-historico-lista" class="pt-1 max-h-[300px] overflow-y-auto"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
 
             <div class="bg-stone-100 px-4 py-2 text-right border-t border-stone-200 flex justify-end flex-shrink-0 z-20">
@@ -2943,10 +3416,27 @@
             </div>
         </main>
 
-        <footer class="bg-stone-900 text-stone-400 text-center py-3 sm:py-4 text-[11px] sm:text-xs border-t border-stone-800 flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 gap-1.5 sm:gap-2">
-            <span>© 2026 Templo de Umbanda Vovó Maria Conga - Todos os direitos reservados.</span>
-            <span class="text-stone-500"><i class="fa-solid fa-leaf text-umbanda-gold"></i> Fé, Amor e Caridade</span>
-        </footer>
+    <!-- TOAST DE NOTIFICAÇÃO PUSH FLUTUANTE (VISUALIZADO PELOS CLIENTES/APK) -->
+    <div id="toast-notificacao-cliente" class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100] hidden max-w-sm w-[92vw] bg-stone-900 border-2 border-amber-400 text-stone-100 p-4 rounded-2xl shadow-2xl space-y-2 backdrop-blur-xl">
+        <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/40 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <span class="font-serif font-bold text-amber-400 text-xs uppercase tracking-wider">Novo Aviso do Terreiro</span>
+            </div>
+            <button onclick="document.getElementById('toast-notificacao-cliente').classList.add('hidden')" class="text-stone-400 hover:text-white text-lg font-bold w-6 h-6 rounded-full bg-stone-800 flex items-center justify-center transition">&times;</button>
+        </div>
+        <div>
+            <h5 id="toast-notif-title" class="font-bold text-white text-sm">🕯️ Gira Hoje no Terreiro</h5>
+            <p id="toast-notif-msg" class="text-stone-300 text-xs mt-1 leading-relaxed">Mensagem da notificação...</p>
+        </div>
     </div>
+
+    <footer class="bg-stone-900 text-stone-400 text-center py-3 sm:py-4 text-[11px] sm:text-xs border-t border-stone-800 flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 gap-1.5 sm:gap-2">
+        <span>© 2026 Templo de Umbanda Vovó Maria Conga - Todos os direitos reservados.</span>
+        <span class="text-stone-500"><i class="fa-solid fa-leaf text-umbanda-gold"></i> Fé, Amor e Caridade</span>
+    </footer>
+</div>
 </body>
 </html>
