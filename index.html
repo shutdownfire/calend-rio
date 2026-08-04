@@ -26,7 +26,7 @@
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
-          appId: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
+          appId: "79939fe5-bccb-4456-8901-c6c58fa9a3d8",
           notifyButton: { enable: false }
         });
         try {
@@ -63,19 +63,10 @@
 
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                    var swCode = `
-                        const CACHE_NAME = 'vovo-maria-conga-v1';
-                        self.addEventListener('install', (e) => { self.skipWaiting(); });
-                        self.addEventListener('activate', (e) => { self.clients.claim(); });
-                        self.addEventListener('fetch', (e) => {
-                            if (e.request.method !== 'GET') return;
-                            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-                        });
-                    `;
-                    try {
-                        var swBlob = new Blob([swCode], { type: 'application/javascript' });
-                        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(){});
-                    } catch(e) {}
+                    // ARQUIVO REAL "OneSignalSDKWorker.js" (na raiz do site) faz tanto o
+                    // cache offline do PWA quanto o push da OneSignal, num único worker,
+                    // evitando conflito de scope entre os dois.
+                    navigator.serviceWorker.register('./OneSignalSDKWorker.js').catch(function(){});
                 });
             }
         })();
@@ -1180,78 +1171,6 @@
             if (modal) modal.classList.add("hidden");
         }
 
-        function abrirModalNotificacaoDisparada(titulo, texto) {
-            var titleElem = document.getElementById("modal-notif-disparada-titulo");
-            var textElem = document.getElementById("modal-notif-disparada-texto");
-            if (titleElem && titulo) titleElem.innerText = titulo;
-            if (textElem && texto) textElem.innerText = texto;
-            var modal = document.getElementById("notificacao-disparada-modal");
-            if (modal) modal.classList.remove("hidden");
-        }
-
-        function fecharModalNotificacaoDisparada() {
-            var modal = document.getElementById("notificacao-disparada-modal");
-            if (modal) modal.classList.add("hidden");
-        }
-
-        var deferredPwaPrompt = null;
-
-        window.addEventListener('beforeinstallprompt', function(e) {
-            e.preventDefault();
-            deferredPwaPrompt = e;
-            verificarExibicaoModalPwa();
-        });
-
-        function verificarExibicaoModalPwa() {
-            var ehStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-            if (ehStandalone) return;
-
-            var ultimoDescarte = localStorage.getItem("pwa_install_prompt_dismissed");
-            if (ultimoDescarte) {
-                var tempoPassado = Date.now() - parseInt(ultimoDescarte);
-                if (tempoPassado < 24 * 60 * 60 * 1000) return;
-            }
-
-            setTimeout(function() {
-                abrirModalInstalarPwa();
-            }, 1200);
-        }
-
-        function abrirModalInstalarPwa() {
-            var m = document.getElementById("modal-instalar-pwa");
-            if (m) m.classList.remove("hidden");
-        }
-
-        function fecharModalInstalarPwa(foiDescarte) {
-            var m = document.getElementById("modal-instalar-pwa");
-            if (m) m.classList.add("hidden");
-            if (foiDescarte) {
-                localStorage.setItem("pwa_install_prompt_dismissed", Date.now());
-            }
-        }
-
-        async function dispararInstalacaoPwa() {
-            var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-            if (deferredPwaPrompt) {
-                fecharModalInstalarPwa(false);
-                deferredPwaPrompt.prompt();
-                var choiceResult = await deferredPwaPrompt.userChoice;
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('Fiel aceitou a instalação do PWA');
-                } else {
-                    localStorage.setItem("pwa_install_prompt_dismissed", Date.now());
-                }
-                deferredPwaPrompt = null;
-            } else if (isIOS) {
-                var instrucoesIOS = document.getElementById("pwa-instrucoes-ios");
-                if (instrucoesIOS) instrucoesIOS.classList.remove("hidden");
-            } else {
-                fecharModalInstalarPwa(true);
-                abrirModalNotificacaoDisparada("📱 Instalação do App", "Para instalar no seu celular:\n\n1. Toque no menu do seu navegador (três pontos ⋮ ou Compartilhar).\n2. Selecione 'Adicionar à Tela Inicial' ou 'Instalar Aplicativo'.");
-            }
-        }
-
         function abrirFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.remove("hidden"); }
         function fecharFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.add("hidden"); }
 
@@ -1358,22 +1277,30 @@
         }
 
         function escutarNotificacoesEmTempoReal() {
-            if (!supabaseClient) return;
+            console.log("[NOTIF-DEBUG] escutarNotificacoesEmTempoReal() foi chamada.");
+            if (!supabaseClient) {
+                console.error("[NOTIF-DEBUG] supabaseClient é null/undefined! Biblioteca do Supabase não carregou.");
+                return;
+            }
 
             // 1. Escuta em Tempo Real via WebSocket (Broadcast + Postgres Changes)
             GLOBAL_PUSH_CHANNEL = supabaseClient.channel('global_push_broadcast');
             GLOBAL_PUSH_CHANNEL
                 .on('broadcast', { event: 'nova_notificacao' }, function(payload) {
+                    console.log("[NOTIF-DEBUG] Broadcast recebido:", payload);
                     if (payload && payload.payload) {
                         processarNovaNotificacao(payload.payload);
                     }
                 })
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, function(payload) {
+                    console.log("[NOTIF-DEBUG] postgres_changes INSERT recebido:", payload);
                     if (payload && payload.new) {
                         processarNovaNotificacao(payload.new);
                     }
                 })
-                .subscribe();
+                .subscribe(function(status, err) {
+                    console.log("[NOTIF-DEBUG] Status da inscrição no canal:", status, err || "");
+                });
 
             // 2. BUSCA AUTOMÁTICA A CADA 6 SEGUNDOS (Garante entrega em 100% dos celulares)
             setInterval(async function() {
@@ -1384,10 +1311,15 @@
                         .order('id', { ascending: false })
                         .limit(1);
 
-                    if (!error && data && data.length > 0) {
+                    if (error) {
+                        console.error("[NOTIF-DEBUG] Erro no polling de notificações:", error);
+                    } else if (data && data.length > 0) {
+                        console.log("[NOTIF-DEBUG] Polling encontrou registro mais recente:", data[0]);
                         processarNovaNotificacao(data[0]);
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.error("[NOTIF-DEBUG] Exceção no polling:", e);
+                }
             }, 6000);
         }
 
@@ -1472,9 +1404,9 @@
                     if (error) {
                         console.error("Erro ao salvar notificação no Supabase:", error);
                         erroMsg = error.message || JSON.stringify(error);
-                    } else {
+                    } else if (data && data.length > 0) {
                         enviouComSucesso = true;
-                        var novaNotifSalva = (data && data.length > 0) ? data[0] : { id: Date.now(), titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao };
+                        var novaNotifSalva = data[0];
 
                         if (GLOBAL_PUSH_CHANNEL) {
                             try {
@@ -1494,43 +1426,23 @@
                 erroMsg = "Supabase não inicializado.";
             }
 
-            // DISPARO PUSH GLOBAL VIA ONESIGNAL (PARA TELA BLOQUEADA / TELA APAGADA / APP FECHADO DE TODOS OS FIÉIS)
+            // DISPARO PUSH GLOBAL VIA EDGE FUNCTION (PARA TELA BLOQUEADA / TELA APAGADA / APP FECHADO)
             try {
-                var osApiKey = atob("b3NfdjJfYXBwX3Bnano3em40em5jZm5jaWJ5M2N5N2tuZDNjcXE3YXBkZTNsZW5xZnl1cTZxMmZoNzdrdDZhd3N3NXAzZWx6YW1odHBrdW54NmpvdXR4N3NjNWozM3ZnZnFhNHBwY25lY2p6eHpzamk=");
-                var osPayload = {
-                    app_id: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
-                    included_segments: ["Subscribed Users", "All"],
-                    target_channel: "push",
-                    headings: { pt: titulo, en: titulo },
-                    contents: { pt: mensagem, en: mensagem },
-                    url: linkAcao || "https://shutdownfire.github.io/calend-rio/",
-                    chrome_web_icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
-                    chrome_web_badge: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
-                };
-
-                fetch("https://onesignal.com/api/v1/notifications", {
+                fetch(SUPABASE_URL + "/functions/v1/enviar-notificacao-push", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json; charset=utf-8",
-                        "Authorization": "Key " + osApiKey
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + SUPABASE_ANON_KEY
                     },
-                    body: JSON.stringify(osPayload)
+                    body: JSON.stringify({
+                        titulo: titulo,
+                        mensagem: mensagem,
+                        link: linkAcao
+                    })
                 })
-                .then(function(res){ return res.json(); })
-                .then(function(data){
-                    console.log("[OneSignal PUSH Resposta com Key]", data);
-                    if (data && data.errors && data.errors.length > 0) {
-                        fetch("https://onesignal.com/api/v1/notifications", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json; charset=utf-8",
-                                "Authorization": "Basic " + osApiKey
-                            },
-                            body: JSON.stringify(osPayload)
-                        }).then(r => r.json()).then(d => console.log("[OneSignal PUSH Resposta com Basic]", d)).catch(function(){});
-                    }
-                })
-                .catch(function(err){ console.warn("OneSignal REST Push:", err); });
+                .then(function(r){ return r.json(); })
+                .then(function(res){ console.log("[NOTIF-DEBUG] Push OneSignal via Edge Function:", res); })
+                .catch(function(err){ console.warn("[NOTIF-DEBUG] Erro ao chamar Edge Function de push:", err); });
             } catch(e) {}
 
             if (btn) {
@@ -1539,7 +1451,7 @@
             }
 
             if (!enviouComSucesso) {
-                abrirModalNotificacaoDisparada("⚠️ Falha no Envio", "A notificação NÃO foi enviada para o banco de dados!\n\nMotivo do erro: " + erroMsg + "\n\nVerifique se rodou o comando SQL no Supabase para liberar a tabela 'notificacoes'.");
+                alert("⚠️ A notificação NÃO foi enviada para o banco de dados!\n\nMotivo do erro: " + erroMsg + "\n\nVerifique se rodou o comando SQL no Supabase para liberar a tabela 'notificacoes'.");
                 return;
             }
 
@@ -1560,7 +1472,7 @@
             atualizarPrevisualizacaoNotificacao();
             carregarHistoricoNotificacoesAdmin();
 
-            abrirModalNotificacaoDisparada("🚀 Notificação Disparada!", "Notificação gravada no Supabase e disparada com sucesso para TODOS os celulares!");
+            alert("🚀 Notificação gravada no Supabase e disparada com sucesso para TODOS os celulares!");
         }
 
         function aplicarTemplateNotificacao(tipo) {
@@ -2206,7 +2118,8 @@
             carregarCalendarioDoSupabase(); 
             escutarPresencasEmTempoReal();
             escutarEventosEmTempoReal();
-            verificarExibicaoModalPwa();
+            escutarNotificacoesEmTempoReal();
+            verificarPermissaoNotificacaoAoCarregar();
 
             setInterval(function() {
                 carregarContadoresPresenca();
@@ -2268,6 +2181,12 @@
             50% { left: 140%; opacity: 0; }
             100% { left: 140%; opacity: 0; }
         }
+
+        @keyframes toastSlideIn {
+            0% { opacity: 0; transform: translateY(-16px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .modal-animate-slide { animation: toastSlideIn 0.35s ease-out; }
         .shine-effect {
             position: absolute; top: 0; left: -120%; width: 50%; height: 100%;
             background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
@@ -2336,6 +2255,34 @@
     </style>
 </head>
 <body class="bg-stone-100 font-sans text-stone-800 antialiased min-h-screen py-2 px-1.5 sm:py-6 sm:px-6">
+
+    <!-- TOAST DE NOTIFICAÇÃO EM TEMPO REAL (estava faltando no HTML) -->
+    <div id="toast-notificacao-cliente" class="hidden fixed top-3 left-1/2 -translate-x-1/2 sm:top-5 sm:left-auto sm:right-5 sm:translate-x-0 z-[9999] w-[92%] sm:w-96 max-w-md">
+        <div class="bg-white border border-amber-300 shadow-2xl rounded-xl p-3.5 sm:p-4 flex items-start gap-3">
+            <div class="flex-shrink-0 w-9 h-9 rounded-full bg-umbanda-green flex items-center justify-center text-amber-300">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+                <p id="toast-notif-title" class="font-serif font-bold text-umbanda-green text-sm truncate">Novo Aviso do Terreiro</p>
+                <p id="toast-notif-msg" class="text-stone-700 text-xs mt-0.5"></p>
+            </div>
+            <button type="button" onclick="document.getElementById('toast-notificacao-cliente').classList.add('hidden')" class="flex-shrink-0 text-stone-400 hover:text-stone-600 text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- BANNER DE SOLICITAÇÃO DE PERMISSÃO DE NOTIFICAÇÃO (estava faltando no HTML) -->
+    <div id="banner-permissao-notificacao" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 sm:bottom-5 z-[9999] w-[92%] sm:w-auto max-w-md">
+        <div class="bg-umbanda-green text-white shadow-2xl rounded-xl p-3.5 sm:p-4 flex items-center gap-3 border border-amber-400/50">
+            <i class="fa-solid fa-bell text-amber-300"></i>
+            <p class="text-xs sm:text-sm flex-1">Ative as notificações para receber avisos do terreiro em tempo real.</p>
+            <button type="button" onclick="solicitarPermissaoNotificacaoNativa()" class="bg-amber-400 text-umbanda-green font-bold text-xs px-3 py-1.5 rounded-lg flex-shrink-0">Ativar</button>
+            <button type="button" onclick="document.getElementById('banner-permissao-notificacao').classList.add('hidden')" class="text-stone-300 hover:text-white text-xs flex-shrink-0">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
 
     <!-- TOP BAR HARMONIZADA E ELEGANTE -->
     <div class="max-w-5xl mx-auto mb-3 sm:mb-6 no-print bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl shadow-md border border-amber-400/40 flex items-center justify-between gap-2 text-stone-100 relative overflow-hidden">
@@ -2782,68 +2729,6 @@
                 <p class="text-xs text-stone-600 mt-2 font-medium leading-relaxed">Preencha o <strong>Mês/Ano</strong>, <strong>Dia do Mês</strong> e o <strong>Título do Evento</strong>!</p>
             </div>
             <button type="button" onclick="fecharModalCamposObrigatorios()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Entendido</button>
-        </div>
-    </div>
-
-    <!-- MODAL SUCESSO DISPARO NOTIFICAÇÃO (DESIGN ULTRA PREMIUM) -->
-    <div id="notificacao-disparada-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalNotificacaoDisparada()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl relative text-stone-100 modal-animate-pop" onclick="event.stopPropagation()">
-            <div class="w-16 h-16 rounded-full bg-amber-500/20 text-amber-400 border-2 border-amber-400/50 flex items-center justify-center text-3xl mx-auto shadow-[0_0_25px_rgba(245,158,11,0.4)]">
-                <i class="fa-solid fa-paper-plane text-amber-400"></i>
-            </div>
-            <div class="space-y-2">
-                <h3 id="modal-notif-disparada-titulo" class="font-serif font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-300 to-amber-500">Notificação Disparada!</h3>
-                <p id="modal-notif-disparada-texto" class="text-xs text-stone-300 font-medium leading-relaxed">
-                    Notificação gravada no Supabase e disparada com sucesso para TODOS os celulares!
-                </p>
-                <div class="pt-1">
-                    <span class="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-400 bg-emerald-950/80 border border-emerald-500/40 px-3 py-1 rounded-full shadow-sm">
-                        <i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i> Transmissão em Tempo Real Concluída
-                    </span>
-                </div>
-            </div>
-            <button type="button" onclick="fecharModalNotificacaoDisparada()" class="w-full py-3 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-700 hover:to-amber-700 active:scale-95 text-stone-950 font-black rounded-xl text-xs sm:text-sm transition shadow-lg uppercase tracking-wider cursor-pointer">
-                Concluído
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL DE INSTALAÇÃO DO APLICATIVO PWA -->
-    <div id="modal-instalar-pwa" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[101] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalInstalarPwa(true)">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-5 sm:p-6 text-center space-y-4 shadow-2xl relative text-stone-100 modal-animate-pop" onclick="event.stopPropagation()">
-            <button type="button" onclick="fecharModalInstalarPwa(true)" class="absolute top-3 right-3 text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition">&times;</button>
-            
-            <div class="w-16 h-16 rounded-2xl border-2 border-amber-400 bg-stone-950 p-1 mx-auto shadow-[0_0_25px_rgba(245,158,11,0.4)] overflow-hidden">
-                <img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" alt="Icone App" class="w-full h-full object-cover rounded-xl">
-            </div>
-
-            <div class="space-y-1.5">
-                <span class="text-[10px] font-bold uppercase tracking-[0.25em] text-amber-300 block font-cinzel">APLICATIVO OFICIAL</span>
-                <h3 class="font-serif font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-yellow-200 to-amber-400">Instalar Aplicativo Maria Conga</h3>
-                <p class="text-xs text-stone-300 font-medium leading-relaxed pt-1">
-                    Instale o app no seu celular para receber avisos de giras em tempo real e acessar o calendário mesmo sem internet!
-                </p>
-            </div>
-
-            <!-- INSTRUÇÕES ESPECÍFICAS PARA IPHONE / SAFARI -->
-            <div id="pwa-instrucoes-ios" class="hidden bg-amber-500/10 border border-amber-400/30 rounded-xl p-3 text-left space-y-1 text-xs text-amber-200">
-                <p class="font-bold text-amber-300 flex items-center gap-1.5">
-                    <i class="fa-brands fa-apple text-sm"></i> No iPhone / iPad:
-                </p>
-                <ol class="list-decimal list-inside space-y-1 text-[11px] text-stone-300">
-                    <li>Toque no botão <strong>Compartilhar</strong> <i class="fa-solid fa-arrow-up-from-bracket text-amber-400"></i> (no rodapé do Safari).</li>
-                    <li>Role para baixo e selecione <strong>Adicionar à Tela de Início</strong> <i class="fa-regular fa-square-plus text-amber-400"></i>.</li>
-                </ol>
-            </div>
-
-            <div class="space-y-2 pt-1">
-                <button type="button" onclick="dispararInstalacaoPwa()" class="w-full py-3.5 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-700 hover:to-amber-700 active:scale-95 text-stone-950 font-black rounded-xl text-xs sm:text-sm transition shadow-lg uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-download text-sm"></i> Instalar Aplicativo Agora
-                </button>
-                <button type="button" onclick="fecharModalInstalarPwa(true)" class="w-full py-2 text-stone-400 hover:text-stone-200 font-bold text-xs transition">
-                    Agora não, continuar no navegador
-                </button>
-            </div>
         </div>
     </div>
 
@@ -3492,6 +3377,8 @@
                                 <div id="notificacoes-historico-lista" class="max-h-[300px] overflow-y-auto pr-1"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>
