@@ -63,19 +63,10 @@
 
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                    var swCode = `
-                        const CACHE_NAME = 'vovo-maria-conga-v1';
-                        self.addEventListener('install', (e) => { self.skipWaiting(); });
-                        self.addEventListener('activate', (e) => { self.clients.claim(); });
-                        self.addEventListener('fetch', (e) => {
-                            if (e.request.method !== 'GET') return;
-                            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-                        });
-                    `;
-                    try {
-                        var swBlob = new Blob([swCode], { type: 'application/javascript' });
-                        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(){});
-                    } catch(e) {}
+                    // ARQUIVO REAL "OneSignalSDKWorker.js" (na raiz do site) faz tanto o
+                    // cache offline do PWA quanto o push da OneSignal, num único worker,
+                    // evitando conflito de scope entre os dois.
+                    navigator.serviceWorker.register('./OneSignalSDKWorker.js').catch(function(){});
                 });
             }
         })();
