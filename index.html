@@ -1472,9 +1472,9 @@
                     if (error) {
                         console.error("Erro ao salvar notificação no Supabase:", error);
                         erroMsg = error.message || JSON.stringify(error);
-                    } else if (data && data.length > 0) {
+                    } else {
                         enviouComSucesso = true;
-                        var novaNotifSalva = data[0];
+                        var novaNotifSalva = (data && data.length > 0) ? data[0] : { id: Date.now(), titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao };
 
                         if (GLOBAL_PUSH_CHANNEL) {
                             try {
@@ -1494,28 +1494,42 @@
                 erroMsg = "Supabase não inicializado.";
             }
 
-            // DISPARO PUSH GLOBAL VIA ONESIGNAL (PARA TELA BLOQUEADA / TELA APAGADA / APP FECHADO)
+            // DISPARO PUSH GLOBAL VIA ONESIGNAL (PARA TELA BLOQUEADA / TELA APAGADA / APP FECHADO DE TODOS OS FIÉIS)
             try {
                 var osApiKey = atob("b3NfdjJfYXBwX3Bnano3em40em5jZm5jaWJ5M2N5N2tuZDNjcXE3YXBkZTNsZW5xZnl1cTZxMmZoNzdrdDZhd3N3NXAzZWx6YW1odHBrdW54NmpvdXR4N3NjNWozM3ZnZnFhNHBwY25lY2p6eHpzamk=");
+                var osPayload = {
+                    app_id: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
+                    included_segments: ["Subscribed Users", "All"],
+                    target_channel: "push",
+                    headings: { pt: titulo, en: titulo },
+                    contents: { pt: mensagem, en: mensagem },
+                    url: linkAcao || "https://shutdownfire.github.io/calend-rio/",
+                    chrome_web_icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
+                    chrome_web_badge: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
+                };
+
                 fetch("https://onesignal.com/api/v1/notifications", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json; charset=utf-8",
-                        "Authorization": "Basic " + osApiKey
+                        "Authorization": "Key " + osApiKey
                     },
-                    body: JSON.stringify({
-                        app_id: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
-                        included_segments: ["Subscribed Users"],
-                        target_channel: "push",
-                        headings: { pt: titulo, en: titulo },
-                        contents: { pt: mensagem, en: mensagem },
-                        url: linkAcao || "https://shutdownfire.github.io/calend-rio/",
-                        chrome_web_icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
-                        chrome_web_badge: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
-                    })
+                    body: JSON.stringify(osPayload)
                 })
                 .then(function(res){ return res.json(); })
-                .then(function(data){ console.log("[OneSignal PUSH Resposta]", data); })
+                .then(function(data){
+                    console.log("[OneSignal PUSH Resposta com Key]", data);
+                    if (data && data.errors && data.errors.length > 0) {
+                        fetch("https://onesignal.com/api/v1/notifications", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8",
+                                "Authorization": "Basic " + osApiKey
+                            },
+                            body: JSON.stringify(osPayload)
+                        }).then(r => r.json()).then(d => console.log("[OneSignal PUSH Resposta com Basic]", d)).catch(function(){});
+                    }
+                })
                 .catch(function(err){ console.warn("OneSignal REST Push:", err); });
             } catch(e) {}
 
