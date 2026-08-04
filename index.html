@@ -2191,6 +2191,12 @@
             50% { left: 140%; opacity: 0; }
             100% { left: 140%; opacity: 0; }
         }
+
+        @keyframes toastSlideIn {
+            0% { opacity: 0; transform: translateY(-16px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .modal-animate-slide { animation: toastSlideIn 0.35s ease-out; }
         .shine-effect {
             position: absolute; top: 0; left: -120%; width: 50%; height: 100%;
             background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
@@ -2259,6 +2265,34 @@
     </style>
 </head>
 <body class="bg-stone-100 font-sans text-stone-800 antialiased min-h-screen py-2 px-1.5 sm:py-6 sm:px-6">
+
+    <!-- TOAST DE NOTIFICAÇÃO EM TEMPO REAL (estava faltando no HTML) -->
+    <div id="toast-notificacao-cliente" class="hidden fixed top-3 left-1/2 -translate-x-1/2 sm:top-5 sm:left-auto sm:right-5 sm:translate-x-0 z-[9999] w-[92%] sm:w-96 max-w-md">
+        <div class="bg-white border border-amber-300 shadow-2xl rounded-xl p-3.5 sm:p-4 flex items-start gap-3">
+            <div class="flex-shrink-0 w-9 h-9 rounded-full bg-umbanda-green flex items-center justify-center text-amber-300">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+                <p id="toast-notif-title" class="font-serif font-bold text-umbanda-green text-sm truncate">Novo Aviso do Terreiro</p>
+                <p id="toast-notif-msg" class="text-stone-700 text-xs mt-0.5"></p>
+            </div>
+            <button type="button" onclick="document.getElementById('toast-notificacao-cliente').classList.add('hidden')" class="flex-shrink-0 text-stone-400 hover:text-stone-600 text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- BANNER DE SOLICITAÇÃO DE PERMISSÃO DE NOTIFICAÇÃO (estava faltando no HTML) -->
+    <div id="banner-permissao-notificacao" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 sm:bottom-5 z-[9999] w-[92%] sm:w-auto max-w-md">
+        <div class="bg-umbanda-green text-white shadow-2xl rounded-xl p-3.5 sm:p-4 flex items-center gap-3 border border-amber-400/50">
+            <i class="fa-solid fa-bell text-amber-300"></i>
+            <p class="text-xs sm:text-sm flex-1">Ative as notificações para receber avisos do terreiro em tempo real.</p>
+            <button type="button" onclick="solicitarPermissaoNotificacaoNativa()" class="bg-amber-400 text-umbanda-green font-bold text-xs px-3 py-1.5 rounded-lg flex-shrink-0">Ativar</button>
+            <button type="button" onclick="document.getElementById('banner-permissao-notificacao').classList.add('hidden')" class="text-stone-300 hover:text-white text-xs flex-shrink-0">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
 
     <!-- TOP BAR HARMONIZADA E ELEGANTE -->
     <div class="max-w-5xl mx-auto mb-3 sm:mb-6 no-print bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl shadow-md border border-amber-400/40 flex items-center justify-between gap-2 text-stone-100 relative overflow-hidden">
