@@ -1494,24 +1494,29 @@
                 erroMsg = "Supabase não inicializado.";
             }
 
-            // DISPARO PUSH GLOBAL VIA ONESIGNAL (PARA TELA BLOQUEADA / TELA APAGADA)
+            // DISPARO PUSH GLOBAL VIA ONESIGNAL (PARA TELA BLOQUEADA / TELA APAGADA / APP FECHADO)
             try {
                 var osApiKey = atob("b3NfdjJfYXBwX3Bnano3em40em5jZm5jaWJ5M2N5N2tuZDNjcXE3YXBkZTNsZW5xZnl1cTZxMmZoNzdrdDZhd3N3NXAzZWx6YW1odHBrdW54NmpvdXR4N3NjNWozM3ZnZnFhNHBwY25lY2p6eHpzamk=");
                 fetch("https://onesignal.com/api/v1/notifications", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json; charset=utf-8",
-                        "Authorization": "Key " + osApiKey
+                        "Authorization": "Basic " + osApiKey
                     },
                     body: JSON.stringify({
                         app_id: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
-                        included_segments: ["Subscribed Users", "Total Subscriptions"],
+                        included_segments: ["Subscribed Users"],
+                        target_channel: "push",
                         headings: { pt: titulo, en: titulo },
                         contents: { pt: mensagem, en: mensagem },
                         url: linkAcao || "https://shutdownfire.github.io/calend-rio/",
-                        chrome_web_icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
+                        chrome_web_icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
+                        chrome_web_badge: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
                     })
-                }).catch(function(err){ console.warn("OneSignal REST Push:", err); });
+                })
+                .then(function(res){ return res.json(); })
+                .then(function(data){ console.log("[OneSignal PUSH Resposta]", data); })
+                .catch(function(err){ console.warn("OneSignal REST Push:", err); });
             } catch(e) {}
 
             if (btn) {
