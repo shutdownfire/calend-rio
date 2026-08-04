@@ -1171,6 +1171,16 @@
             if (modal) modal.classList.add("hidden");
         }
 
+        function abrirModalNotificacaoDisparada() {
+            var modal = document.getElementById("notificacao-disparada-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalNotificacaoDisparada() {
+            var modal = document.getElementById("notificacao-disparada-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
         function abrirFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.remove("hidden"); }
         function fecharFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.add("hidden"); }
 
@@ -1236,6 +1246,56 @@
                 btnMontar.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
                 if (btnNotif) btnNotif.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
                 btnStats.className = "px-3 sm:px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+            }
+        }
+
+        /* ===== INSTALAÇÃO DO APLICATIVO (PWA) ===== */
+        var eventoInstalacaoPWA = null;
+        var APP_JA_INSTALADO = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+        function ehIOS() {
+            return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            eventoInstalacaoPWA = e;
+            abrirModalInstalarApp();
+        });
+
+        window.addEventListener('appinstalled', function() {
+            APP_JA_INSTALADO = true;
+            fecharModalInstalarApp(false);
+            try { localStorage.setItem('app_instalado', '1'); } catch(e) {}
+        });
+
+        function abrirModalInstalarApp() {
+            if (APP_JA_INSTALADO) return;
+            var dispensadoEm = localStorage.getItem('instalar_app_dispensado_em');
+            if (dispensadoEm && (Date.now() - parseInt(dispensadoEm, 10)) < 3 * 24 * 60 * 60 * 1000) return;
+            var modal = document.getElementById('modal-instalar-app');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function fecharModalInstalarApp(lembrarDispensa) {
+            var modal = document.getElementById('modal-instalar-app');
+            if (modal) modal.classList.add('hidden');
+            if (lembrarDispensa) {
+                try { localStorage.setItem('instalar_app_dispensado_em', Date.now().toString()); } catch(e) {}
+            }
+        }
+
+        function instalarAppAgora() {
+            if (eventoInstalacaoPWA) {
+                eventoInstalacaoPWA.prompt();
+                eventoInstalacaoPWA.userChoice.then(function(escolha) {
+                    eventoInstalacaoPWA = null;
+                    fecharModalInstalarApp(escolha.outcome !== 'accepted');
+                });
+            } else if (ehIOS()) {
+                alert('Para instalar: toque no ícone de Compartilhar do Safari e depois em "Adicionar à Tela de Início".');
+            } else {
+                fecharModalInstalarApp(true);
             }
         }
 
@@ -1472,7 +1532,7 @@
             atualizarPrevisualizacaoNotificacao();
             carregarHistoricoNotificacoesAdmin();
 
-            alert("🚀 Notificação gravada no Supabase e disparada com sucesso para TODOS os celulares!");
+            abrirModalNotificacaoDisparada();
         }
 
         function aplicarTemplateNotificacao(tipo) {
@@ -2121,6 +2181,10 @@
             escutarNotificacoesEmTempoReal();
             verificarPermissaoNotificacaoAoCarregar();
 
+            if (!APP_JA_INSTALADO && ehIOS()) {
+                setTimeout(function() { abrirModalInstalarApp(); }, 2500);
+            }
+
             setInterval(function() {
                 carregarContadoresPresenca();
             }, 4000);
@@ -2280,6 +2344,31 @@
             <button type="button" onclick="solicitarPermissaoNotificacaoNativa()" class="bg-amber-400 text-umbanda-green font-bold text-xs px-3 py-1.5 rounded-lg flex-shrink-0">Ativar</button>
             <button type="button" onclick="document.getElementById('banner-permissao-notificacao').classList.add('hidden')" class="text-stone-300 hover:text-white text-xs flex-shrink-0">
                 <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL DE INSTALAÇÃO DO APLICATIVO (PWA) -->
+    <div id="modal-instalar-app" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[9998] flex items-center justify-center p-4 no-print">
+        <div class="relative bg-gradient-to-b from-stone-950 via-black to-stone-950 border-2 border-amber-400/70 rounded-[28px] max-w-xs w-full p-6 text-center shadow-[0_0_50px_rgba(251,191,36,0.25)]">
+            <button type="button" onclick="fecharModalInstalarApp(true)" class="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 hover:text-white flex items-center justify-center text-xs transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-20 h-20 mx-auto rounded-2xl bg-stone-50 border border-amber-400/40 flex items-center justify-center overflow-hidden shadow-[0_0_25px_rgba(251,191,36,0.45)]">
+                <img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" alt="Ícone do Aplicativo" class="w-14 h-14 object-contain">
+            </div>
+
+            <span class="block mt-4 text-[10px] font-cinzel font-bold text-amber-400 uppercase tracking-[0.25em]">Aplicativo Oficial</span>
+            <h3 class="mt-1.5 font-serif font-black text-xl text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-300 to-amber-500">Instalar Aplicativo Maria Conga</h3>
+            <p class="mt-2.5 text-stone-300 text-xs leading-relaxed">Instale o app no seu celular para receber avisos de giras em tempo real e acessar o calendário mesmo sem internet!</p>
+
+            <button type="button" id="btn-instalar-app-agora" onclick="instalarAppAgora()" class="mt-5 w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 hover:brightness-110 active:scale-95 text-stone-900 font-bold text-xs tracking-wide shadow-lg shadow-amber-500/30 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-download"></i> INSTALAR APLICATIVO AGORA
+            </button>
+
+            <button type="button" onclick="fecharModalInstalarApp(true)" class="mt-3 text-stone-400 hover:text-stone-200 text-[11px] font-medium transition">
+                Agora não, continuar no navegador
             </button>
         </div>
     </div>
@@ -2729,6 +2818,20 @@
                 <p class="text-xs text-stone-600 mt-2 font-medium leading-relaxed">Preencha o <strong>Mês/Ano</strong>, <strong>Dia do Mês</strong> e o <strong>Título do Evento</strong>!</p>
             </div>
             <button type="button" onclick="fecharModalCamposObrigatorios()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Entendido</button>
+        </div>
+    </div>
+
+    <!-- MODAL NOTIFICAÇÃO DISPARADA COM SUCESSO -->
+    <div id="notificacao-disparada-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[98] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalNotificacaoDisparada()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-emerald-400" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                <i class="fa-solid fa-paper-plane text-emerald-700"></i>
+            </div>
+            <div>
+                <h3 class="font-serif font-bold text-lg text-umbanda-green">Notificação Disparada!</h3>
+                <p class="text-xs text-stone-600 mt-2 font-medium leading-relaxed">Gravada no Supabase e enviada com sucesso para <strong>TODOS os celulares</strong>! 🚀</p>
+            </div>
+            <button type="button" onclick="fecharModalNotificacaoDisparada()" class="w-full py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Entendido</button>
         </div>
     </div>
 
