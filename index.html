@@ -1181,6 +1181,16 @@
             if (modal) modal.classList.add("hidden");
         }
 
+        function abrirModalNotifCamposObrigatorios() {
+            var modal = document.getElementById("notif-campos-obrigatorios-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalNotifCamposObrigatorios() {
+            var modal = document.getElementById("notif-campos-obrigatorios-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
         function abrirFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.remove("hidden"); }
         function fecharFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.add("hidden"); }
 
@@ -1436,7 +1446,7 @@
             var linkAcao = document.getElementById("notif-link") ? document.getElementById("notif-link").value.trim() : "";
 
             if (!titulo || !mensagem) {
-                alert("⚠️ Por favor, preencha o Título e a Mensagem da notificação!");
+                abrirModalNotifCamposObrigatorios();
                 return;
             }
 
@@ -2832,6 +2842,20 @@
                 <p class="text-xs text-stone-600 mt-2 font-medium leading-relaxed">Gravada no Supabase e enviada com sucesso para <strong>TODOS os celulares</strong>! 🚀</p>
             </div>
             <button type="button" onclick="fecharModalNotificacaoDisparada()" class="w-full py-2.5 bg-umbanda-green hover:bg-umbanda-lightgreen active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Entendido</button>
+        </div>
+    </div>
+
+    <!-- MODAL CAMPOS OBRIGATÓRIOS DA NOTIFICAÇÃO -->
+    <div id="notif-campos-obrigatorios-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[98] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalNotifCamposObrigatorios()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-amber-500" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+            </div>
+            <div>
+                <h3 class="font-serif font-bold text-lg text-stone-900">Atenção!</h3>
+                <p class="text-xs text-stone-600 mt-2 font-medium leading-relaxed">Por favor, preencha o <strong>Título</strong> e a <strong>Mensagem</strong> da notificação!</p>
+            </div>
+            <button type="button" onclick="fecharModalNotifCamposObrigatorios()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Entendido</button>
         </div>
     </div>
 
