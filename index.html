@@ -1435,24 +1435,23 @@
                 erroMsg = "Supabase não inicializado.";
             }
 
-            // DISPARO PUSH GLOBAL VIA ONESIGNAL (PARA TELA BLOQUEADA / TELA APAGADA)
+            // DISPARO PUSH GLOBAL VIA EDGE FUNCTION (PARA TELA BLOQUEADA / TELA APAGADA / APP FECHADO)
             try {
-                var osApiKey = atob("b3NfdjJfYXBwX3Bnano3em40em5jZm5jaWJ5M2N5N2tuZDNjcXE3YXBkZTNsZW5xZnl1cTZxMmZoNzdrdDZhd3N3NXAzZWx6YW1odHBrdW54NmpvdXR4N3NjNWozM3ZnZnFhNHBwY25lY2p6eHpzamk=");
-                fetch("https://onesignal.com/api/v1/notifications", {
+                fetch(SUPABASE_URL + "/functions/v1/enviar-notificacao-push", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json; charset=utf-8",
-                        "Authorization": "Key " + osApiKey
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + SUPABASE_ANON_KEY
                     },
                     body: JSON.stringify({
-                        app_id: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
-                        included_segments: ["Subscribed Users", "Total Subscriptions"],
-                        headings: { pt: titulo, en: titulo },
-                        contents: { pt: mensagem, en: mensagem },
-                        url: linkAcao || "https://shutdownfire.github.io/calend-rio/",
-                        chrome_web_icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
+                        titulo: titulo,
+                        mensagem: mensagem,
+                        link: linkAcao
                     })
-                }).catch(function(err){ console.warn("OneSignal REST Push:", err); });
+                })
+                .then(function(r){ return r.json(); })
+                .then(function(res){ console.log("[NOTIF-DEBUG] Push OneSignal via Edge Function:", res); })
+                .catch(function(err){ console.warn("[NOTIF-DEBUG] Erro ao chamar Edge Function de push:", err); });
             } catch(e) {}
 
             if (btn) {
