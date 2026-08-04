@@ -26,7 +26,7 @@
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
-          appId: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
+          appId: "79939fe5-bccb-4456-8901-c6c58fa9a3d8",
           notifyButton: { enable: false }
         });
         try {
@@ -63,19 +63,10 @@
 
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                    var swCode = `
-                        const CACHE_NAME = 'vovo-maria-conga-v1';
-                        self.addEventListener('install', (e) => { self.skipWaiting(); });
-                        self.addEventListener('activate', (e) => { self.clients.claim(); });
-                        self.addEventListener('fetch', (e) => {
-                            if (e.request.method !== 'GET') return;
-                            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-                        });
-                    `;
-                    try {
-                        var swBlob = new Blob([swCode], { type: 'application/javascript' });
-                        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(){});
-                    } catch(e) {}
+                    // ARQUIVO REAL "OneSignalSDKWorker.js" (na raiz do site) faz tanto o
+                    // cache offline do PWA quanto o push da OneSignal, num único worker,
+                    // evitando conflito de scope entre os dois.
+                    navigator.serviceWorker.register('./OneSignalSDKWorker.js').catch(function(){});
                 });
             }
         })();
@@ -153,45 +144,15 @@
             return frasesMap[day] || frasesMap[1];
         }
 
-        function removerFrasesDuplicadas(texto) {
-            if (!texto || typeof texto !== 'string') return "";
-            var str = texto.trim();
-            if (!str) return "";
-
-            var frases = str.split(/(?<=[.!?])\s+/);
-            var frasesUnicas = [];
-
-            frases.forEach(function(f) {
-                var fClean = f.trim();
-                if (!fClean) return;
-
-                var fNorm = fClean.toLowerCase().replace(/[^a-z0-9à-ú]/g, '');
-                if (fNorm.length === 0) return;
-
-                var ehDuplicada = frasesUnicas.some(function(existente) {
-                    var exNorm = existente.toLowerCase().replace(/[^a-z0-9à-ú]/g, '');
-                    if (exNorm === fNorm) return true;
-                    if (exNorm.length > 18 && fNorm.length > 18) {
-                        if (exNorm.includes(fNorm) || fNorm.includes(exNorm)) return true;
-                    }
-                    return false;
-                });
-
-                if (!ehDuplicada) {
-                    frasesUnicas.push(fClean);
-                }
-            });
-
-            return frasesUnicas.join(" ");
-        }
-
         function obterDescricaoAutomatica(titulo, descExistente) {
             var tTrim = (titulo && typeof titulo === 'string') ? titulo.trim() : "";
             var padrao = (tTrim && DESCRICOES_PADRAO[tTrim]) ? DESCRICOES_PADRAO[tTrim] : "";
             var customizada = (descExistente && typeof descExistente === 'string') ? descExistente.trim() : "";
 
-            var resultado = customizada ? customizada : padrao;
-            return removerFrasesDuplicadas(resultado);
+            if (padrao && customizada) return padrao + ' ' + customizada;
+            if (padrao) return padrao;
+            if (customizada) return customizada;
+            return "";
         }
 
         function obterListaTitulosCompleta() {
@@ -939,19 +900,19 @@
                 var idNorm = normalizarEventoId(ev.id);
                 var estaConfirmadoModal = localStorage.getItem("confirmado_gira_" + idNorm) || localStorage.getItem("confirmado_gira_" + ev.id);
                 if (estaConfirmadoModal) {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-3 sm:py-3.5 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_25px_rgba(16,185,129,0.3)]">' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" disabled class="w-full py-2.5 sm:py-3 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 tracking-[0.2em] uppercase font-cinzel shadow-[0_0_25px_rgba(16,185,129,0.3)]">' +
                                         '<i class="fa-solid fa-circle-check text-emerald-400 text-sm sm:text-base"></i> PRESENÇA CONFIRMADA' +
                                    '</button>';
                 } else {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-3 sm:py-3.5 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer">' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-2.5 sm:py-3 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer">' +
                                         '<i class="fa-solid fa-check text-sm sm:text-base"></i> CONFIRMAR PRESENÇA' +
                                    '</button>';
                 }
             } else {
                 acaoBtnHtml = '<div class="flex justify-center pt-1">' +
-                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="btn-zap-exact active:scale-95 transition-all duration-200 cursor-pointer shadow-md py-2.5 px-6 text-xs sm:text-sm font-bold flex items-center gap-2">' +
-                                    '<i class="fa-brands fa-whatsapp text-base"></i>' +
-                                    '<span>Agendar via WhatsApp</span>' +
+                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="btn-zap-exact active:scale-95 transition-all duration-200 cursor-pointer shadow-md">' +
+                                    '<i class="fa-brands fa-whatsapp text-sm"></i>' +
+                                    '<span>Agendar</span>' +
                                 '</button>' +
                                '</div>';
             }
@@ -963,7 +924,7 @@
                         <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs shadow-inner flex-shrink-0">
                             <i class="fa-solid fa-users"></i>
                         </div>
-                        <div class="min-w-0 text-left">
+                        <div class="min-w-0">
                             <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Público Alvo</span>
                             <strong class="text-stone-100 font-bold text-xs sm:text-sm font-sans truncate block">${ev.publico.trim()}</strong>
                         </div>
@@ -977,23 +938,9 @@
                         <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs shadow-inner flex-shrink-0">
                             <i class="fa-regular fa-clock"></i>
                         </div>
-                        <div class="min-w-0 text-left">
+                        <div class="min-w-0">
                             <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Horário de Início</span>
                             <strong class="text-amber-300 font-bold text-xs sm:text-sm font-sans truncate block">${ev.horario.trim()}</strong>
-                        </div>
-                    </div>
-                `);
-            }
-
-            if (ev.valor && ev.valor.trim() !== '') {
-                infoBoxRows.push(`
-                    <div class="flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs shadow-inner flex-shrink-0">
-                            <i class="fa-solid fa-tag"></i>
-                        </div>
-                        <div class="min-w-0 text-left">
-                            <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Valor</span>
-                            <strong class="text-amber-300 font-bold text-xs sm:text-sm font-sans truncate block">${ev.valor.trim()}</strong>
                         </div>
                     </div>
                 `);
@@ -1009,7 +956,7 @@
                         <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-emerald-400 text-xs shadow-inner flex-shrink-0">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
-                        <div class="min-w-0 text-left">
+                        <div class="min-w-0">
                             <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Situação do Trabalho</span>
                             <span class="inline-flex items-center gap-1.5 font-bold text-xs px-2.5 py-0.5 rounded-full border mt-0.5 ${statusColorClass}">
                                 ${ev.status.trim()}
@@ -1021,13 +968,13 @@
 
             var cardInfoBoxHtml = "";
             if (infoBoxRows.length > 0) {
-                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/30 rounded-2xl p-3 text-left space-y-2.5 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
+                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/30 rounded-2xl p-2.5 sm:p-3 text-left space-y-2 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
                                     infoBoxRows.join('<div class="h-[1px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full"></div>') +
                                   `</div>`;
             }
 
             var temObservacaoCustom = ev.descricao && ev.descricao.trim() !== '';
-            var descTexto = temObservacaoCustom ? removerFrasesDuplicadas(ev.descricao) : estilo.saudacao;
+            var descTexto = temObservacaoCustom ? ev.descricao.trim() : estilo.saudacao;
             var fraseAutomaticaExtraHtml = temObservacaoCustom
                 ? `<div class="bg-black/50 text-amber-100 p-2.5 sm:p-3.5 rounded-2xl border border-amber-400/30 shadow-xl font-serif italic text-xs sm:text-sm relative backdrop-blur-md mt-2">
                         <span class="text-amber-400 font-bold text-sm leading-none">“</span>
@@ -1039,45 +986,35 @@
             var containerModal = document.getElementById("evento-detalhe-modal-content");
             if (containerModal) {
                 containerModal.innerHTML = `
-                    <div class="${estilo.bgCardStyle} rounded-[28px] sm:rounded-[32px] p-4 sm:p-6 text-stone-200 text-center space-y-3 sm:space-y-3.5 relative overflow-hidden shadow-2xl backdrop-blur-3xl max-h-[92vh] max-h-[92dvh] overflow-y-auto modal-animate-pop">
-                        <div class="absolute inset-1.5 sm:inset-2 border border-amber-500/40 rounded-[24px] sm:rounded-[28px] pointer-events-none"></div>
-                        
-                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3.5 right-3.5 sm:top-4.5 sm:right-4.5 text-amber-300 hover:text-white font-bold w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-stone-950/90 border-2 border-amber-400/60 flex items-center justify-center transition-all duration-200 shadow-2xl z-40 cursor-pointer hover:scale-110 active:scale-95" title="Fechar Modal">
-                            <i class="fa-solid fa-xmark text-base sm:text-lg"></i>
-                        </button>
-                        
-                        <span class="text-[9.5px] sm:text-[11.5px] uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.25em] sm:tracking-[0.3em]">✦ ${estilo.linhaTag} ✦</span>
-                        
-                        <div class="relative w-14 h-14 sm:w-16 sm:h-16 mx-auto z-10">
+                    <div class="${estilo.bgCardStyle} rounded-[24px] sm:rounded-[28px] p-3.5 sm:p-5 text-stone-200 text-center space-y-2 sm:space-y-2.5 relative overflow-hidden shadow-2xl backdrop-blur-3xl max-h-[92vh] max-h-[92dvh] overflow-y-auto">
+                        <div class="absolute inset-1.5 sm:inset-2 border border-amber-500/40 rounded-[22px] sm:rounded-[24px] pointer-events-none"></div>
+                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-amber-400 hover:text-white text-base font-bold w-8 h-8 rounded-full bg-black/80 border border-amber-500/40 flex items-center justify-center transition shadow-2xl z-30 cursor-pointer hover:scale-110 active:scale-95">&times;</button>
+                        <span class="text-[9px] sm:text-[11px] uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.25em] sm:tracking-[0.3em]">${estilo.linhaTag}</span>
+                        <div class="relative w-12 h-12 sm:w-14 sm:h-14 mx-auto z-10">
                             <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
                                 ${estilo.topIcon}
                             </div>
                         </div>
-
                         <div class="space-y-0.5 z-10 relative">
-                            <span class="${estilo.accentText} uppercase block font-cinzel text-[11px] sm:text-xs tracking-[0.22em]">${nomeDiaSemana.toUpperCase()}</span>
+                            <span class="${estilo.accentText} uppercase block font-cinzel text-[11px] sm:text-xs tracking-[0.2em]">${nomeDiaSemana.toUpperCase()}</span>
                             <h3 class="text-2xl sm:text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
                         </div>
-
                         <div class="relative z-10 my-1">
-                            <div class="${estilo.boxTituloBg} p-3 sm:p-3.5 rounded-2xl relative shadow-2xl">
+                            <div class="${estilo.boxTituloBg} p-2.5 sm:p-3 rounded-2xl relative shadow-2xl">
                                 <span class="text-[8px] sm:text-[9px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.2em] sm:tracking-[0.3em] block mb-0.5">GIRA DE</span>
                                 <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">${ev.titulo.replace('Gira de ', '')}</h4>
                             </div>
                         </div>
-
                         ${cardInfoBoxHtml}
-
                         <div class="z-10 relative pt-0.5">
-                            <div class="bg-black/70 text-amber-50 p-3 sm:p-3.5 rounded-2xl border border-amber-400/40 shadow-2xl font-serif font-semibold not-italic text-xs sm:text-sm relative backdrop-blur-md">
+                            <div class="bg-black/70 text-amber-50 p-2.5 sm:p-3 rounded-2xl border border-amber-400/40 shadow-2xl font-serif font-semibold not-italic text-sm relative backdrop-blur-md">
                                 <span class="text-amber-400 font-bold text-base leading-none">“</span>
                                 <span>${descTexto}</span>
                                 <span class="text-amber-400 font-bold text-base leading-none">”</span>
                             </div>
                             ${fraseAutomaticaExtraHtml}
                         </div>
-
-                        <div class="pt-1 z-10 relative">
+                        <div class="pt-0.5 z-10 relative">
                             ${acaoBtnHtml}
                         </div>
                     </div>
@@ -1234,78 +1171,6 @@
             if (modal) modal.classList.add("hidden");
         }
 
-        function abrirModalNotificacaoDisparada(titulo, texto) {
-            var titleElem = document.getElementById("modal-notif-disparada-titulo");
-            var textElem = document.getElementById("modal-notif-disparada-texto");
-            if (titleElem && titulo) titleElem.innerText = titulo;
-            if (textElem && texto) textElem.innerText = texto;
-            var modal = document.getElementById("notificacao-disparada-modal");
-            if (modal) modal.classList.remove("hidden");
-        }
-
-        function fecharModalNotificacaoDisparada() {
-            var modal = document.getElementById("notificacao-disparada-modal");
-            if (modal) modal.classList.add("hidden");
-        }
-
-        var deferredPwaPrompt = null;
-
-        window.addEventListener('beforeinstallprompt', function(e) {
-            e.preventDefault();
-            deferredPwaPrompt = e;
-            verificarExibicaoModalPwa();
-        });
-
-        function verificarExibicaoModalPwa() {
-            var ehStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-            if (ehStandalone) return;
-
-            var ultimoDescarte = localStorage.getItem("pwa_install_prompt_dismissed");
-            if (ultimoDescarte) {
-                var tempoPassado = Date.now() - parseInt(ultimoDescarte);
-                if (tempoPassado < 24 * 60 * 60 * 1000) return;
-            }
-
-            setTimeout(function() {
-                abrirModalInstalarPwa();
-            }, 1200);
-        }
-
-        function abrirModalInstalarPwa() {
-            var m = document.getElementById("modal-instalar-pwa");
-            if (m) m.classList.remove("hidden");
-        }
-
-        function fecharModalInstalarPwa(foiDescarte) {
-            var m = document.getElementById("modal-instalar-pwa");
-            if (m) m.classList.add("hidden");
-            if (foiDescarte) {
-                localStorage.setItem("pwa_install_prompt_dismissed", Date.now());
-            }
-        }
-
-        async function dispararInstalacaoPwa() {
-            var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-            if (deferredPwaPrompt) {
-                fecharModalInstalarPwa(false);
-                deferredPwaPrompt.prompt();
-                var choiceResult = await deferredPwaPrompt.userChoice;
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('Fiel aceitou a instalação do PWA');
-                } else {
-                    localStorage.setItem("pwa_install_prompt_dismissed", Date.now());
-                }
-                deferredPwaPrompt = null;
-            } else if (isIOS) {
-                var instrucoesIOS = document.getElementById("pwa-instrucoes-ios");
-                if (instrucoesIOS) instrucoesIOS.classList.remove("hidden");
-            } else {
-                fecharModalInstalarPwa(true);
-                abrirModalNotificacaoDisparada("📱 Instalação do App", "Para instalar no seu celular:\n\n1. Toque no menu do seu navegador (três pontos ⋮ ou Compartilhar).\n2. Selecione 'Adicionar à Tela Inicial' ou 'Instalar Aplicativo'.");
-            }
-        }
-
         function abrirFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.remove("hidden"); }
         function fecharFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.add("hidden"); }
 
@@ -1412,22 +1277,30 @@
         }
 
         function escutarNotificacoesEmTempoReal() {
-            if (!supabaseClient) return;
+            console.log("[NOTIF-DEBUG] escutarNotificacoesEmTempoReal() foi chamada.");
+            if (!supabaseClient) {
+                console.error("[NOTIF-DEBUG] supabaseClient é null/undefined! Biblioteca do Supabase não carregou.");
+                return;
+            }
 
             // 1. Escuta em Tempo Real via WebSocket (Broadcast + Postgres Changes)
             GLOBAL_PUSH_CHANNEL = supabaseClient.channel('global_push_broadcast');
             GLOBAL_PUSH_CHANNEL
                 .on('broadcast', { event: 'nova_notificacao' }, function(payload) {
+                    console.log("[NOTIF-DEBUG] Broadcast recebido:", payload);
                     if (payload && payload.payload) {
                         processarNovaNotificacao(payload.payload);
                     }
                 })
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, function(payload) {
+                    console.log("[NOTIF-DEBUG] postgres_changes INSERT recebido:", payload);
                     if (payload && payload.new) {
                         processarNovaNotificacao(payload.new);
                     }
                 })
-                .subscribe();
+                .subscribe(function(status, err) {
+                    console.log("[NOTIF-DEBUG] Status da inscrição no canal:", status, err || "");
+                });
 
             // 2. BUSCA AUTOMÁTICA A CADA 6 SEGUNDOS (Garante entrega em 100% dos celulares)
             setInterval(async function() {
@@ -1438,10 +1311,15 @@
                         .order('id', { ascending: false })
                         .limit(1);
 
-                    if (!error && data && data.length > 0) {
+                    if (error) {
+                        console.error("[NOTIF-DEBUG] Erro no polling de notificações:", error);
+                    } else if (data && data.length > 0) {
+                        console.log("[NOTIF-DEBUG] Polling encontrou registro mais recente:", data[0]);
                         processarNovaNotificacao(data[0]);
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.error("[NOTIF-DEBUG] Exceção no polling:", e);
+                }
             }, 6000);
         }
 
@@ -1526,9 +1404,9 @@
                     if (error) {
                         console.error("Erro ao salvar notificação no Supabase:", error);
                         erroMsg = error.message || JSON.stringify(error);
-                    } else {
+                    } else if (data && data.length > 0) {
                         enviouComSucesso = true;
-                        var novaNotifSalva = (data && data.length > 0) ? data[0] : { id: Date.now(), titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao };
+                        var novaNotifSalva = data[0];
 
                         if (GLOBAL_PUSH_CHANNEL) {
                             try {
@@ -1548,43 +1426,23 @@
                 erroMsg = "Supabase não inicializado.";
             }
 
-            // DISPARO PUSH GLOBAL VIA ONESIGNAL (PARA TELA BLOQUEADA / TELA APAGADA / APP FECHADO DE TODOS OS FIÉIS)
+            // DISPARO PUSH GLOBAL VIA EDGE FUNCTION (PARA TELA BLOQUEADA / TELA APAGADA / APP FECHADO)
             try {
-                var osApiKey = atob("b3NfdjJfYXBwX3Bnano3em40em5jZm5jaWJ5M2N5N2tuZDNjcXE3YXBkZTNsZW5xZnl1cTZxMmZoNzdrdDZhd3N3NXAzZWx6YW1odHBrdW54NmpvdXR4N3NjNWozM3ZnZnFhNHBwY25lY2p6eHpzamk=");
-                var osPayload = {
-                    app_id: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
-                    included_segments: ["Subscribed Users", "All"],
-                    target_channel: "push",
-                    headings: { pt: titulo, en: titulo },
-                    contents: { pt: mensagem, en: mensagem },
-                    url: linkAcao || "https://shutdownfire.github.io/calend-rio/",
-                    chrome_web_icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
-                    chrome_web_badge: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
-                };
-
-                fetch("https://onesignal.com/api/v1/notifications", {
+                fetch(SUPABASE_URL + "/functions/v1/enviar-notificacao-push", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json; charset=utf-8",
-                        "Authorization": "Key " + osApiKey
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + SUPABASE_ANON_KEY
                     },
-                    body: JSON.stringify(osPayload)
+                    body: JSON.stringify({
+                        titulo: titulo,
+                        mensagem: mensagem,
+                        link: linkAcao
+                    })
                 })
-                .then(function(res){ return res.json(); })
-                .then(function(data){
-                    console.log("[OneSignal PUSH Resposta com Key]", data);
-                    if (data && data.errors && data.errors.length > 0) {
-                        fetch("https://onesignal.com/api/v1/notifications", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json; charset=utf-8",
-                                "Authorization": "Basic " + osApiKey
-                            },
-                            body: JSON.stringify(osPayload)
-                        }).then(r => r.json()).then(d => console.log("[OneSignal PUSH Resposta com Basic]", d)).catch(function(){});
-                    }
-                })
-                .catch(function(err){ console.warn("OneSignal REST Push:", err); });
+                .then(function(r){ return r.json(); })
+                .then(function(res){ console.log("[NOTIF-DEBUG] Push OneSignal via Edge Function:", res); })
+                .catch(function(err){ console.warn("[NOTIF-DEBUG] Erro ao chamar Edge Function de push:", err); });
             } catch(e) {}
 
             if (btn) {
@@ -1593,7 +1451,7 @@
             }
 
             if (!enviouComSucesso) {
-                abrirModalNotificacaoDisparada("⚠️ Falha no Envio", "A notificação NÃO foi enviada para o banco de dados!\n\nMotivo do erro: " + erroMsg + "\n\nVerifique se rodou o comando SQL no Supabase para liberar a tabela 'notificacoes'.");
+                alert("⚠️ A notificação NÃO foi enviada para o banco de dados!\n\nMotivo do erro: " + erroMsg + "\n\nVerifique se rodou o comando SQL no Supabase para liberar a tabela 'notificacoes'.");
                 return;
             }
 
@@ -1614,7 +1472,7 @@
             atualizarPrevisualizacaoNotificacao();
             carregarHistoricoNotificacoesAdmin();
 
-            abrirModalNotificacaoDisparada("🚀 Notificação Disparada!", "Notificação gravada no Supabase e disparada com sucesso para TODOS os celulares!");
+            alert("🚀 Notificação gravada no Supabase e disparada com sucesso para TODOS os celulares!");
         }
 
         function aplicarTemplateNotificacao(tipo) {
@@ -2260,7 +2118,8 @@
             carregarCalendarioDoSupabase(); 
             escutarPresencasEmTempoReal();
             escutarEventosEmTempoReal();
-            verificarExibicaoModalPwa();
+            escutarNotificacoesEmTempoReal();
+            verificarPermissaoNotificacaoAoCarregar();
 
             setInterval(function() {
                 carregarContadoresPresenca();
@@ -2282,106 +2141,6 @@
             });
             atualizarBloqueioScrollFundo();
         });
-
-        var deferredPwaPrompt = null;
-
-        window.addEventListener('beforeinstallprompt', function(e) {
-            e.preventDefault();
-            deferredPwaPrompt = e;
-            console.log("✅ Evento beforeinstallprompt capturado com sucesso!");
-            verificarExibicaoModalPwa();
-        });
-
-        window.addEventListener('appinstalled', function() {
-            console.log("🎉 Aplicativo PWA instalado pelo usuário!");
-            deferredPwaPrompt = null;
-            localStorage.setItem("pwa_instalado", "true");
-            fecharModalInstalarPwa(false);
-        });
-
-        function verificarExibicaoModalPwa() {
-            var isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                               window.navigator.standalone === true || 
-                               (document.referrer && document.referrer.includes('android-app://'));
-
-            if (isStandalone || localStorage.getItem("pwa_instalado") === "true") {
-                console.log("O app já está instalado/rodando no modo PWA standalone.");
-                return;
-            }
-
-            var ultimoDismiss = localStorage.getItem("pwa_modal_dismissed");
-            if (ultimoDismiss) {
-                var diffHoras = (Date.now() - parseInt(ultimoDismiss)) / (1000 * 60 * 60);
-                if (diffHoras < 12) {
-                    console.log("Modal PWA recusado recentemente. Próxima exibição em " + (12 - diffHoras).toFixed(1) + "h.");
-                    return;
-                }
-            }
-
-            var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-            var iosInstructions = document.getElementById("pwa-instrucoes-ios");
-            var btnInstalar = document.getElementById("btn-pwa-instalar-acao");
-
-            if (isIOS) {
-                if (iosInstructions) iosInstructions.classList.remove("hidden");
-                if (btnInstalar) {
-                    btnInstalar.innerHTML = '<i class="fa-solid fa-arrow-up-from-bracket text-sm"></i> Como Adicionar à Tela de Início';
-                }
-            } else {
-                if (iosInstructions) iosInstructions.classList.add("hidden");
-                if (btnInstalar) {
-                    btnInstalar.innerHTML = '<i class="fa-solid fa-download text-sm"></i> Instalar Aplicativo Agora';
-                }
-            }
-
-            setTimeout(function() {
-                var modalPwa = document.getElementById("modal-instalar-pwa");
-                if (modalPwa) {
-                    modalPwa.classList.remove("hidden");
-                }
-            }, 1200);
-        }
-
-        function dispararInstalacaoPwa() {
-            var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-
-            if (isIOS) {
-                var iosInstructions = document.getElementById("pwa-instrucoes-ios");
-                if (iosInstructions) {
-                    iosInstructions.classList.remove("hidden");
-                    iosInstructions.scrollIntoView({ behavior: 'smooth' });
-                }
-                return;
-            }
-
-            if (deferredPwaPrompt) {
-                deferredPwaPrompt.prompt();
-                deferredPwaPrompt.userChoice.then(function(choiceResult) {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('Usuário aceitou a instalação do aplicativo');
-                        localStorage.setItem("pwa_instalado", "true");
-                        fecharModalInstalarPwa(false);
-                    } else {
-                        console.log('Usuário recusou a instalação');
-                        fecharModalInstalarPwa(true);
-                    }
-                    deferredPwaPrompt = null;
-                });
-            } else {
-                alert("📲 Para instalar o aplicativo:\n\n1. Toque nos 3 pontinhos (⋮) do seu navegador.\n2. Selecione 'Instalar aplicativo' ou 'Adicionar à tela inicial'.");
-                fecharModalInstalarPwa(true);
-            }
-        }
-
-        function fecharModalInstalarPwa(salvarDismiss) {
-            if (salvarDismiss) {
-                localStorage.setItem("pwa_modal_dismissed", Date.now().toString());
-            }
-            var modalPwa = document.getElementById("modal-instalar-pwa");
-            if (modalPwa) {
-                modalPwa.classList.add("hidden");
-            }
-        }
 
         function fetchRealGoatCounterData() {
             var elem = document.getElementById("stat-total-visits"); if (!elem) return;
@@ -2410,7 +2169,6 @@
         }
     </script>
     <style>
-        .hidden { display: none !important; }
         @media print {
             .no-print { display: none !important; }
             body { background: #ffffff !important; padding: 0 !important; }
@@ -2423,11 +2181,12 @@
             50% { left: 140%; opacity: 0; }
             100% { left: 140%; opacity: 0; }
         }
-        @keyframes modalPopIn {
-            0% { opacity: 0; transform: scale(0.92) translateY(12px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+
+        @keyframes toastSlideIn {
+            0% { opacity: 0; transform: translateY(-16px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
-        .modal-animate-pop { animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .modal-animate-slide { animation: toastSlideIn 0.35s ease-out; }
         .shine-effect {
             position: absolute; top: 0; left: -120%; width: 50%; height: 100%;
             background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
@@ -2496,6 +2255,34 @@
     </style>
 </head>
 <body class="bg-stone-100 font-sans text-stone-800 antialiased min-h-screen py-2 px-1.5 sm:py-6 sm:px-6">
+
+    <!-- TOAST DE NOTIFICAÇÃO EM TEMPO REAL (estava faltando no HTML) -->
+    <div id="toast-notificacao-cliente" class="hidden fixed top-3 left-1/2 -translate-x-1/2 sm:top-5 sm:left-auto sm:right-5 sm:translate-x-0 z-[9999] w-[92%] sm:w-96 max-w-md">
+        <div class="bg-white border border-amber-300 shadow-2xl rounded-xl p-3.5 sm:p-4 flex items-start gap-3">
+            <div class="flex-shrink-0 w-9 h-9 rounded-full bg-umbanda-green flex items-center justify-center text-amber-300">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+                <p id="toast-notif-title" class="font-serif font-bold text-umbanda-green text-sm truncate">Novo Aviso do Terreiro</p>
+                <p id="toast-notif-msg" class="text-stone-700 text-xs mt-0.5"></p>
+            </div>
+            <button type="button" onclick="document.getElementById('toast-notificacao-cliente').classList.add('hidden')" class="flex-shrink-0 text-stone-400 hover:text-stone-600 text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- BANNER DE SOLICITAÇÃO DE PERMISSÃO DE NOTIFICAÇÃO (estava faltando no HTML) -->
+    <div id="banner-permissao-notificacao" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 sm:bottom-5 z-[9999] w-[92%] sm:w-auto max-w-md">
+        <div class="bg-umbanda-green text-white shadow-2xl rounded-xl p-3.5 sm:p-4 flex items-center gap-3 border border-amber-400/50">
+            <i class="fa-solid fa-bell text-amber-300"></i>
+            <p class="text-xs sm:text-sm flex-1">Ative as notificações para receber avisos do terreiro em tempo real.</p>
+            <button type="button" onclick="solicitarPermissaoNotificacaoNativa()" class="bg-amber-400 text-umbanda-green font-bold text-xs px-3 py-1.5 rounded-lg flex-shrink-0">Ativar</button>
+            <button type="button" onclick="document.getElementById('banner-permissao-notificacao').classList.add('hidden')" class="text-stone-300 hover:text-white text-xs flex-shrink-0">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
 
     <!-- TOP BAR HARMONIZADA E ELEGANTE -->
     <div class="max-w-5xl mx-auto mb-3 sm:mb-6 no-print bg-gradient-to-r from-umbanda-green via-emerald-900 to-umbanda-green p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl shadow-md border border-amber-400/40 flex items-center justify-between gap-2 text-stone-100 relative overflow-hidden">
@@ -2942,68 +2729,6 @@
                 <p class="text-xs text-stone-600 mt-2 font-medium leading-relaxed">Preencha o <strong>Mês/Ano</strong>, <strong>Dia do Mês</strong> e o <strong>Título do Evento</strong>!</p>
             </div>
             <button type="button" onclick="fecharModalCamposObrigatorios()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Entendido</button>
-        </div>
-    </div>
-
-    <!-- MODAL SUCESSO DISPARO NOTIFICAÇÃO (DESIGN ULTRA PREMIUM) -->
-    <div id="notificacao-disparada-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalNotificacaoDisparada()">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl relative text-stone-100 modal-animate-pop" onclick="event.stopPropagation()">
-            <div class="w-16 h-16 rounded-full bg-amber-500/20 text-amber-400 border-2 border-amber-400/50 flex items-center justify-center text-3xl mx-auto shadow-[0_0_25px_rgba(245,158,11,0.4)]">
-                <i class="fa-solid fa-paper-plane text-amber-400"></i>
-            </div>
-            <div class="space-y-2">
-                <h3 id="modal-notif-disparada-titulo" class="font-serif font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-300 to-amber-500">Notificação Disparada!</h3>
-                <p id="modal-notif-disparada-texto" class="text-xs text-stone-300 font-medium leading-relaxed">
-                    Notificação gravada no Supabase e disparada com sucesso para TODOS os celulares!
-                </p>
-                <div class="pt-1">
-                    <span class="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-400 bg-emerald-950/80 border border-emerald-500/40 px-3 py-1 rounded-full shadow-sm">
-                        <i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i> Transmissão em Tempo Real Concluída
-                    </span>
-                </div>
-            </div>
-            <button type="button" onclick="fecharModalNotificacaoDisparada()" class="w-full py-3 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-700 hover:to-amber-700 active:scale-95 text-stone-950 font-black rounded-xl text-xs sm:text-sm transition shadow-lg uppercase tracking-wider cursor-pointer">
-                Concluído
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL DE INSTALAÇÃO DO APLICATIVO PWA -->
-    <div id="modal-instalar-pwa" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[101] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalInstalarPwa(true)">
-        <div class="bg-stone-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-5 sm:p-6 text-center space-y-4 shadow-2xl relative text-stone-100 modal-animate-pop" onclick="event.stopPropagation()">
-            <button type="button" onclick="fecharModalInstalarPwa(true)" class="absolute top-3 right-3 text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center transition">&times;</button>
-            
-            <div class="w-16 h-16 rounded-2xl border-2 border-amber-400 bg-stone-950 p-1 mx-auto shadow-[0_0_25px_rgba(245,158,11,0.4)] overflow-hidden">
-                <img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" alt="Icone App" class="w-full h-full object-cover rounded-xl">
-            </div>
-
-            <div class="space-y-1.5">
-                <span class="text-[10px] font-bold uppercase tracking-[0.25em] text-amber-300 block font-cinzel">APLICATIVO OFICIAL</span>
-                <h3 class="font-serif font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-yellow-200 to-amber-400">Instalar Aplicativo Maria Conga</h3>
-                <p class="text-xs text-stone-300 font-medium leading-relaxed pt-1">
-                    Instale o app no seu celular para receber avisos de giras em tempo real e acessar o calendário mesmo sem internet!
-                </p>
-            </div>
-
-            <!-- INSTRUÇÕES ESPECÍFICAS PARA IPHONE / SAFARI -->
-            <div id="pwa-instrucoes-ios" class="hidden bg-amber-500/10 border border-amber-400/30 rounded-xl p-3 text-left space-y-1 text-xs text-amber-200">
-                <p class="font-bold text-amber-300 flex items-center gap-1.5">
-                    <i class="fa-brands fa-apple text-sm"></i> No iPhone / iPad:
-                </p>
-                <ol class="list-decimal list-inside space-y-1 text-[11px] text-stone-300">
-                    <li>Toque no botão <strong>Compartilhar</strong> <i class="fa-solid fa-arrow-up-from-bracket text-amber-400"></i> (no rodapé do Safari).</li>
-                    <li>Role para baixo e selecione <strong>Adicionar à Tela de Início</strong> <i class="fa-regular fa-square-plus text-amber-400"></i>.</li>
-                </ol>
-            </div>
-
-            <div class="space-y-2 pt-1">
-                <button id="btn-pwa-instalar-acao" type="button" onclick="dispararInstalacaoPwa()" class="w-full py-3.5 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-700 hover:to-amber-700 active:scale-95 text-stone-950 font-black rounded-xl text-xs sm:text-sm transition shadow-lg uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-download text-sm"></i> Instalar Aplicativo Agora
-                </button>
-                <button type="button" onclick="fecharModalInstalarPwa(true)" class="w-full py-2 text-stone-400 hover:text-stone-200 font-bold text-xs transition">
-                    Agora não, continuar no navegador
-                </button>
-            </div>
         </div>
     </div>
 
@@ -3652,6 +3377,8 @@
                                 <div id="notificacoes-historico-lista" class="max-h-[300px] overflow-y-auto pr-1"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>
