@@ -1286,22 +1286,30 @@
         }
 
         function escutarNotificacoesEmTempoReal() {
-            if (!supabaseClient) return;
+            console.log("[NOTIF-DEBUG] escutarNotificacoesEmTempoReal() foi chamada.");
+            if (!supabaseClient) {
+                console.error("[NOTIF-DEBUG] supabaseClient é null/undefined! Biblioteca do Supabase não carregou.");
+                return;
+            }
 
             // 1. Escuta em Tempo Real via WebSocket (Broadcast + Postgres Changes)
             GLOBAL_PUSH_CHANNEL = supabaseClient.channel('global_push_broadcast');
             GLOBAL_PUSH_CHANNEL
                 .on('broadcast', { event: 'nova_notificacao' }, function(payload) {
+                    console.log("[NOTIF-DEBUG] Broadcast recebido:", payload);
                     if (payload && payload.payload) {
                         processarNovaNotificacao(payload.payload);
                     }
                 })
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notificacoes' }, function(payload) {
+                    console.log("[NOTIF-DEBUG] postgres_changes INSERT recebido:", payload);
                     if (payload && payload.new) {
                         processarNovaNotificacao(payload.new);
                     }
                 })
-                .subscribe();
+                .subscribe(function(status, err) {
+                    console.log("[NOTIF-DEBUG] Status da inscrição no canal:", status, err || "");
+                });
 
             // 2. BUSCA AUTOMÁTICA A CADA 6 SEGUNDOS (Garante entrega em 100% dos celulares)
             setInterval(async function() {
@@ -1312,10 +1320,15 @@
                         .order('id', { ascending: false })
                         .limit(1);
 
-                    if (!error && data && data.length > 0) {
+                    if (error) {
+                        console.error("[NOTIF-DEBUG] Erro no polling de notificações:", error);
+                    } else if (data && data.length > 0) {
+                        console.log("[NOTIF-DEBUG] Polling encontrou registro mais recente:", data[0]);
                         processarNovaNotificacao(data[0]);
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.error("[NOTIF-DEBUG] Exceção no polling:", e);
+                }
             }, 6000);
         }
 
