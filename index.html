@@ -20,26 +20,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,500;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- ONESIGNAL WEB PUSH SDK EMBUTIDO INLINE EM 1 SÓ ARQUIVO HTML -->
+    <!-- ONESIGNAL WEB PUSH SDK (PADRÃO OFICIAL) -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
-        var osWorkerCode = "importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');";
-        var osWorkerBlob = new Blob([osWorkerCode], { type: 'application/javascript' });
-        var osWorkerUrl = URL.createObjectURL(osWorkerBlob);
-
-        if ('serviceWorker' in navigator) {
-          try {
-            navigator.serviceWorker.register(osWorkerUrl, { scope: './' }).catch(function(){});
-          } catch(e) {}
-        }
-
         await OneSignal.init({
           appId: "7993ffe5-bccb-445b-8901-c8c38fa9a3d8",
-          allowLocalhostAsSecureOrigin: true,
-          serviceWorkerPath: osWorkerUrl
+          notifyButton: { enable: false }
         });
+        try {
+          OneSignal.Slidedown.promptPush();
+        } catch(e) {}
       });
     </script>
 
@@ -1257,6 +1249,7 @@
         }
 
         var GLOBAL_PUSH_CHANNEL = null;
+        var ULTIMO_ID_NOTIFICACAO_EXIBIDO = localStorage.getItem("ultimo_id_notificacao_exibido") || null;
 
         function solicitarPermissaoNotificacaoNativa() {
             if (window.OneSignalDeferred) {
@@ -1280,8 +1273,6 @@
                 if (banner) banner.classList.remove("hidden");
             }
         }
-
-        var ULTIMO_ID_NOTIFICACAO_EXIBIDO = localStorage.getItem("ultimo_id_notificacao_exibido") || null;
 
         function processarNovaNotificacao(notif) {
             if (!notif || !notif.id) return;
@@ -3349,6 +3340,8 @@
                         </div>
                     </div>
                 </div>
+                    </div>
+                </div>
             </div>
 
             <div class="bg-stone-100 px-4 py-2 text-right border-t border-stone-200 flex justify-end flex-shrink-0 z-20">
@@ -3484,23 +3477,6 @@
             <span>© 2026 Templo de Umbanda Vovó Maria Conga - Todos os direitos reservados.</span>
             <span class="text-stone-500"><i class="fa-solid fa-leaf text-umbanda-gold"></i> Fé, Amor e Caridade</span>
         </footer>
-    </div>
-
-    <!-- TOAST DE NOTIFICAÇÃO PUSH FLUTUANTE (VISUALIZADO PELOS CLIENTES/APK) -->
-    <div id="toast-notificacao-cliente" class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100] hidden max-w-sm w-[92vw] bg-stone-900 border-2 border-amber-400 text-stone-100 p-4 rounded-2xl shadow-2xl space-y-2 backdrop-blur-xl">
-        <div class="flex items-center justify-between border-b border-stone-800 pb-2">
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/40 flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-bell"></i>
-                </div>
-                <span class="font-serif font-bold text-amber-400 text-xs uppercase tracking-wider">Novo Aviso do Terreiro</span>
-            </div>
-            <button onclick="document.getElementById('toast-notificacao-cliente').classList.add('hidden')" class="text-stone-400 hover:text-white text-lg font-bold w-6 h-6 rounded-full bg-stone-800 flex items-center justify-center transition">&times;</button>
-        </div>
-        <div>
-            <h5 id="toast-notif-title" class="font-bold text-white text-sm">🕯️ Gira Hoje no Terreiro</h5>
-            <p id="toast-notif-msg" class="text-stone-300 text-xs mt-1 leading-relaxed">Mensagem da notificação...</p>
-        </div>
     </div>
 </body>
 </html>
