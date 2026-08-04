@@ -2115,6 +2115,8 @@
             carregarCalendarioDoSupabase(); 
             escutarPresencasEmTempoReal();
             escutarEventosEmTempoReal();
+            escutarNotificacoesEmTempoReal();
+            verificarPermissaoNotificacaoAoCarregar();
 
             setInterval(function() {
                 carregarContadoresPresenca();
