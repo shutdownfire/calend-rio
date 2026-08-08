@@ -242,6 +242,79 @@
         </div>
     </div>
 
+    <!-- MODAL ESCOLHER DATA/HORA DO AGENDAMENTO -->
+    <div id="modal-escolher-datahora-agendamento" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[99] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalEscolherDataHoraAgendamento()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-2.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-calendar-clock"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-sm sm:text-base text-white">Data e Horário</h3>
+                        <p class="text-[11px] text-stone-400 font-medium">Quando a notificação deve ser disparada</p>
+                    </div>
+                </div>
+                <button type="button" onclick="fecharModalEscolherDataHoraAgendamento()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
+            </div>
+            <input type="datetime-local" id="input-datahora-agendamento-temp" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800 font-bold text-white focus:border-amber-500 outline-none transition text-sm">
+            <button type="button" onclick="confirmarDataHoraAgendamento()" class="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 active:scale-98 text-stone-900 font-black rounded-xl text-xs transition shadow-lg uppercase tracking-wider">
+                <i class="fa-solid fa-check mr-1.5"></i> Confirmar
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL FEEDBACK GENÉRICO DO AGENDAMENTO (sucesso / erro / aviso) -->
+    <div id="agendamento-feedback-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[99] hidden flex items-center justify-center p-4 no-print" onclick="fecharFeedbackAgendamento()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2" id="agendamento-feedback-card" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner" id="agendamento-feedback-icone-wrap">
+                <i class="fa-solid" id="agendamento-feedback-icone"></i>
+            </div>
+            <div>
+                <h3 class="font-serif font-bold text-lg" id="agendamento-feedback-titulo"></h3>
+                <p class="text-xs text-stone-600 mt-2 font-medium leading-relaxed" id="agendamento-feedback-texto"></p>
+            </div>
+            <button type="button" onclick="fecharFeedbackAgendamento()" class="w-full py-2.5 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md" id="agendamento-feedback-botao">Entendido</button>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR CANCELAMENTO DE AGENDAMENTO -->
+    <div id="confirmar-cancelamento-agendamento-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[99] hidden flex items-center justify-center p-4 no-print" onclick="fecharConfirmarCancelamentoAgendamento()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-red-400" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-full bg-red-100 text-red-700 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <div>
+                <h3 class="font-serif font-bold text-lg text-stone-900">Cancelar agendamento?</h3>
+                <p class="text-xs text-stone-600 mt-2 font-medium leading-relaxed">Essa notificação não será mais enviada. Essa ação não pode ser desfeita.</p>
+            </div>
+            <div class="flex gap-2">
+                <button type="button" onclick="fecharConfirmarCancelamentoAgendamento()" class="flex-1 py-2.5 bg-stone-200 hover:bg-stone-300 active:scale-95 text-stone-700 font-bold rounded-xl text-xs transition">Voltar</button>
+                <button type="button" onclick="confirmarCancelamentoAgendamentoDefinitivo()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LOGIN DA ÁREA ADMINISTRATIVA -->
+    <div id="admin-login-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[97] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalLoginAdmin()">
+        <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-xs w-full p-6 space-y-4 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
+            <div class="text-center space-y-1.5">
+                <div class="w-14 h-14 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-2xl mx-auto">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="font-serif font-bold text-base text-white">Área Administrativa</h3>
+                <p class="text-[11px] text-stone-400 font-medium">Digite a senha para continuar</p>
+            </div>
+            <div>
+                <input type="password" id="admin-login-senha" placeholder="Senha" onkeydown="if(event.key==='Enter'){verificarSenhaAdmin();}" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800 font-bold text-white focus:border-amber-500 outline-none transition text-sm text-center tracking-widest">
+                <p id="admin-login-erro" class="hidden text-[11px] text-red-400 font-bold mt-2 text-center"></p>
+            </div>
+            <button type="button" id="btn-confirmar-login-admin" onclick="verificarSenhaAdmin()" class="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 active:scale-98 text-stone-900 font-black rounded-xl text-xs transition shadow-lg uppercase tracking-wider">
+                Entrar
+            </button>
+        </div>
+    </div>
+
     <!-- MODAL SELEÇÃO DE MÊS -->
     <div id="seletor-mes-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[80] hidden flex items-start pt-6 sm:items-center sm:pt-0 justify-center p-3 sm:p-4 overflow-y-auto no-print" onclick="fecharModalSeletorMes()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-lg w-full p-4 sm:p-5 space-y-3 shadow-2xl relative text-stone-100 my-auto pb-6" onclick="event.stopPropagation()">
@@ -749,7 +822,12 @@
                         <p class="text-[9.5px] sm:text-xs text-stone-200 font-semibold leading-tight">Painel de Estatísticas de Visita e Gestão</p>
                     </div>
                 </div>
-                <button onclick="closeAdminStats()" class="text-stone-300 hover:text-white text-2xl font-bold leading-none p-1">&times;</button>
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <button onclick="sairDoPainelAdmin()" title="Sair da área administrativa" class="text-stone-200 hover:text-white text-[10px] sm:text-xs font-bold bg-black/25 hover:bg-black/40 border border-white/20 rounded-lg px-2 sm:px-2.5 py-1.5 flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Sair</span>
+                    </button>
+                    <button onclick="closeAdminStats()" class="text-stone-300 hover:text-white text-2xl font-bold leading-none p-1">&times;</button>
+                </div>
             </div>
 
             <div class="bg-stone-100 border-b border-stone-200 px-3 sm:px-4 pt-2 flex flex-wrap justify-between items-center gap-2 text-xs sm:text-sm flex-shrink-0">
@@ -1343,8 +1421,12 @@
                                 </div>
                                 <p class="text-[10.5px] text-stone-500 leading-relaxed -mt-1">Preencha o título e a mensagem acima normalmente. Aqui você escolhe quando ela deve ser disparada automaticamente, mesmo com o painel fechado.</p>
                                 <div>
-                                    <label for="notif-agendamento-datahora" class="font-bold text-stone-800 block mb-1 text-xs">Data e Horário do Disparo</label>
-                                    <input type="datetime-local" id="notif-agendamento-datahora" class="w-full p-3 rounded-xl border border-stone-300 font-bold text-stone-800 focus:border-amber-500 outline-none transition text-xs sm:text-sm">
+                                    <label class="font-bold text-stone-800 block mb-1 text-xs">Data e Horário do Disparo</label>
+                                    <button type="button" onclick="abrirModalEscolherDataHoraAgendamento()" id="btn-abrir-datahora-agendamento" class="w-full p-3 rounded-xl border border-stone-300 font-bold text-left text-stone-400 focus:border-amber-500 outline-none transition text-xs sm:text-sm flex items-center justify-between gap-2 hover:border-amber-400 bg-stone-50 cursor-pointer">
+                                        <span id="texto-datahora-agendamento-selecionada"><i class="fa-regular fa-calendar mr-1.5"></i> Toque para escolher</span>
+                                        <i class="fa-solid fa-chevron-right text-[10px] text-stone-400"></i>
+                                    </button>
+                                    <input type="hidden" id="notif-agendamento-datahora">
                                 </div>
                                 <button id="btn-agendar-notif" type="button" onclick="agendarNotificacaoAdmin()" class="w-full py-3 bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-700 hover:from-emerald-800 hover:to-emerald-800 active:scale-98 text-white font-black rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider">
                                     <i class="fa-solid fa-clock text-sm"></i> Agendar Notificação
@@ -2629,7 +2711,72 @@
         function abrirFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.remove("hidden"); }
         function fecharFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.add("hidden"); }
 
+        /* ===== PROTEÇÃO POR SENHA DA ÁREA ADMINISTRATIVA ===== */
         function showAdminModal() {
+            if (sessionStorage.getItem("admin_autenticado") === "true") {
+                abrirPainelAdminDeVerdade();
+                return;
+            }
+            var modalLogin = document.getElementById("admin-login-modal");
+            if (modalLogin) {
+                modalLogin.classList.remove("hidden");
+                var input = document.getElementById("admin-login-senha");
+                var erro = document.getElementById("admin-login-erro");
+                if (erro) erro.classList.add("hidden");
+                if (input) {
+                    input.value = "";
+                    setTimeout(function () { input.focus(); }, 150);
+                }
+            }
+        }
+
+        function fecharModalLoginAdmin() {
+            var modal = document.getElementById("admin-login-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        async function verificarSenhaAdmin() {
+            var input = document.getElementById("admin-login-senha");
+            var senha = input ? input.value : "";
+            var erro = document.getElementById("admin-login-erro");
+            var btn = document.getElementById("btn-confirmar-login-admin");
+
+            if (!senha) {
+                if (erro) { erro.textContent = "Digite a senha."; erro.classList.remove("hidden"); }
+                return;
+            }
+
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; }
+            if (erro) erro.classList.add("hidden");
+
+            try {
+                const resp = await fetch(SUPABASE_URL + "/functions/v1/verificar-senha-admin", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + SUPABASE_ANON_KEY },
+                    body: JSON.stringify({ senha: senha })
+                });
+                const resultado = await resp.json();
+
+                if (resultado && resultado.ok === true) {
+                    sessionStorage.setItem("admin_autenticado", "true");
+                    fecharModalLoginAdmin();
+                    abrirPainelAdminDeVerdade();
+                } else {
+                    if (erro) { erro.textContent = "Senha incorreta. Tente novamente."; erro.classList.remove("hidden"); }
+                }
+            } catch (e) {
+                if (erro) { erro.textContent = "Erro ao verificar a senha. Confira sua conexão."; erro.classList.remove("hidden"); }
+            }
+
+            if (btn) { btn.disabled = false; btn.innerHTML = "Entrar"; }
+        }
+
+        function sairDoPainelAdmin() {
+            sessionStorage.removeItem("admin_autenticado");
+            closeAdminStats();
+        }
+
+        function abrirPainelAdminDeVerdade() {
             var adminModal = document.getElementById("admin-modal"); if (adminModal) adminModal.classList.remove("hidden");
             document.body.classList.add("overflow-hidden");
             
@@ -3048,6 +3195,87 @@
         }
 
         /* ===== NOTIFICAÇÕES AGENDADAS (DISPARO AUTOMÁTICO FUTURO) ===== */
+        function abrirModalEscolherDataHoraAgendamento() {
+            var atual = document.getElementById("notif-agendamento-datahora").value;
+            var tempInput = document.getElementById("input-datahora-agendamento-temp");
+            if (atual) tempInput.value = atual;
+            document.getElementById("modal-escolher-datahora-agendamento").classList.remove("hidden");
+        }
+
+        function fecharModalEscolherDataHoraAgendamento() {
+            document.getElementById("modal-escolher-datahora-agendamento").classList.add("hidden");
+        }
+
+        function confirmarDataHoraAgendamento() {
+            var tempInput = document.getElementById("input-datahora-agendamento-temp");
+            if (!tempInput.value) {
+                mostrarFeedbackAgendamento('aviso', 'Escolha uma data', 'Selecione o dia e o horário antes de confirmar.');
+                return;
+            }
+            document.getElementById("notif-agendamento-datahora").value = tempInput.value;
+            var dataFormatada = new Date(tempInput.value).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            var textoSpan = document.getElementById("texto-datahora-agendamento-selecionada");
+            textoSpan.innerHTML = '<i class="fa-solid fa-calendar-check text-emerald-500 mr-1.5"></i> ' + dataFormatada;
+            var btnDataHora = document.getElementById("btn-abrir-datahora-agendamento");
+            btnDataHora.classList.remove("text-stone-400");
+            btnDataHora.classList.add("text-stone-800");
+            fecharModalEscolherDataHoraAgendamento();
+        }
+
+        function resetarSeletorDataHoraAgendamento() {
+            document.getElementById("notif-agendamento-datahora").value = "";
+            var textoSpan = document.getElementById("texto-datahora-agendamento-selecionada");
+            textoSpan.innerHTML = '<i class="fa-regular fa-calendar mr-1.5"></i> Toque para escolher';
+            var btnDataHora = document.getElementById("btn-abrir-datahora-agendamento");
+            btnDataHora.classList.add("text-stone-400");
+            btnDataHora.classList.remove("text-stone-800");
+        }
+
+        function mostrarFeedbackAgendamento(tipo, titulo, mensagem) {
+            var cores = {
+                sucesso: { borda: 'border-emerald-400', bg: 'bg-emerald-100', texto: 'text-emerald-800', icone: 'fa-circle-check', tituloCor: 'text-umbanda-green', botao: 'bg-umbanda-green hover:bg-umbanda-lightgreen' },
+                erro:    { borda: 'border-red-400',     bg: 'bg-red-100',     texto: 'text-red-700',     icone: 'fa-circle-xmark',        tituloCor: 'text-red-700',     botao: 'bg-red-600 hover:bg-red-700' },
+                aviso:   { borda: 'border-amber-500',   bg: 'bg-amber-100',   texto: 'text-amber-700',   icone: 'fa-triangle-exclamation', tituloCor: 'text-stone-900',   botao: 'bg-amber-600 hover:bg-amber-700' }
+            };
+            var c = cores[tipo] || cores.aviso;
+            document.getElementById("agendamento-feedback-card").className = "bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 " + c.borda;
+            document.getElementById("agendamento-feedback-icone-wrap").className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner " + c.bg + " " + c.texto;
+            document.getElementById("agendamento-feedback-icone").className = "fa-solid " + c.icone;
+            var tituloEl = document.getElementById("agendamento-feedback-titulo");
+            tituloEl.className = "font-serif font-bold text-lg " + c.tituloCor;
+            tituloEl.textContent = titulo;
+            document.getElementById("agendamento-feedback-texto").innerHTML = mensagem;
+            document.getElementById("agendamento-feedback-botao").className = "w-full py-2.5 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md " + c.botao;
+            document.getElementById("agendamento-feedback-modal").classList.remove("hidden");
+        }
+
+        function fecharFeedbackAgendamento() {
+            document.getElementById("agendamento-feedback-modal").classList.add("hidden");
+        }
+
+        var _idAgendamentoParaCancelar = null;
+
+        function fecharConfirmarCancelamentoAgendamento() {
+            _idAgendamentoParaCancelar = null;
+            document.getElementById("confirmar-cancelamento-agendamento-modal").classList.add("hidden");
+        }
+
+        async function confirmarCancelamentoAgendamentoDefinitivo() {
+            var id = _idAgendamentoParaCancelar;
+            fecharConfirmarCancelamentoAgendamento();
+            if (!id || !supabaseClient) return;
+            try {
+                const { error } = await supabaseClient.from('notificacoes_agendadas').delete().eq('id', id);
+                if (error) {
+                    mostrarFeedbackAgendamento('erro', 'Erro ao cancelar', error.message);
+                } else {
+                    carregarNotificacoesAgendadas();
+                }
+            } catch (e) {
+                mostrarFeedbackAgendamento('erro', 'Erro ao cancelar', String(e && e.message ? e.message : e));
+            }
+        }
+
         async function agendarNotificacaoAdmin() {
             var titulo = document.getElementById("notif-titulo") ? document.getElementById("notif-titulo").value.trim() : "";
             var mensagem = document.getElementById("notif-mensagem") ? document.getElementById("notif-mensagem").value.trim() : "";
@@ -3061,16 +3289,16 @@
                 return;
             }
             if (!dataHoraValor) {
-                alert("⚠️ Escolha a data e o horário do disparo agendado.");
+                mostrarFeedbackAgendamento('aviso', 'Falta a data', 'Escolha a data e o horário do disparo agendado antes de continuar.');
                 return;
             }
             var dataEscolhida = new Date(dataHoraValor);
             if (dataEscolhida.getTime() <= Date.now()) {
-                alert("⚠️ A data/horário escolhido já passou. Escolha um horário no futuro.");
+                mostrarFeedbackAgendamento('aviso', 'Horário no passado', 'A data/horário escolhido já passou. Escolha um horário no futuro.');
                 return;
             }
             if (!supabaseClient) {
-                alert("Supabase não inicializado.");
+                mostrarFeedbackAgendamento('erro', 'Erro de conexão', 'O Supabase não foi inicializado. Recarregue a página e tente de novo.');
                 return;
             }
 
@@ -3093,17 +3321,17 @@
                     }]);
 
                 if (error) {
-                    alert("⚠️ Não foi possível agendar a notificação!\n\nMotivo do erro: " + (error.message || JSON.stringify(error)) + "\n\nVerifique se a tabela 'notificacoes_agendadas' foi criada no Supabase.");
+                    mostrarFeedbackAgendamento('erro', 'Não foi possível agendar', 'Motivo: ' + (error.message || JSON.stringify(error)) + '<br><br>Verifique se a tabela <strong>notificacoes_agendadas</strong> foi criada no Supabase.');
                 } else {
                     document.getElementById("notif-titulo").value = "";
                     document.getElementById("notif-mensagem").value = "";
-                    dataHoraInput.value = "";
+                    resetarSeletorDataHoraAgendamento();
                     atualizarPrevisualizacaoNotificacao();
                     carregarNotificacoesAgendadas();
-                    alert("✅ Notificação agendada com sucesso para " + dataEscolhida.toLocaleString('pt-BR') + "!");
+                    mostrarFeedbackAgendamento('sucesso', 'Notificação Agendada!', 'Será enviada automaticamente em <strong>' + dataEscolhida.toLocaleString('pt-BR') + '</strong>, mesmo com o painel fechado. 🚀');
                 }
             } catch (e) {
-                alert("Erro ao agendar: " + (e.message || e));
+                mostrarFeedbackAgendamento('erro', 'Erro ao agendar', String(e && e.message ? e.message : e));
             }
 
             if (btn) {
@@ -3124,11 +3352,11 @@
                 const { data, error } = await supabaseClient
                     .from('notificacoes_agendadas')
                     .select('*')
-                    .eq('enviada', false)
+                    .in('status', ['pendente', 'aguardando_confirmacao', 'falha_permanente'])
                     .order('data_hora_agendada', { ascending: true });
 
                 if (error) {
-                    container.innerHTML = '<p class="text-xs text-red-500 italic p-3 text-center">Erro ao carregar agendamentos. Verifique se a tabela existe.</p>';
+                    container.innerHTML = '<p class="text-xs text-red-500 italic p-3 text-center">Erro ao carregar agendamentos. Verifique se a tabela existe (e se rodou a atualização de colunas).</p>';
                     return;
                 }
 
@@ -3140,7 +3368,20 @@
                 var html = '';
                 data.forEach(function(item) {
                     var dataFormatada = new Date(item.data_hora_agendada).toLocaleString('pt-BR');
-                    html += `<div class="p-2.5 bg-emerald-50/60 border border-emerald-200 rounded-xl text-xs space-y-1 shadow-2xs">
+                    var status = item.status || 'pendente';
+                    var borda = 'border-emerald-200';
+                    var badge = '';
+                    if (status === 'pendente') {
+                        borda = 'border-emerald-200';
+                        badge = '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 inline-block mt-1"><i class="fa-regular fa-clock"></i> Aguardando horário</span>';
+                    } else if (status === 'aguardando_confirmacao') {
+                        borda = 'border-blue-200';
+                        badge = '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-300 inline-block mt-1"><i class="fa-solid fa-satellite-dish"></i> Enviado, confirmando entrega...</span>';
+                    } else if (status === 'falha_permanente') {
+                        borda = 'border-red-300';
+                        badge = '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-300 inline-block mt-1"><i class="fa-solid fa-triangle-exclamation"></i> Falhou após ' + (item.tentativas || 0) + ' tentativas</span>';
+                    }
+                    html += `<div class="p-2.5 bg-white border ${borda} rounded-xl text-xs space-y-1 shadow-2xs">
                                 <div class="flex justify-between items-start gap-2">
                                     <strong class="text-stone-900 font-bold flex items-center gap-1.5"><i class="fa-solid fa-clock text-emerald-600"></i> ${item.titulo}</strong>
                                     <button type="button" onclick="cancelarNotificacaoAgendada('${item.id}')" class="text-red-500 hover:text-red-700 flex-shrink-0" title="Cancelar agendamento">
@@ -3148,7 +3389,8 @@
                                     </button>
                                 </div>
                                 <p class="text-stone-600 text-[11px] leading-relaxed">${item.mensagem}</p>
-                                <span class="text-[10px] text-emerald-700 font-bold block">📅 Envio em: ${dataFormatada}</span>
+                                <span class="text-[10px] text-stone-500 font-bold block">📅 Envio em: ${dataFormatada}</span>
+                                ${badge}
                              </div>`;
                 });
                 container.innerHTML = html;
@@ -3157,22 +3399,9 @@
             }
         }
 
-        async function cancelarNotificacaoAgendada(id) {
-            if (!confirm("Cancelar esse agendamento? Ele não será mais enviado.")) return;
-            if (!supabaseClient) return;
-            try {
-                const { error } = await supabaseClient
-                    .from('notificacoes_agendadas')
-                    .delete()
-                    .eq('id', id);
-                if (error) {
-                    alert("Erro ao cancelar: " + error.message);
-                } else {
-                    carregarNotificacoesAgendadas();
-                }
-            } catch (e) {
-                alert("Erro ao cancelar: " + (e.message || e));
-            }
+        function cancelarNotificacaoAgendada(id) {
+            _idAgendamentoParaCancelar = id;
+            document.getElementById("confirmar-cancelamento-agendamento-modal").classList.remove("hidden");
         }
 
         function agendarConsultaWhatsApp(dataEvento, entidade, tipo) {
