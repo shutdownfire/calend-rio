@@ -3143,7 +3143,12 @@
                         supabaseClient.from('notificacoes')
                             .update({ push_status: res.pushOk ? 'enviado' : 'falha' })
                             .eq('id', novaNotifSalva.id)
-                            .then(function(){ carregarHistoricoNotificacoesAdmin(); });
+                            .then(function(updRes){
+                                if (updRes && updRes.error) {
+                                    console.error("[NOTIF-DEBUG] Falha ao atualizar push_status (provável falta de política UPDATE na tabela 'notificacoes'):", updRes.error);
+                                }
+                                carregarHistoricoNotificacoesAdmin();
+                            });
                     }
                 })
                 .catch(function(err){
@@ -3152,7 +3157,12 @@
                         supabaseClient.from('notificacoes')
                             .update({ push_status: 'falha' })
                             .eq('id', novaNotifSalva.id)
-                            .then(function(){ carregarHistoricoNotificacoesAdmin(); });
+                            .then(function(updRes){
+                                if (updRes && updRes.error) {
+                                    console.error("[NOTIF-DEBUG] Falha ao atualizar push_status (provável falta de política UPDATE na tabela 'notificacoes'):", updRes.error);
+                                }
+                                carregarHistoricoNotificacoesAdmin();
+                            });
                     }
                 });
             } catch(e) {}
