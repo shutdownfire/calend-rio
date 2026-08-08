@@ -77,6 +77,37 @@
         })();
     </script>
 
+    <!-- CONTROLE DE VERSÃO: força limpeza de cache e recarrega sozinho quando sobe uma atualização -->
+    <script>
+        (function() {
+            // AUMENTE ESSE NÚMERO/TEXTO SEMPRE QUE PUBLICAR UMA ATUALIZAÇÃO NO index.html
+            var APP_VERSION = "2026-08-08.1";
+            try {
+                var versaoSalva = localStorage.getItem("app_versao_atual");
+                if (versaoSalva !== APP_VERSION) {
+                    localStorage.setItem("app_versao_atual", APP_VERSION);
+                    // Só força recarregar se já existia uma versão anterior salva
+                    // (evita ficar recarregando em loop na primeira visita da pessoa)
+                    if (versaoSalva) {
+                        var recarregar = function () { window.location.reload(); };
+                        if ('serviceWorker' in navigator) {
+                            navigator.serviceWorker.getRegistrations().then(function (regs) {
+                                regs.forEach(function (reg) { reg.unregister(); });
+                            }).catch(function () {});
+                        }
+                        if ('caches' in window) {
+                            caches.keys().then(function (nomes) {
+                                return Promise.all(nomes.map(function (nome) { return caches.delete(nome); }));
+                            }).then(recarregar).catch(recarregar);
+                        } else {
+                            recarregar();
+                        }
+                    }
+                }
+            } catch (e) {}
+        })();
+    </script>
+
 
     <!-- CSS separado em arquivo proprio (antes era inline) -->
     <style>
