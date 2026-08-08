@@ -257,7 +257,16 @@
                 </div>
                 <button type="button" onclick="fecharModalEscolherDataHoraAgendamento()" class="text-stone-400 hover:text-white text-lg font-bold w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center">&times;</button>
             </div>
-            <input type="datetime-local" id="input-datahora-agendamento-temp" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800 font-bold text-white focus:border-amber-500 outline-none transition text-sm">
+            <div class="grid grid-cols-1 gap-3">
+                <div>
+                    <label class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-1.5">Data</label>
+                    <input type="date" id="input-data-agendamento-temp" class="w-full p-3.5 rounded-xl border border-stone-700 bg-stone-800 font-bold text-white focus:border-amber-500 outline-none transition text-sm">
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block mb-1.5">Horário</label>
+                    <input type="time" id="input-hora-agendamento-temp" class="w-full p-3.5 rounded-xl border border-stone-700 bg-stone-800 font-bold text-white focus:border-amber-500 outline-none transition text-sm">
+                </div>
+            </div>
             <button type="button" onclick="confirmarDataHoraAgendamento()" class="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 active:scale-98 text-stone-900 font-black rounded-xl text-xs transition shadow-lg uppercase tracking-wider">
                 <i class="fa-solid fa-check mr-1.5"></i> Confirmar
             </button>
@@ -296,7 +305,7 @@
     </div>
 
     <!-- MODAL LOGIN DA ÁREA ADMINISTRATIVA -->
-    <div id="admin-login-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[97] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalLoginAdmin()">
+    <div id="admin-login-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[97] hidden flex items-start justify-center p-4 pt-16 pb-[50vh] overflow-y-auto no-print" onclick="fecharModalLoginAdmin()">
         <div class="bg-stone-900 border-2 border-amber-400 rounded-2xl max-w-xs w-full p-6 space-y-4 shadow-2xl relative text-stone-100" onclick="event.stopPropagation()">
             <div class="text-center space-y-1.5">
                 <div class="w-14 h-14 rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30 flex items-center justify-center text-2xl mx-auto">
@@ -306,8 +315,17 @@
                 <p class="text-[11px] text-stone-400 font-medium">Digite a senha para continuar</p>
             </div>
             <div>
-                <input type="password" id="admin-login-senha" placeholder="Senha" onkeydown="if(event.key==='Enter'){verificarSenhaAdmin();}" class="w-full p-3 rounded-xl border border-stone-700 bg-stone-800 font-bold text-white focus:border-amber-500 outline-none transition text-sm text-center tracking-widest">
+                <div class="relative">
+                    <input type="password" id="admin-login-senha" placeholder="Senha" onkeydown="if(event.key==='Enter'){verificarSenhaAdmin();}" class="w-full p-3 pr-11 rounded-xl border border-stone-700 bg-stone-800 font-bold text-white focus:border-amber-500 outline-none transition text-sm text-center tracking-widest">
+                    <button type="button" onclick="toggleSenhaVisivelAdmin()" id="btn-toggle-senha-admin" title="Mostrar/ocultar senha" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-amber-400 transition p-1.5 cursor-pointer">
+                        <i class="fa-solid fa-eye text-sm" id="icone-toggle-senha-admin"></i>
+                    </button>
+                </div>
                 <p id="admin-login-erro" class="hidden text-[11px] text-red-400 font-bold mt-2 text-center"></p>
+                <label class="flex items-center justify-center gap-2 mt-3 cursor-pointer select-none">
+                    <input type="checkbox" id="admin-login-salvar-senha" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+                    <span class="text-[11px] text-stone-400 font-medium">Salvar senha neste aparelho</span>
+                </label>
             </div>
             <button type="button" id="btn-confirmar-login-admin" onclick="verificarSenhaAdmin()" class="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 active:scale-98 text-stone-900 font-black rounded-xl text-xs transition shadow-lg uppercase tracking-wider">
                 Entrar
@@ -844,7 +862,7 @@
                 </div>
             </div>
 
-            <div class="p-3 sm:p-6 overflow-y-auto space-y-4 bg-stone-50 flex-1 min-h-0">
+            <div class="p-3 sm:p-6 pb-40 sm:pb-6 overflow-y-auto space-y-4 bg-stone-50 flex-1 min-h-0">
                 
                 <div id="tab-content-stats" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -1442,9 +1460,6 @@
                                     <h5 class="font-bold text-stone-900 text-xs uppercase tracking-wider flex items-center gap-2">
                                         <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> Histórico de Disparos
                                     </h5>
-                                    <button type="button" onclick="limparHistoricoNotificacoesAdmin()" class="text-[10px] text-red-500 hover:text-red-700 font-bold flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-trash-can"></i> Limpar
-                                    </button>
                                 </div>
                                 <div id="notificacoes-historico-lista" class="max-h-[300px] overflow-y-auto pr-1"></div>
                             </div>
@@ -2712,6 +2727,19 @@
         function fecharFotoJoaoCaveira() { var m = document.getElementById("foto-joao-caveira-modal"); if (m) m.classList.add("hidden"); }
 
         /* ===== PROTEÇÃO POR SENHA DA ÁREA ADMINISTRATIVA ===== */
+        function toggleSenhaVisivelAdmin() {
+            var input = document.getElementById("admin-login-senha");
+            var icone = document.getElementById("icone-toggle-senha-admin");
+            if (!input) return;
+            if (input.type === "password") {
+                input.type = "text";
+                if (icone) { icone.classList.remove("fa-eye"); icone.classList.add("fa-eye-slash"); }
+            } else {
+                input.type = "password";
+                if (icone) { icone.classList.remove("fa-eye-slash"); icone.classList.add("fa-eye"); }
+            }
+        }
+
         function showAdminModal() {
             if (sessionStorage.getItem("admin_autenticado") === "true") {
                 abrirPainelAdminDeVerdade();
@@ -2722,11 +2750,17 @@
                 modalLogin.classList.remove("hidden");
                 var input = document.getElementById("admin-login-senha");
                 var erro = document.getElementById("admin-login-erro");
+                var checkboxSalvar = document.getElementById("admin-login-salvar-senha");
+                var icone = document.getElementById("icone-toggle-senha-admin");
                 if (erro) erro.classList.add("hidden");
+                if (icone) { icone.classList.remove("fa-eye-slash"); icone.classList.add("fa-eye"); }
+                var senhaSalva = localStorage.getItem("admin_senha_salva");
                 if (input) {
-                    input.value = "";
+                    input.type = "password";
+                    input.value = senhaSalva || "";
                     setTimeout(function () { input.focus(); }, 150);
                 }
+                if (checkboxSalvar) checkboxSalvar.checked = !!senhaSalva;
             }
         }
 
@@ -2758,6 +2792,12 @@
                 const resultado = await resp.json();
 
                 if (resultado && resultado.ok === true) {
+                    var checkboxSalvar = document.getElementById("admin-login-salvar-senha");
+                    if (checkboxSalvar && checkboxSalvar.checked) {
+                        localStorage.setItem("admin_senha_salva", senha);
+                    } else {
+                        localStorage.removeItem("admin_senha_salva");
+                    }
                     sessionStorage.setItem("admin_autenticado", "true");
                     fecharModalLoginAdmin();
                     abrirPainelAdminDeVerdade();
@@ -3093,9 +3133,28 @@
                         link: linkAcao
                     })
                 })
-                .then(function(r){ return r.json(); })
-                .then(function(res){ console.log("[NOTIF-DEBUG] Push OneSignal via Edge Function:", res); })
-                .catch(function(err){ console.warn("[NOTIF-DEBUG] Erro ao chamar Edge Function de push:", err); });
+                .then(function(r){
+                    var pushOk = r.ok;
+                    return r.json().then(function(json){ return { pushOk: pushOk, json: json }; }).catch(function(){ return { pushOk: pushOk, json: null }; });
+                })
+                .then(function(res){
+                    console.log("[NOTIF-DEBUG] Push OneSignal via Edge Function:", res.json);
+                    if (novaNotifSalva && novaNotifSalva.id && supabaseClient) {
+                        supabaseClient.from('notificacoes')
+                            .update({ push_status: res.pushOk ? 'enviado' : 'falha' })
+                            .eq('id', novaNotifSalva.id)
+                            .then(function(){ carregarHistoricoNotificacoesAdmin(); });
+                    }
+                })
+                .catch(function(err){
+                    console.warn("[NOTIF-DEBUG] Erro ao chamar Edge Function de push:", err);
+                    if (novaNotifSalva && novaNotifSalva.id && supabaseClient) {
+                        supabaseClient.from('notificacoes')
+                            .update({ push_status: 'falha' })
+                            .eq('id', novaNotifSalva.id)
+                            .then(function(){ carregarHistoricoNotificacoesAdmin(); });
+                    }
+                });
             } catch(e) {}
 
             if (btn) {
@@ -3108,15 +3167,7 @@
                 return;
             }
 
-            var localNotifs = JSON.parse(localStorage.getItem("notificacoes_historico") || "[]");
-            localNotifs.unshift({
-                id: Date.now(),
-                titulo: titulo,
-                mensagem: mensagem,
-                categoria: categoria,
-                data: new Date().toLocaleString('pt-BR')
-            });
-            localStorage.setItem("notificacoes_historico", JSON.stringify(localNotifs));
+            localStorage.removeItem("notificacoes_historico");
 
             processarNovaNotificacao({ id: Date.now(), titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao });
 
@@ -3164,41 +3215,74 @@
             if (prevMsg) prevMsg.innerText = m || "Sua mensagem de aviso aparecerá aqui na tela do celular do fiel assim que for enviada...";
         }
 
-        function carregarHistoricoNotificacoesAdmin() {
+        async function carregarHistoricoNotificacoesAdmin() {
             var container = document.getElementById("notificacoes-historico-lista");
             if (!container) return;
 
-            var historico = JSON.parse(localStorage.getItem("notificacoes_historico") || "[]");
-
-            if (historico.length === 0) {
-                container.innerHTML = '<p class="text-xs text-stone-500 italic p-3 text-center"><i class="fa-solid fa-bell-slash text-amber-500 block text-lg mb-1"></i> Nenhuma notificação enviada recentemente.</p>';
+            if (!supabaseClient) {
+                container.innerHTML = '<p class="text-xs text-stone-500 italic p-3 text-center">Supabase não inicializado.</p>';
                 return;
             }
 
-            var html = '<div class="space-y-2">';
-            historico.forEach(function(item) {
-                html += `<div class="p-3 bg-white border border-stone-200 rounded-xl text-xs space-y-1 shadow-2xs">
-                            <div class="flex justify-between items-start">
-                                <strong class="text-stone-900 font-bold flex items-center gap-1.5"><i class="fa-solid fa-bell text-amber-500"></i> ${item.titulo}</strong>
-                                <span class="text-[10px] text-stone-400 font-medium">${item.data}</span>
-                            </div>
-                            <p class="text-stone-600 text-[11px] leading-relaxed">${item.mensagem}</p>
-                         </div>`;
-            });
-            container.innerHTML = html + '</div>';
-        }
+            container.innerHTML = '<p class="text-xs text-stone-400 italic p-3 text-center"><i class="fa-solid fa-spinner fa-spin"></i> Carregando histórico...</p>';
 
-        function limparHistoricoNotificacoesAdmin() {
-            if (!confirm("Tem certeza que deseja apagar todo o histórico de disparos? Essa ação não pode ser desfeita.")) return;
-            localStorage.removeItem("notificacoes_historico");
-            carregarHistoricoNotificacoesAdmin();
+            try {
+                const { data, error } = await supabaseClient
+                    .from('notificacoes')
+                    .select('*')
+                    .order('id', { ascending: false })
+                    .limit(30);
+
+                if (error) {
+                    container.innerHTML = '<p class="text-xs text-red-500 italic p-3 text-center">Erro ao carregar histórico do Supabase.</p>';
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p class="text-xs text-stone-500 italic p-3 text-center"><i class="fa-solid fa-bell-slash text-amber-500 block text-lg mb-1"></i> Nenhuma notificação enviada ainda.</p>';
+                    return;
+                }
+
+                var html = '<div class="space-y-2">';
+                data.forEach(function(item) {
+                    var dataFormatada = item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : '';
+                    var statusBadge;
+                    if (item.push_status === 'enviado') {
+                        statusBadge = '<i class="fa-solid fa-circle-check text-emerald-500" title="Enviado com sucesso"></i>';
+                    } else if (item.push_status === 'falha') {
+                        statusBadge = '<i class="fa-solid fa-circle-xmark text-red-500" title="Falha ao enviar o push"></i>';
+                    } else {
+                        statusBadge = '<i class="fa-regular fa-clock text-stone-300" title="Aguardando confirmação de envio"></i>';
+                    }
+                    html += `<div class="p-3 bg-white border border-stone-200 rounded-xl text-xs space-y-1 shadow-2xs">
+                                <div class="flex justify-between items-start gap-2">
+                                    <strong class="text-stone-900 font-bold flex items-center gap-1.5">${statusBadge} ${item.titulo || ''}</strong>
+                                    <span class="text-[10px] text-stone-400 font-medium flex-shrink-0">${dataFormatada}</span>
+                                </div>
+                                <p class="text-stone-600 text-[11px] leading-relaxed">${item.mensagem || ''}</p>
+                             </div>`;
+                });
+                container.innerHTML = html + '</div>';
+            } catch (e) {
+                container.innerHTML = '<p class="text-xs text-red-500 italic p-3 text-center">Erro ao carregar histórico.</p>';
+            }
         }
 
         /* ===== NOTIFICAÇÕES AGENDADAS (DISPARO AUTOMÁTICO FUTURO) ===== */
         function abrirModalEscolherDataHoraAgendamento() {
             var atual = document.getElementById("notif-agendamento-datahora").value;
-            var tempInput = document.getElementById("input-datahora-agendamento-temp");
-            if (atual) tempInput.value = atual;
+            var inputData = document.getElementById("input-data-agendamento-temp");
+            var inputHora = document.getElementById("input-hora-agendamento-temp");
+            var pad = function (n) { return String(n).padStart(2, "0"); };
+            if (atual) {
+                var d = new Date(atual);
+                inputData.value = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+                inputHora.value = pad(d.getHours()) + ":" + pad(d.getMinutes());
+            } else {
+                var agora = new Date();
+                inputData.value = agora.getFullYear() + "-" + pad(agora.getMonth() + 1) + "-" + pad(agora.getDate());
+                inputHora.value = "";
+            }
             document.getElementById("modal-escolher-datahora-agendamento").classList.remove("hidden");
         }
 
@@ -3207,13 +3291,15 @@
         }
 
         function confirmarDataHoraAgendamento() {
-            var tempInput = document.getElementById("input-datahora-agendamento-temp");
-            if (!tempInput.value) {
-                mostrarFeedbackAgendamento('aviso', 'Escolha uma data', 'Selecione o dia e o horário antes de confirmar.');
+            var inputData = document.getElementById("input-data-agendamento-temp");
+            var inputHora = document.getElementById("input-hora-agendamento-temp");
+            if (!inputData.value || !inputHora.value) {
+                mostrarFeedbackAgendamento('aviso', 'Escolha data e horário', 'Selecione o dia e o horário antes de confirmar.');
                 return;
             }
-            document.getElementById("notif-agendamento-datahora").value = tempInput.value;
-            var dataFormatada = new Date(tempInput.value).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            var valorCombinado = inputData.value + "T" + inputHora.value;
+            document.getElementById("notif-agendamento-datahora").value = valorCombinado;
+            var dataFormatada = new Date(valorCombinado).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
             var textoSpan = document.getElementById("texto-datahora-agendamento-selecionada");
             textoSpan.innerHTML = '<i class="fa-solid fa-calendar-check text-emerald-500 mr-1.5"></i> ' + dataFormatada;
             var btnDataHora = document.getElementById("btn-abrir-datahora-agendamento");
@@ -3989,6 +4075,16 @@
             escutarEventosEmTempoReal();
             escutarNotificacoesEmTempoReal();
             verificarPermissaoNotificacaoAoCarregar();
+
+            /* ===== AJUSTE PARA O TECLADO DO CELULAR NÃO CORTAR CAMPOS/BOTÕES ===== */
+            document.addEventListener('focusin', function (e) {
+                var alvo = e.target;
+                if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.tagName === 'SELECT')) {
+                    setTimeout(function () {
+                        alvo.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    }, 350);
+                }
+            });
 
             if (!APP_JA_INSTALADO && ehIOS()) {
                 setTimeout(function() { abrirModalInstalarApp(); }, 2500);
