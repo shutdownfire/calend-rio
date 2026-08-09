@@ -82,7 +82,7 @@
     <script>
         (function() {
             // AUMENTE ESSE NÚMERO/TEXTO SEMPRE QUE PUBLICAR UMA ATUALIZAÇÃO NO index.html
-            var APP_VERSION = "2026-08-09.2";
+            var APP_VERSION = "2026-08-09.3";
             try {
                 var versaoSalva = localStorage.getItem("app_versao_atual");
                 if (versaoSalva !== APP_VERSION) {
@@ -4330,6 +4330,9 @@
                     throw new Error("HTTP " + resposta.status + (corpoErro ? " - " + corpoErro : ""));
                 }
                 var dados = await resposta.json();
+                if (dados._debug_tempos_ms) {
+                    console.log("[STATS-DEBUG] Tempos da busca no GoatCounter (ms):", dados._debug_tempos_ms);
+                }
                 if (dados.error) throw new Error(dados.error);
 
                 if (elHoje) elHoje.innerText = dados.hoje;
