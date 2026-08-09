@@ -2643,7 +2643,7 @@
             var html = "";
 
             for (var i = details.firstDay - 1; i >= 0; i--) {
-                html += '<div class="min-h-[68px] sm:min-h-[92px] p-1.5 bg-stone-50/40 rounded-xl sm:rounded-2xl border border-dashed border-stone-200/60 opacity-30 relative">' +
+                html += '<div class="min-h-[80px] sm:min-h-[96px] p-1.5 bg-stone-50/40 rounded-xl sm:rounded-2xl border border-dashed border-stone-200/60 opacity-30 relative">' +
                             '<span class="text-stone-300 font-medium text-[9px] sm:text-xs absolute top-1.5 left-1.5">' + (prevMonthTotalDays - i) + '</span>' +
                         '</div>';
             }
@@ -2668,21 +2668,21 @@
                     var rodapeHtml = "";
                     if (ev.valor && ev.valor.trim() !== '') {
                         var valorLimpo = ev.valor.replace(',00', '').trim();
-                        rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="text-[7.5px] sm:text-[11px] ' + valColor + ' font-extrabold tracking-tight">' + valorLimpo + '</span></div>';
+                        rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="text-[9.5px] sm:text-[11px] ' + valColor + ' font-extrabold tracking-tight">' + valorLimpo + '</span></div>';
                     } else if (ehHorarioValido) {
-                        rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="inline-flex items-center justify-center gap-0.5 text-[6.5px] sm:text-[10px] text-stone-600 font-medium"><i class="fa-regular fa-clock text-[6.5px] sm:text-[9.5px] text-stone-500"></i> ' + ev.horario + '</span></div>';
+                        rodapeHtml = '<div class="w-full text-center pb-0.5"><span class="inline-flex items-center justify-center gap-0.5 text-[8.5px] sm:text-[10px] text-stone-600 font-medium"><i class="fa-regular fa-clock text-[8px] sm:text-[9.5px] text-stone-500"></i> ' + ev.horario + '</span></div>';
                     }
 
                     var tituloHtml = '';
                     if (tituloGrid === 'Organização e Limpeza' || ev.categoria === 'amber') {
-                        tituloHtml = '<p class="font-bold text-[6px] sm:text-[10px] text-stone-900 leading-tight text-center font-sans max-w-full"><span class="block">Organização</span><span class="block">Limpeza</span></p>';
+                        tituloHtml = '<p class="font-bold text-[8.5px] sm:text-[10.5px] text-stone-900 leading-tight text-center font-sans max-w-full"><span class="block">Organização</span><span class="block">Limpeza</span></p>';
                     } else {
-                        tituloHtml = '<p class="font-bold text-[6.5px] sm:text-[11.5px] text-stone-900 leading-tight sm:leading-snug tracking-tight break-words text-center font-sans max-w-full">' + tituloGrid + '</p>';
+                        tituloHtml = '<p class="font-bold text-[9px] sm:text-[11.5px] text-stone-900 leading-tight sm:leading-snug tracking-tight break-words text-center font-sans max-w-full">' + tituloGrid + '</p>';
                     }
 
-                    html += '<div onclick="abrirModalDetalhesEvento(' + d + ')" class="min-h-[68px] sm:min-h-[92px] p-0.5 sm:p-2 ' + bgClass + ' rounded-xl sm:rounded-2xl border flex flex-col justify-between items-center relative hover:shadow-md transition cursor-pointer active:scale-95 overflow-hidden shadow-2xs group">' +
+                    html += '<div onclick="abrirModalDetalhesEvento(' + d + ')" class="min-h-[80px] sm:min-h-[96px] p-0.5 sm:p-2 ' + bgClass + ' rounded-xl sm:rounded-2xl border flex flex-col justify-between items-center relative hover:shadow-md transition cursor-pointer active:scale-95 overflow-hidden shadow-2xs group">' +
                                 '<div class="w-full flex justify-between items-center pointer-events-none z-10 px-1 pt-0.5">' +
-                                    '<span class="font-extrabold text-stone-900 bg-white/95 w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[8px] sm:text-[11px] leading-none shadow-2xs">' + diaFmt + '</span>' +
+                                    '<span class="font-extrabold text-stone-900 bg-white/95 w-[18px] h-[18px] sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[9.5px] sm:text-[11px] leading-none shadow-2xs">' + diaFmt + '</span>' +
                                     '<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ' + dotClass + ' shadow-2xs"></span>' +
                                 '</div>' +
                                 '<div class="my-auto text-center flex flex-col items-center justify-center w-full px-0.5 py-0.5 pointer-events-none">' +
@@ -2691,7 +2691,7 @@
                                 rodapeHtml +
                             '</div>';
                 } else {
-                    html += '<div class="min-h-[68px] sm:min-h-[92px] p-1.5 sm:p-2 bg-white/90 rounded-xl sm:rounded-2xl border border-stone-200/80 relative shadow-2xs hover:border-stone-300 transition">' +
+                    html += '<div class="min-h-[80px] sm:min-h-[96px] p-1.5 sm:p-2 bg-white/90 rounded-xl sm:rounded-2xl border border-stone-200/80 relative shadow-2xs hover:border-stone-300 transition">' +
                                 '<span class="text-stone-400 font-semibold text-[9px] sm:text-xs absolute top-1.5 left-1.5">' + diaFmt + '</span>' +
                             '</div>';
                 }
