@@ -3142,10 +3142,10 @@
                     '<div class="premium-rule w-14 mx-auto mt-2"></div>' +
                 '</div>' +
                 '<div class="relative z-10 mt-4 space-y-2">' + listaNomesHtml + '</div>' +
-                '<div class="z-10 relative mt-4">' +
-                    '<p class="font-cinzel font-black text-lg sm:text-xl tracking-wide" style="color:var(--accent)">Feliz aniversário!!! 🎉</p>' +
-                    '<p class="text-[#f3e7cf] text-sm sm:text-base font-serif font-semibold mt-0.5">Que seu dia seja especial.</p>' +
+                '<div class="z-10 relative mt-2 w-full text-center">' +
+                    '<p class="font-cinzel font-black text-lg sm:text-xl w-full text-center" style="color:var(--accent)">Feliz aniversário!!! <span>🎉</span></p>' +
                 '</div>' +
+                '<p class="text-[#f3e7cf] text-sm sm:text-base font-serif font-semibold mt-0.5 z-10 relative">Que seu dia seja especial.</p>' +
                 '<div class="z-10 relative mt-4">' +
                     '<div class="premium-quote-block py-3 px-1">' +
                         '<p class="font-sans font-medium text-[#f7ecd4] text-sm sm:text-base leading-relaxed tracking-wide">' +
@@ -3153,12 +3153,9 @@
                         '</p>' +
                     '</div>' +
                 '</div>' +
-                '<div class="z-10 relative mt-4 text-left">' +
-                    '<label for="aniversario-msg-textarea" class="text-[10px] font-bold uppercase tracking-wider block mb-1.5" style="color:var(--accent)">Deixe sua mensagem</label>' +
-                    '<textarea id="aniversario-msg-textarea" rows="2" placeholder="Escreva uma mensagem carinhosa para o aniversariante..." class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition resize-none"></textarea>' +
-                    '<button type="button" onclick="enviarMensagemAniversarioWhatsApp()" class="premium-whatsapp-btn w-full justify-center mt-2.5">' +
-                        '<i class="fa-brands fa-whatsapp text-base"></i> Enviar Mensagem pelo WhatsApp' +
-                    '</button>' +
+                '<div class="z-10 relative mt-4 flex items-center justify-center gap-2 py-2 px-3 rounded-xl mx-auto" style="background:rgba(79,212,138,0.12); border:1px solid rgba(79,212,138,0.35); max-width:fit-content">' +
+                    '<i class="fa-brands fa-whatsapp text-base" style="color:#4fd48a"></i>' +
+                    '<p class="text-[11px] sm:text-xs font-sans font-bold" style="color:#4fd48a">Clique no WhatsApp do aniversariante e deixe sua mensagem</p>' +
                 '</div>' +
             '</div>';
 
@@ -4323,16 +4320,18 @@
             document.getElementById("confirmar-cancelamento-agendamento-modal").classList.remove("hidden");
         }
 
-        function enviarMensagemAniversarioWhatsApp() {
-            var textarea = document.getElementById("aniversario-msg-textarea");
-            var mensagemPessoal = textarea ? textarea.value.trim() : "";
-            var nomes = ULTIMOS_ANIVERSARIANTES_NOMES.length ? ULTIMOS_ANIVERSARIANTES_NOMES.join(" e ") : "";
-            var hora = new Date().getHours(); var saudacao = (hora >= 12 && hora < 18) ? "Boa tarde!" : ((hora >= 18 || hora < 5) ? "Boa noite!" : "Bom dia!");
-
-            var msg = saudacao + (nomes ? " Hoje é aniversário de " + nomes + "! " : " ");
-            msg += mensagemPessoal ? mensagemPessoal : "Feliz aniversário! Que seu dia seja especial, com muita luz, saúde e axé!";
-
-            window.open("https://wa.me/" + PAULA_WHATSAPP_NUMERO + "?text=" + encodeURIComponent(msg), "_blank");
+        // ---- Abre o WhatsApp do próprio aniversariante (ícone ao lado do nome, no card do dia) ----
+        function enviarMensagemParaAniversariante(indice) {
+            var pessoa = ULTIMOS_ANIVERSARIANTES_PESSOAS[indice];
+            if (!pessoa) return;
+            if (!pessoa.aniversario_telefone) {
+                alert("Este aniversariante ainda não tem WhatsApp cadastrado.");
+                return;
+            }
+            var hora = new Date().getHours();
+            var saudacao = (hora >= 12 && hora < 18) ? "Boa tarde!" : ((hora >= 18 || hora < 5) ? "Boa noite!" : "Bom dia!");
+            var msg = saudacao + " Feliz aniversário, " + pessoa.nome + "! Que seu dia seja especial, com muita luz, saúde e axé! 🎉";
+            window.open("https://wa.me/" + pessoa.aniversario_telefone + "?text=" + encodeURIComponent(msg), "_blank");
         }
 
         function agendarConsultaWhatsApp(dataEvento, entidade, tipo) {
