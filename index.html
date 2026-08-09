@@ -133,7 +133,7 @@
     <script>
         (function() {
             // AUMENTE ESSE NÚMERO/TEXTO SEMPRE QUE PUBLICAR UMA ATUALIZAÇÃO NO index.html
-            var APP_VERSION = "2026-08-09.8";
+            var APP_VERSION = "2026-08-09.9";
             try {
                 var versaoSalva = localStorage.getItem("app_versao_atual");
                 if (versaoSalva !== APP_VERSION) {
@@ -141,7 +141,20 @@
                     // Só força recarregar se já existia uma versão anterior salva
                     // (evita ficar recarregando em loop na primeira visita da pessoa)
                     if (versaoSalva) {
-                        var recarregar = function () { window.location.reload(); };
+                        function algumModalAbertoVersao() {
+                            var modais = document.querySelectorAll('.fixed.inset-0');
+                            for (var i = 0; i < modais.length; i++) {
+                                if (!modais[i].classList.contains('hidden')) return true;
+                            }
+                            return false;
+                        }
+                        var recarregar = function () {
+                            if (algumModalAbertoVersao()) {
+                                setTimeout(recarregar, 2000);
+                                return;
+                            }
+                            window.location.reload();
+                        };
                         if ('serviceWorker' in navigator) {
                             navigator.serviceWorker.getRegistrations().then(function (regs) {
                                 regs.forEach(function (reg) { reg.unregister(); });
