@@ -3083,6 +3083,7 @@
             var idStr = String(notif.id);
             if (ULTIMO_ID_NOTIFICACAO_EXIBIDO === idStr) return;
 
+            console.log("[NOTIF-DEBUG] Registro NOVO encontrado, processando:", notif);
             ULTIMO_ID_NOTIFICACAO_EXIBIDO = idStr;
             localStorage.setItem("ultimo_id_notificacao_exibido", idStr);
 
@@ -3127,7 +3128,6 @@
                     if (error) {
                         console.error("[NOTIF-DEBUG] Erro no polling de notificações:", error);
                     } else if (data && data.length > 0) {
-                        console.log("[NOTIF-DEBUG] Polling encontrou registro mais recente:", data[0]);
                         processarNovaNotificacao(data[0]);
                     }
                 } catch(e) {
