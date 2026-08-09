@@ -1118,8 +1118,8 @@
                                     </div>
                                 </div>
 
-                                <div class="space-y-5 text-xs">
-                                    <div class="space-y-2">
+                                <div class="space-y-3.5 text-xs">
+                                    <div class="space-y-2 bg-amber-50/50 border border-amber-200/60 rounded-2xl p-3.5">
                                         <div class="flex items-center gap-2">
                                             <span id="step-num-1" class="w-6 h-6 rounded-full bg-amber-500 text-stone-950 font-black flex items-center justify-center text-xs animate-pulse ring-4 ring-amber-400/40 shadow-lg scale-110 transition-all duration-300">1</span>
                                             <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">DATA DA ATIVIDADE</label>
@@ -1154,36 +1154,17 @@
                                         </div>
                                     </div>
 
-                                    <div class="space-y-2 pt-1 border-t border-stone-100">
-                                        <div class="flex items-center gap-2 pt-2">
+                                    <div class="space-y-2 bg-emerald-50/50 border border-emerald-200/60 rounded-2xl p-3.5">
+                                        <div class="flex items-center gap-2">
                                             <span id="step-num-2" class="w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] transition-all duration-300">2</span>
                                             <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">EVENTO / TÍTULO</label>
                                         </div>
 
-                                        <div class="pl-7">
+                                        <div class="pl-7 space-y-2.5">
                                             <input type="hidden" id="input-titulo" value="">
                                             <div class="relative">
                                                 <i class="fa-solid fa-bars-staggered absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
-                                                <input type="text" id="input-titulo-display" readonly value="" onclick="abrirModalTitulo()" placeholder="Clique para selecionar evento..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-2 pt-1 border-t border-stone-100">
-                                        <div class="flex items-center justify-between pt-2">
-                                            <div class="flex items-center gap-2">
-                                                <span id="step-num-3" class="w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] transition-all duration-300">3</span>
-                                                <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">CATEGORIA / TIPO</label>
-                                            </div>
-                                            <button type="button" onclick="adicionarNovaCategoria()" class="text-[11px] text-emerald-800 hover:underline font-bold">+ Nova Categoria</button>
-                                        </div>
-
-                                        <div class="pl-7 space-y-2.5">
-                                            <input type="hidden" id="input-categoria" value="">
-                                            <div class="relative">
-                                                <i class="fa-solid fa-tags absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
-                                                <input type="text" id="input-categoria-display" readonly value="" onclick="abrirModalCategoria()" placeholder="Clique para selecionar categoria..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
-                                                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                                <input type="text" id="input-titulo-display" readonly value="" onclick="abrirModalTitulo()" placeholder="Clique para selecionar evento..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-white cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                             </div>
 
                                             <div class="flex flex-wrap gap-2 pt-1">
@@ -1206,8 +1187,27 @@
                                         </div>
                                     </div>
 
-                                    <div class="space-y-2 pt-1 border-t border-stone-100">
-                                        <div class="flex items-center gap-2 pt-2">
+                                    <div class="space-y-2 bg-stone-100/60 border border-stone-200 rounded-2xl p-3.5">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-2">
+                                                <span id="step-num-3" class="w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] transition-all duration-300">3</span>
+                                                <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">CATEGORIA / TIPO</label>
+                                            </div>
+                                            <button type="button" onclick="adicionarNovaCategoria()" class="text-[11px] text-emerald-800 hover:underline font-bold">+ Nova Categoria</button>
+                                        </div>
+
+                                        <div class="pl-7">
+                                            <input type="hidden" id="input-categoria" value="">
+                                            <div class="relative">
+                                                <i class="fa-solid fa-tags absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-sm pointer-events-none"></i>
+                                                <input type="text" id="input-categoria-display" readonly value="" onclick="abrirModalCategoria()" placeholder="Clique para selecionar categoria..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 font-bold text-stone-800 bg-white cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-2 bg-sky-50/50 border border-sky-200/60 rounded-2xl p-3.5">
+                                        <div class="flex items-center gap-2">
                                             <span id="step-num-4" class="w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] transition-all duration-300">4</span>
                                             <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">HORÁRIOS</label>
                                         </div>
@@ -1218,7 +1218,7 @@
                                                     <label class="font-bold text-stone-600 block mb-1">Horário de Início / Término</label>
                                                     <div class="relative">
                                                         <i class="fa-regular fa-clock absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
-                                                        <input type="text" id="input-horario-inicio" readonly onclick="abrirModalHorario()" placeholder="Selecione o horário" class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                        <input type="text" id="input-horario-inicio" readonly onclick="abrirModalHorario()" placeholder="Selecione o horário" class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-white cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                                         <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
                                                     </div>
                                                 </div>
@@ -1227,20 +1227,24 @@
                                                     <label class="font-bold text-stone-600 block mb-1">Valor <span class="text-stone-400 font-normal">(Opcional)</span></label>
                                                     <div class="relative">
                                                         <i class="fa-solid fa-tag absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
-                                                        <input type="text" id="input-valor" readonly onclick="abrirModalValor()" placeholder="Clique para selecionar..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                        <input type="text" id="input-valor" readonly onclick="abrirModalValor()" placeholder="Clique para selecionar..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-white cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div id="container-opcoes-avancadas" class="space-y-4 pt-1">
+                                    <div id="container-opcoes-avancadas" class="space-y-2 bg-violet-50/50 border border-violet-200/60 rounded-2xl p-3.5">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-solid fa-sliders w-5 text-center text-violet-500 text-xs"></i>
+                                            <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">DETALHES ADICIONAIS <span class="text-stone-400 font-normal normal-case">(opcional)</span></label>
+                                        </div>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-7">
                                             <div>
                                                 <label class="font-bold text-stone-600 block mb-1">Responsável <span class="text-stone-400 font-normal">(Opcional)</span></label>
                                                 <div class="relative">
                                                     <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
-                                                    <input type="text" id="input-responsavel" value="" oninput="atualizarPrevisualizacao()" placeholder="Ex: Pai João de Xangô" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-300 text-stone-800 font-semibold bg-stone-50/50 text-xs sm:text-sm">
+                                                    <input type="text" id="input-responsavel" value="" oninput="atualizarPrevisualizacao()" placeholder="Ex: Pai João de Xangô" class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-300 text-stone-800 font-semibold bg-white text-xs sm:text-sm">
                                                 </div>
                                             </div>
 
@@ -1249,7 +1253,7 @@
                                                 <input type="hidden" id="input-repeticao" value="Não repetir">
                                                 <div class="relative">
                                                     <i class="fa-solid fa-rotate-right absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
-                                                    <input type="text" id="input-repeticao-display" readonly value="Não repetir" onclick="abrirModalRepeticao()" placeholder="Clique para selecionar..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <input type="text" id="input-repeticao-display" readonly value="Não repetir" onclick="abrirModalRepeticao()" placeholder="Clique para selecionar..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-white cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                                     <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
                                                 </div>
                                             </div>
@@ -1259,7 +1263,7 @@
                                                 <input type="hidden" id="input-publico" value="">
                                                 <div class="relative">
                                                     <i class="fa-solid fa-users absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
-                                                    <input type="text" id="input-publico-display" readonly value="" onclick="abrirModalPublico()" placeholder="Clique para selecionar público..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <input type="text" id="input-publico-display" readonly value="" onclick="abrirModalPublico()" placeholder="Clique para selecionar público..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-white cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                                     <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
                                                 </div>
                                             </div>
@@ -1269,22 +1273,22 @@
                                                 <input type="hidden" id="input-status" value="">
                                                 <div class="relative">
                                                     <i class="fa-solid fa-shield-halved absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none"></i>
-                                                    <input type="text" id="input-status-display" readonly value="" onclick="abrirModalStatus()" placeholder="Clique para selecionar status..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-stone-50/50 cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
+                                                    <input type="text" id="input-status-display" readonly value="" onclick="abrirModalStatus()" placeholder="Clique para selecionar status..." class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-stone-300 font-semibold text-stone-800 bg-white cursor-pointer hover:border-amber-400 transition text-xs sm:text-sm">
                                                     <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="space-y-2 pt-1 border-t border-stone-100">
-                                        <div class="flex items-center gap-2 pt-2">
+                                    <div class="space-y-2 bg-rose-50/50 border border-rose-200/60 rounded-2xl p-3.5">
+                                        <div class="flex items-center gap-2">
                                             <span id="step-num-5" class="w-5 h-5 rounded-full bg-stone-300 text-stone-600 font-bold flex items-center justify-center text-[11px] transition-all duration-300">5</span>
                                             <label class="font-bold text-stone-800 uppercase tracking-wider text-[11px]">OBSERVAÇÕES <span class="text-stone-400 font-normal">(OPCIONAL)</span></label>
                                         </div>
 
                                         <div class="pl-7 relative">
                                             <i class="fa-regular fa-comment absolute left-3.5 top-3.5 text-stone-400 text-sm pointer-events-none"></i>
-                                            <textarea id="input-descricao" rows="2" placeholder="Adicione informações importantes sobre a atividade..." oninput="atualizarPrevisualizacao(); atualizarIndicadoresPassos();" class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-stone-300 text-stone-800 bg-stone-50/50 font-medium text-xs sm:text-sm outline-none focus:border-amber-400 transition"></textarea>
+                                            <textarea id="input-descricao" rows="2" placeholder="Adicione informações importantes sobre a atividade..." oninput="atualizarPrevisualizacao(); atualizarIndicadoresPassos();" class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-stone-300 text-stone-800 bg-white font-medium text-xs sm:text-sm outline-none focus:border-amber-400 transition"></textarea>
                                         </div>
                                     </div>
 
