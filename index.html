@@ -72,29 +72,36 @@
                     // ARQUIVO REAL "OneSignalSDKWorker.js" (na raiz do site) faz tanto o
                     // cache offline do PWA quanto o push da OneSignal, num único worker,
                     // evitando conflito de scope entre os dois.
-                    navigator.serviceWorker.register('./OneSignalSDKWorker.js').then(function (reg) {
-                        // Assim que o worker novo assume o controle, recarrega a página
-                        // automaticamente (é o "puxar pra atualizar" acontecendo sozinho).
-                        var jaRecarregou = false;
-                        navigator.serviceWorker.addEventListener('controllerchange', function () {
-                            if (jaRecarregou) return;
-                            jaRecarregou = true;
-                            window.location.reload();
-                        });
-                    }).catch(function(){});
+                    navigator.serviceWorker.register('./OneSignalSDKWorker.js').catch(function(){});
+                });
+
+                // Assim que um worker novo assume o controle da página, recarrega
+                // automaticamente — mas NO MÁXIMO 1 VEZ por sessão da aba, pra nunca
+                // correr o risco de ficar recarregando em loop.
+                navigator.serviceWorker.addEventListener('controllerchange', function () {
+                    var jaRecarregou = false;
+                    try { jaRecarregou = sessionStorage.getItem('sw_reload_ja_feito') === '1'; } catch(e) {}
+                    if (jaRecarregou) return;
+                    try { sessionStorage.setItem('sw_reload_ja_feito', '1'); } catch(e) {}
+                    window.location.reload();
                 });
 
                 // SEMPRE QUE O APP É ABERTO OU VOLTA PRA TELA (usuário reabriu o app,
-                // trocou de aba e voltou, etc.), força checar se existe uma versão nova
-                // do worker publicada — isso é o que dispara o "controllerchange" acima.
+                // trocou de aba e voltou, etc.), checa se existe uma versão nova
+                // do worker publicada — com um intervalo mínimo entre checagens pra
+                // não disparar várias vezes seguidas.
                 function verificarAtualizacaoAoAbrirApp() {
+                    var agora = Date.now();
+                    var ultimaChecagem = 0;
+                    try { ultimaChecagem = parseInt(sessionStorage.getItem('sw_ultima_checagem') || '0', 10); } catch(e) {}
+                    if (agora - ultimaChecagem < 15000) return; // no máx. 1 checagem a cada 15s
+                    try { sessionStorage.setItem('sw_ultima_checagem', String(agora)); } catch(e) {}
+
                     navigator.serviceWorker.getRegistrations().then(function (regs) {
                         regs.forEach(function (reg) { reg.update().catch(function(){}); });
                     }).catch(function(){});
                 }
                 window.addEventListener('load', verificarAtualizacaoAoAbrirApp);
-                window.addEventListener('pageshow', verificarAtualizacaoAoAbrirApp);
-                window.addEventListener('focus', verificarAtualizacaoAoAbrirApp);
                 document.addEventListener('visibilitychange', function () {
                     if (document.visibilityState === 'visible') verificarAtualizacaoAoAbrirApp();
                 });
