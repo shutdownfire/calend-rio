@@ -252,6 +252,8 @@
             height: 96vh;
             height: 96dvh;
             max-height: 96dvh;
+            height: calc(var(--app-vh, 1vh) * 96);
+            max-height: calc(var(--app-vh, 1vh) * 96);
         }
 
         .overflow-y-auto {
@@ -1631,7 +1633,7 @@
                                 <i class="fa-solid fa-cake-candles"></i>
                             </div>
                             <div>
-                                <h4 class="font-serif font-bold text-stone-900 text-sm sm:text-base">CADASTRAR ANIVERSARIANTE</h4>
+                                <h4 id="form-aniv-titulo" class="font-serif font-bold text-stone-900 text-sm sm:text-base">CADASTRAR ANIVERSARIANTE</h4>
                                 <p class="text-stone-500 text-xs font-medium">Pra filhos da casa que não usam o app, cadastre aqui manualmente</p>
                             </div>
                         </div>
@@ -1658,9 +1660,14 @@
                                 </select>
                             </div>
                         </div>
-                        <button type="button" onclick="adicionarAniversarianteAdmin()" id="btn-add-aniversariante" class="w-full sm:w-auto px-5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-plus"></i> Cadastrar Aniversariante
-                        </button>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <button type="button" onclick="salvarAniversarianteAdmin()" id="btn-add-aniversariante" class="w-full sm:w-auto px-5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Cadastrar Aniversariante
+                            </button>
+                            <button type="button" onclick="cancelarEdicaoAniversariante()" id="btn-cancelar-edicao-aniv" class="hidden w-full sm:w-auto px-5 py-2.5 border border-stone-300 hover:bg-stone-100 text-stone-700 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-xmark"></i> Cancelar Edição
+                            </button>
+                        </div>
                     </div>
 
                     <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3">
@@ -1814,6 +1821,16 @@
 
     <!-- JS separado em arquivos externos (ordem importa: variaveis/funcoes globais compartilhadas) -->
     <script>
+        // ---- Corrige altura real da viewport em navegadores embutidos (ex: WhatsApp, Instagram) ----
+        // que calculam mal vh/dvh e cortam o rodapé de modais como o Painel Administrativo.
+        function ajustarAlturaRealViewport() {
+            var vhReal = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--app-vh', vhReal + 'px');
+        }
+        ajustarAlturaRealViewport();
+        window.addEventListener('resize', ajustarAlturaRealViewport);
+        window.addEventListener('orientationchange', function () { setTimeout(ajustarAlturaRealViewport, 250); });
+
         var SUPABASE_URL = "https://ndkooiyqhafsinxawzxe.supabase.co";
         var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI6MjEwMDk0NTczMH0.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
         var supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -2927,6 +2944,8 @@
                     .order('aniversario_dia', { ascending: true });
 
                 if (error) { container.innerHTML = '<p class="text-xs text-red-500 italic p-3 text-center">Erro ao carregar. Verifique se a tabela "aniversariantes" foi criada no Supabase.</p>'; return; }
+                window.ANIVERSARIANTES_CACHE = data || [];
+
                 if (!data || data.length === 0) { container.innerHTML = '<p class="text-xs text-stone-500 italic p-3 text-center"><i class="fa-solid fa-cake-candles text-pink-400 block text-base mb-1"></i> Nenhum aniversariante cadastrado ainda.</p>'; return; }
 
                 if (contador) contador.textContent = data.length + ' cadastrado(s)';
@@ -2953,6 +2972,7 @@
                                 '<span class="font-bold text-stone-800 text-xs sm:text-sm truncate">' + p.nome + ' ' + p.sobrenome + '</span>' +
                             '</div>' +
                             '<div class="flex items-center gap-1.5 flex-shrink-0">' +
+                                '<button onclick="carregarParaEditarAniversariante(\'' + p.id + '\')" title="Editar" class="w-7 h-7 rounded-lg text-pink-600 hover:bg-pink-50 border border-pink-200 flex items-center justify-center text-xs transition"><i class="fa-solid fa-pen"></i></button>' +
                                 '<button onclick="excluirAniversarianteAdmin(\'' + p.id + '\')" title="Excluir" class="w-7 h-7 rounded-lg text-red-600 hover:bg-red-50 border border-red-200 flex items-center justify-center text-xs transition"><i class="fa-solid fa-trash"></i></button>' +
                             '</div>' +
                            '</div>';
@@ -2963,7 +2983,9 @@
             }
         }
 
-        async function adicionarAniversarianteAdmin() {
+        var aniversarianteSendoEditadoId = null;
+
+        async function salvarAniversarianteAdmin() {
             var nome = document.getElementById("admin-aniv-nome").value.trim();
             var sobrenome = document.getElementById("admin-aniv-sobrenome").value.trim();
             var dia = parseInt(document.getElementById("admin-aniv-dia").value, 10);
@@ -2975,26 +2997,76 @@
             }
             if (!supabaseClient) { alert("Supabase não inicializado."); return; }
 
+            var editando = !!aniversarianteSendoEditadoId;
             var btn = document.getElementById("btn-add-aniversariante");
-            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cadastrando...'; }
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + (editando ? 'Salvando...' : 'Cadastrando...'); }
 
             try {
-                const { error } = await supabaseClient.from('aniversariantes').insert([{
-                    nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, ativo: true
-                }]);
-                if (error) {
-                    alert("Não foi possível cadastrar: " + (error.message || JSON.stringify(error)));
+                var resultado;
+                if (editando) {
+                    resultado = await supabaseClient.from('aniversariantes')
+                        .update({ nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes })
+                        .eq('id', aniversarianteSendoEditadoId);
                 } else {
-                    document.getElementById("admin-aniv-nome").value = "";
-                    document.getElementById("admin-aniv-sobrenome").value = "";
-                    document.getElementById("admin-aniv-dia").value = "";
+                    resultado = await supabaseClient.from('aniversariantes').insert([{
+                        nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, ativo: true
+                    }]);
+                }
+                if (resultado.error) {
+                    alert("Não foi possível salvar: " + (resultado.error.message || JSON.stringify(resultado.error)));
+                } else {
+                    cancelarEdicaoAniversariante();
                     carregarListaAniversariantesAdmin();
                 }
             } catch (e) {
                 alert("Erro: " + String(e && e.message ? e.message : e));
             }
 
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-plus"></i> Cadastrar Aniversariante'; }
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-plus"></i> ' + (aniversarianteSendoEditadoId ? 'Salvar Alterações' : 'Cadastrar Aniversariante'); }
+        }
+
+        function carregarParaEditarAniversariante(idStr) {
+            var pessoa = null;
+            if (window.ANIVERSARIANTES_CACHE) {
+                pessoa = window.ANIVERSARIANTES_CACHE.find(function (p) { return String(p.id) === String(idStr); });
+            }
+            if (!pessoa) return;
+
+            aniversarianteSendoEditadoId = String(idStr);
+
+            document.getElementById("admin-aniv-nome").value = pessoa.nome || "";
+            document.getElementById("admin-aniv-sobrenome").value = pessoa.sobrenome || "";
+            document.getElementById("admin-aniv-dia").value = pessoa.aniversario_dia || "";
+            document.getElementById("admin-aniv-mes").value = pessoa.aniversario_mes || "1";
+
+            var btn = document.getElementById("btn-add-aniversariante");
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Salvar Alterações';
+
+            var btnCancel = document.getElementById("btn-cancelar-edicao-aniv");
+            if (btnCancel) btnCancel.classList.remove("hidden");
+
+            var titulo = document.getElementById("form-aniv-titulo");
+            if (titulo) titulo.innerText = 'EDITANDO ANIVERSARIANTE';
+
+            var formContainer = document.getElementById("admin-aniv-nome");
+            if (formContainer) formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function cancelarEdicaoAniversariante() {
+            aniversarianteSendoEditadoId = null;
+            document.getElementById("admin-aniv-nome").value = "";
+            document.getElementById("admin-aniv-sobrenome").value = "";
+            document.getElementById("admin-aniv-dia").value = "";
+            document.getElementById("admin-aniv-mes").value = "1";
+
+            var btn = document.getElementById("btn-add-aniversariante");
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-plus"></i> Cadastrar Aniversariante';
+
+            var btnCancel = document.getElementById("btn-cancelar-edicao-aniv");
+            if (btnCancel) btnCancel.classList.add("hidden");
+
+            var titulo = document.getElementById("form-aniv-titulo");
+            if (titulo) titulo.innerText = 'CADASTRAR ANIVERSARIANTE';
         }
 
         async function excluirAniversarianteAdmin(id) {
@@ -3003,6 +3075,7 @@
             try {
                 const { error } = await supabaseClient.from('aniversariantes').delete().eq('id', id);
                 if (error) { alert("Erro ao excluir: " + error.message); return; }
+                if (String(aniversarianteSendoEditadoId) === String(id)) cancelarEdicaoAniversariante();
                 carregarListaAniversariantesAdmin();
             } catch (e) {
                 alert("Erro: " + String(e && e.message ? e.message : e));
@@ -3292,6 +3365,7 @@
         }
 
         function abrirPainelAdminDeVerdade() {
+            ajustarAlturaRealViewport();
             var adminModal = document.getElementById("admin-modal"); if (adminModal) adminModal.classList.remove("hidden");
             document.body.classList.add("overflow-hidden");
             
@@ -3310,6 +3384,7 @@
         function closeAdminStats() { 
             var adminModal = document.getElementById("admin-modal"); if (adminModal) adminModal.classList.add("hidden"); 
             document.body.classList.remove("overflow-hidden");
+            cancelarEdicaoAniversariante();
         }
 
         function switchAdminTab(tabName) {
