@@ -809,6 +809,62 @@
         </div>
     </div>
 
+    <!-- MODAL CADASTRO DE ANIVERSARIANTE (não-bloqueante, lembrete recorrente) -->
+    <div id="cadastro-aniv-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[75] hidden flex items-center justify-center p-4 no-print">
+        <div class="max-w-sm w-full modal-animate-slide">
+            <div class="premium-detail-card rounded-[20px] p-5 sm:p-6 text-center relative overflow-hidden" style="--accent:#cf83a3">
+                <div class="absolute top-0 left-0 right-0 h-[3px]" style="background:linear-gradient(90deg, transparent, var(--accent), transparent)"></div>
+                <button type="button" onclick="fecharModalCadastroAniversariante()" class="absolute top-3 right-3 text-[11px] w-7 h-7 rounded-full border flex items-center justify-center transition hover:scale-110 active:scale-95 z-30" style="color:var(--accent); border-color:var(--accent); opacity:0.85">&times;</button>
+
+                <div class="relative w-14 h-14 mx-auto mt-1 z-10">
+                    <div class="premium-medallion-ring w-full h-full rounded-full bg-[#0d0b08] flex items-center justify-center overflow-hidden">
+                        <i class="fa-solid fa-cake-candles text-2xl" style="color:var(--accent)"></i>
+                    </div>
+                </div>
+
+                <div class="mt-3 space-y-1 z-10 relative">
+                    <span class="premium-badge-tag text-[9px] uppercase font-cinzel font-bold tracking-[0.35em] items-center gap-2 inline-flex" style="color:var(--accent)">
+                        <span class="premium-diamond"></span>SEU ANIVERSÁRIO<span class="premium-diamond"></span>
+                    </span>
+                    <h3 class="text-lg sm:text-xl font-serif font-bold text-[#f3e7cf] tracking-tight pt-1">Quer receber uma saudação da casa no seu dia?</h3>
+                    <p class="text-[#d9c9a3]/80 text-xs sm:text-[13px] pt-1">Cadastre seu nome e data de nascimento e a comunidade vai te homenagear automaticamente. Leva 10 segundos.</p>
+                </div>
+
+                <div class="relative z-10 mt-4 space-y-2.5 text-left">
+                    <input type="text" id="cadastro-aniv-nome" placeholder="Seu nome" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition">
+                    <input type="text" id="cadastro-aniv-sobrenome" placeholder="Seu sobrenome" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition">
+                    <div class="flex gap-2.5">
+                        <input type="number" min="1" max="31" id="cadastro-aniv-dia" placeholder="Dia" class="w-1/2 p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition">
+                        <select id="cadastro-aniv-mes" class="w-1/2 p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] text-sm outline-none focus:border-[color:var(--accent)] transition">
+                            <option value="" class="bg-stone-800">Mês</option>
+                            <option value="1" class="bg-stone-800">Janeiro</option><option value="2" class="bg-stone-800">Fevereiro</option>
+                            <option value="3" class="bg-stone-800">Março</option><option value="4" class="bg-stone-800">Abril</option>
+                            <option value="5" class="bg-stone-800">Maio</option><option value="6" class="bg-stone-800">Junho</option>
+                            <option value="7" class="bg-stone-800">Julho</option><option value="8" class="bg-stone-800">Agosto</option>
+                            <option value="9" class="bg-stone-800">Setembro</option><option value="10" class="bg-stone-800">Outubro</option>
+                            <option value="11" class="bg-stone-800">Novembro</option><option value="12" class="bg-stone-800">Dezembro</option>
+                        </select>
+                    </div>
+                </div>
+                <p id="cadastro-aniv-erro" class="text-red-400 text-[11px] font-semibold mt-2 hidden"></p>
+
+                <div class="mt-4 z-10 relative space-y-2">
+                    <button type="button" id="btn-salvar-cadastro-aniv" onclick="salvarCadastroAniversariante()" class="premium-cta w-full py-3 active:scale-95 font-bold rounded-full text-xs transition-all duration-300 tracking-[0.15em] uppercase font-cinzel cursor-pointer">
+                        <i class="fa-solid fa-check text-sm"></i> Confirmar Cadastro
+                    </button>
+                    <button type="button" onclick="fecharModalCadastroAniversariante()" class="w-full py-2 text-[11px] text-stone-400 hover:text-stone-200 transition font-semibold">Agora não, me lembre depois</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CARTÃO DE ANIVERSARIANTES DO DIA -->
+    <div id="aniversario-hoje-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[76] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalAniversariantesHoje()">
+        <div class="max-w-sm w-full modal-animate-slide" onclick="event.stopPropagation()">
+            <div id="aniversario-hoje-modal-content"></div>
+        </div>
+    </div>
+
     <!-- MODAL SUCESSO PRESENÇA -->
     <div id="sucesso-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4 no-print">
         <div id="sucesso-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-emerald-400">
@@ -952,6 +1008,9 @@
                     </button>
                     <button id="tab-btn-notificacoes" onclick="switchAdminTab('notificacoes')" class="px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-amber-600 transition flex items-center gap-1.5 text-xs sm:text-sm">
                         <i class="fa-solid fa-bell text-amber-500"></i> Disparar Notificações (APK/PWA)
+                    </button>
+                    <button id="tab-btn-aniversariantes" onclick="switchAdminTab('aniversariantes')" class="px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-pink-600 transition flex items-center gap-1.5 text-xs sm:text-sm">
+                        <i class="fa-solid fa-cake-candles text-pink-500"></i> Aniversariantes
                     </button>
                 </div>
             </div>
@@ -1561,6 +1620,58 @@
                                 </div>
                                 <div id="notificacoes-historico-lista" class="max-h-[300px] overflow-y-auto pr-1"></div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-content-aniversariantes" class="space-y-4 hidden pb-4 font-sans">
+                    <div class="bg-white p-4 sm:p-6 rounded-2xl border border-stone-200/90 shadow-sm space-y-4">
+                        <div class="flex items-center gap-3 border-b border-stone-100 pb-3">
+                            <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-600 border border-pink-400/40 flex items-center justify-center text-lg font-bold shadow-xs">
+                                <i class="fa-solid fa-cake-candles"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-serif font-bold text-stone-900 text-sm sm:text-base">CADASTRAR ANIVERSARIANTE</h4>
+                                <p class="text-stone-500 text-xs font-medium">Pra filhos da casa que não usam o app, cadastre aqui manualmente</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                            <div class="sm:col-span-1">
+                                <label class="font-bold text-stone-800 block mb-1">Nome *</label>
+                                <input type="text" id="admin-aniv-nome" placeholder="Ex: Camila" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label class="font-bold text-stone-800 block mb-1">Sobrenome *</label>
+                                <input type="text" id="admin-aniv-sobrenome" placeholder="Ex: Souza" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label class="font-bold text-stone-800 block mb-1">Dia *</label>
+                                <input type="number" min="1" max="31" id="admin-aniv-dia" placeholder="08" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label class="font-bold text-stone-800 block mb-1">Mês *</label>
+                                <select id="admin-aniv-mes" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition bg-white">
+                                    <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option>
+                                    <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option>
+                                    <option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option>
+                                    <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" onclick="adicionarAniversarianteAdmin()" id="btn-add-aniversariante" class="w-full sm:w-auto px-5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Cadastrar Aniversariante
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between border-b border-stone-100 pb-2">
+                            <h5 class="font-bold text-stone-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-list text-pink-600"></i> Todos os Cadastrados
+                            </h5>
+                            <span id="aniv-contador-total" class="text-[10px] font-bold text-stone-500"></span>
+                        </div>
+                        <div id="admin-aniversariantes-lista" class="max-h-[420px] overflow-y-auto pr-1 space-y-2">
+                            <p class="text-xs text-stone-400 italic p-3 text-center"><i class="fa-solid fa-spinner fa-spin"></i> Carregando...</p>
                         </div>
                     </div>
                 </div>
@@ -2655,6 +2766,249 @@
             if (modal) modal.classList.add("hidden");
         }
 
+        // ====================================================================
+        // SISTEMA DE ANIVERSARIANTES
+        // ====================================================================
+
+        // ---- Cadastro (não-bloqueante, com lembrete recorrente a cada visita) ----
+        function abrirModalCadastroAniversariante() {
+            var modal = document.getElementById("cadastro-aniv-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalCadastroAniversariante() {
+            var modal = document.getElementById("cadastro-aniv-modal");
+            if (modal) modal.classList.add("hidden");
+            try { sessionStorage.setItem("aniv_cadastro_dispensado_sessao", "1"); } catch (e) {}
+        }
+
+        function verificarCadastroAniversarianteAoAbrir() {
+            try {
+                var jaCadastrado = localStorage.getItem("aniv_cadastrado") === "1";
+                var dispensadoNaSessao = sessionStorage.getItem("aniv_cadastro_dispensado_sessao") === "1";
+                if (!jaCadastrado && !dispensadoNaSessao) {
+                    setTimeout(function () { abrirModalCadastroAniversariante(); }, 1200);
+                }
+            } catch (e) {}
+        }
+
+        async function salvarCadastroAniversariante() {
+            var nome = document.getElementById("cadastro-aniv-nome").value.trim();
+            var sobrenome = document.getElementById("cadastro-aniv-sobrenome").value.trim();
+            var dia = parseInt(document.getElementById("cadastro-aniv-dia").value, 10);
+            var mes = parseInt(document.getElementById("cadastro-aniv-mes").value, 10);
+            var elErro = document.getElementById("cadastro-aniv-erro");
+
+            if (!nome || !sobrenome || !dia || !mes || dia < 1 || dia > 31 || mes < 1 || mes > 12) {
+                if (elErro) { elErro.textContent = "Preencha nome, sobrenome, dia e mês corretamente."; elErro.classList.remove("hidden"); }
+                return;
+            }
+            if (elErro) elErro.classList.add("hidden");
+            if (!supabaseClient) {
+                if (elErro) { elErro.textContent = "Sem conexão com o banco de dados no momento. Tente de novo em instantes."; elErro.classList.remove("hidden"); }
+                return;
+            }
+
+            var btn = document.getElementById("btn-salvar-cadastro-aniv");
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...'; }
+
+            try {
+                const { error } = await supabaseClient.from('aniversariantes').insert([{
+                    nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, ativo: true
+                }]);
+                if (error) {
+                    if (elErro) { elErro.textContent = "Não foi possível salvar: " + (error.message || "erro desconhecido"); elErro.classList.remove("hidden"); }
+                } else {
+                    localStorage.setItem("aniv_cadastrado", "1");
+                    fecharModalCadastroAniversariante();
+                    verificarAniversariantesHoje();
+                }
+            } catch (e) {
+                if (elErro) { elErro.textContent = String(e && e.message ? e.message : e); elErro.classList.remove("hidden"); }
+            }
+
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-check text-sm"></i> Confirmar Cadastro'; }
+        }
+
+        // ---- Cartão premium animado dos aniversariantes de hoje ----
+        async function verificarAniversariantesHoje() {
+            if (!supabaseClient) return;
+            var hoje = new Date();
+            var diaHoje = hoje.getDate();
+            var mesHoje = hoje.getMonth() + 1;
+            var chaveVisto = "aniv_visto_" + hoje.getFullYear() + "-" + mesHoje + "-" + diaHoje;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('aniversariantes')
+                    .select('nome, sobrenome')
+                    .eq('aniversario_dia', diaHoje)
+                    .eq('aniversario_mes', mesHoje)
+                    .eq('ativo', true);
+
+                if (error || !data || data.length === 0) return;
+
+                renderizarCardAniversario(data);
+
+                var veioDoPush = window.location.hash === "#aniversariantes-hoje";
+                var jaVistoHoje = false;
+                try { jaVistoHoje = sessionStorage.getItem(chaveVisto) === "1"; } catch (e) {}
+                if (!jaVistoHoje || veioDoPush) {
+                    try { sessionStorage.setItem(chaveVisto, "1"); } catch (e) {}
+                    setTimeout(function () { abrirModalAniversariantesHoje(); }, veioDoPush ? 400 : 1600);
+                }
+            } catch (e) {
+                console.warn("Erro ao verificar aniversariantes de hoje:", e);
+            }
+        }
+
+        function renderizarCardAniversario(pessoas) {
+            var nomes = pessoas.map(function (p) { return p.nome; });
+            var listaNomesHtml = pessoas.map(function (p) {
+                return '<div class="premium-plate rounded-xl p-3 text-left flex items-center gap-3">' +
+                            '<div class="w-9 h-9 rounded-full flex items-center justify-center text-sm flex-shrink-0" style="background:color-mix(in srgb, var(--accent) 20%, transparent); color:var(--accent)"><i class="fa-solid fa-cake-candles"></i></div>' +
+                            '<strong class="text-[#f3e7cf] font-bold text-sm sm:text-base font-serif">' + p.nome + ' ' + p.sobrenome + '</strong>' +
+                        '</div>';
+            }).join('<div class="h-2"></div>');
+
+            var tituloCard = pessoas.length === 1 ? 'Hoje é aniversário de' : 'Hoje são aniversariantes';
+
+            var html = '<div class="premium-detail-card rounded-[20px] sm:rounded-[22px] p-5 sm:p-6 text-center relative overflow-hidden max-h-[92vh] max-h-[92dvh] overflow-y-auto" style="--accent:#cf83a3">' +
+                '<div class="absolute top-0 left-0 right-0 h-[3px]" style="background:linear-gradient(90deg, transparent, var(--accent), transparent)"></div>' +
+                '<button type="button" onclick="fecharModalAniversariantesHoje()" class="absolute top-3 right-3 text-[11px] w-7 h-7 rounded-full border flex items-center justify-center transition hover:scale-110 active:scale-95 z-30" style="color:var(--accent); border-color:var(--accent); opacity:0.85">&times;</button>' +
+                '<div class="relative z-10 pt-1">' +
+                    '<span class="premium-badge-tag text-[10px] uppercase font-cinzel font-bold tracking-[0.35em] items-center gap-2 inline-flex" style="color:var(--accent)"><span class="premium-diamond"></span>CELEBRAÇÃO DA CASA<span class="premium-diamond"></span></span>' +
+                '</div>' +
+                '<div class="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto mt-4 z-10">' +
+                    '<div class="premium-medallion-ring w-full h-full rounded-full bg-[#0d0b08] flex items-center justify-center overflow-hidden">' +
+                        '<i class="fa-solid fa-cake-candles text-3xl sm:text-4xl" style="color:var(--accent)"></i>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="mt-3 space-y-1 z-10 relative">' +
+                    '<h3 class="text-xl sm:text-2xl font-serif font-bold text-[#f3e7cf] tracking-tight">' + tituloCard + '</h3>' +
+                    '<div class="premium-rule w-14 mx-auto mt-2"></div>' +
+                '</div>' +
+                '<div class="relative z-10 mt-4 space-y-2">' + listaNomesHtml + '</div>' +
+                '<div class="z-10 relative mt-4">' +
+                    '<div class="premium-quote-block py-3 px-1">' +
+                        '<p class="font-sans font-medium text-[#f7ecd4] text-sm sm:text-base leading-relaxed tracking-wide">' +
+                            '<span style="color:var(--accent)" class="not-italic">“</span>Que os Orixás e a proteção dos Guias abençoem sua caminhada com muita luz, saúde e axé!<span style="color:var(--accent)" class="not-italic">”</span>' +
+                        '</p>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+            var container = document.getElementById("aniversario-hoje-modal-content");
+            if (container) container.innerHTML = html;
+        }
+
+        function abrirModalAniversariantesHoje() {
+            var modal = document.getElementById("aniversario-hoje-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalAniversariantesHoje() {
+            var modal = document.getElementById("aniversario-hoje-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        // ---- CRUD administrativo ----
+        async function carregarListaAniversariantesAdmin() {
+            var container = document.getElementById("admin-aniversariantes-lista");
+            var contador = document.getElementById("aniv-contador-total");
+            if (!container) return;
+            if (!supabaseClient) { container.innerHTML = '<p class="text-xs text-stone-500 italic p-3 text-center">Supabase não inicializado.</p>'; return; }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('aniversariantes')
+                    .select('*')
+                    .order('aniversario_mes', { ascending: true })
+                    .order('aniversario_dia', { ascending: true });
+
+                if (error) { container.innerHTML = '<p class="text-xs text-red-500 italic p-3 text-center">Erro ao carregar. Verifique se a tabela "aniversariantes" foi criada no Supabase.</p>'; return; }
+                if (!data || data.length === 0) { container.innerHTML = '<p class="text-xs text-stone-500 italic p-3 text-center"><i class="fa-solid fa-cake-candles text-pink-400 block text-base mb-1"></i> Nenhum aniversariante cadastrado ainda.</p>'; return; }
+
+                if (contador) contador.textContent = data.length + ' cadastrado(s)';
+
+                var MESES_NOMES = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+                var MESES_ABREV = ['', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+                var html = '';
+                var mesAtualNoLoop = null;
+                data.forEach(function (p) {
+                    if (p.aniversario_mes !== mesAtualNoLoop) {
+                        mesAtualNoLoop = p.aniversario_mes;
+                        html += '<div class="flex items-center gap-2 pt-3 pb-1 first:pt-0">' +
+                                    '<span class="text-[11px] font-black text-pink-700 uppercase tracking-widest font-cinzel">' + MESES_NOMES[mesAtualNoLoop] + '</span>' +
+                                    '<div class="flex-1 h-px bg-pink-200"></div>' +
+                                '</div>';
+                    }
+                    var diaFmt = String(p.aniversario_dia).padStart(2, '0');
+                    html += '<div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border ' + (p.ativo ? 'border-stone-200 bg-white' : 'border-stone-200 bg-stone-100 opacity-60') + '">' +
+                            '<div class="flex items-center gap-2.5 min-w-0">' +
+                                '<div class="w-9 h-9 rounded-lg bg-pink-100 text-pink-700 flex flex-col items-center justify-center text-[10px] font-black leading-none flex-shrink-0">' +
+                                    '<span>' + diaFmt + '</span><span class="text-[8px] font-bold uppercase">' + MESES_ABREV[p.aniversario_mes] + '</span>' +
+                                '</div>' +
+                                '<span class="font-bold text-stone-800 text-xs sm:text-sm truncate">' + p.nome + ' ' + p.sobrenome + '</span>' +
+                            '</div>' +
+                            '<div class="flex items-center gap-1.5 flex-shrink-0">' +
+                                '<button onclick="excluirAniversarianteAdmin(\'' + p.id + '\')" title="Excluir" class="w-7 h-7 rounded-lg text-red-600 hover:bg-red-50 border border-red-200 flex items-center justify-center text-xs transition"><i class="fa-solid fa-trash"></i></button>' +
+                            '</div>' +
+                           '</div>';
+                });
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p class="text-xs text-red-500 italic p-3 text-center">Erro: ' + String(e && e.message ? e.message : e) + '</p>';
+            }
+        }
+
+        async function adicionarAniversarianteAdmin() {
+            var nome = document.getElementById("admin-aniv-nome").value.trim();
+            var sobrenome = document.getElementById("admin-aniv-sobrenome").value.trim();
+            var dia = parseInt(document.getElementById("admin-aniv-dia").value, 10);
+            var mes = parseInt(document.getElementById("admin-aniv-mes").value, 10);
+
+            if (!nome || !sobrenome || !dia || dia < 1 || dia > 31) {
+                alert("Preencha nome, sobrenome e um dia válido (1 a 31).");
+                return;
+            }
+            if (!supabaseClient) { alert("Supabase não inicializado."); return; }
+
+            var btn = document.getElementById("btn-add-aniversariante");
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cadastrando...'; }
+
+            try {
+                const { error } = await supabaseClient.from('aniversariantes').insert([{
+                    nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, ativo: true
+                }]);
+                if (error) {
+                    alert("Não foi possível cadastrar: " + (error.message || JSON.stringify(error)));
+                } else {
+                    document.getElementById("admin-aniv-nome").value = "";
+                    document.getElementById("admin-aniv-sobrenome").value = "";
+                    document.getElementById("admin-aniv-dia").value = "";
+                    carregarListaAniversariantesAdmin();
+                }
+            } catch (e) {
+                alert("Erro: " + String(e && e.message ? e.message : e));
+            }
+
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-plus"></i> Cadastrar Aniversariante'; }
+        }
+
+        async function excluirAniversarianteAdmin(id) {
+            if (!supabaseClient || !id) return;
+            if (!confirm("Tem certeza que deseja excluir esse aniversariante da lista?")) return;
+            try {
+                const { error } = await supabaseClient.from('aniversariantes').delete().eq('id', id);
+                if (error) { alert("Erro ao excluir: " + error.message); return; }
+                carregarListaAniversariantesAdmin();
+            } catch (e) {
+                alert("Erro: " + String(e && e.message ? e.message : e));
+            }
+        }
+
         function renderizarGradeCalendario(mesAno) {
             var gridContainer = document.getElementById("grid-dias-calendario"); if (!gridContainer) return;
             var details = getMonthDetails(mesAno); var prevMonthTotalDays = new Date(details.ano, details.mNum, 0).getDate();
@@ -2962,44 +3316,44 @@
             var tabStats = document.getElementById("tab-content-stats"); 
             var tabMontar = document.getElementById("tab-content-montar");
             var tabNotif = document.getElementById("tab-content-notificacoes");
+            var tabAniv = document.getElementById("tab-content-aniversariantes");
 
             var btnStats = document.getElementById("tab-btn-stats"); 
             var btnMontar = document.getElementById("tab-btn-montar");
             var btnNotif = document.getElementById("tab-btn-notificacoes");
+            var btnAniv = document.getElementById("tab-btn-aniversariantes");
+
+            var CLASSE_INATIVA = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+            var CLASSE_ATIVA_VERDE = "px-3 sm:px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+            var CLASSE_ATIVA_AMBAR = "px-3 sm:px-4 py-2 font-bold text-amber-600 border-b-2 border-amber-500 transition flex items-center gap-1.5 text-xs sm:text-sm";
+            var CLASSE_ATIVA_ROSA = "px-3 sm:px-4 py-2 font-bold text-pink-600 border-b-2 border-pink-500 transition flex items-center gap-1.5 text-xs sm:text-sm";
+
+            [tabStats, tabMontar, tabNotif, tabAniv].forEach(function(t){ if (t) t.classList.add("hidden"); });
+            [btnStats, btnMontar, btnNotif, btnAniv].forEach(function(b){ if (b) b.className = CLASSE_INATIVA; });
 
             if (tabName === 'montar') {
-                tabStats.classList.add("hidden"); 
-                if (tabNotif) tabNotif.classList.add("hidden");
                 tabMontar.classList.remove("hidden");
-
-                btnStats.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
-                if (btnNotif) btnNotif.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
-                btnMontar.className = "px-3 sm:px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+                btnMontar.className = CLASSE_ATIVA_VERDE;
                 
                 carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
                 atualizarInfoDiaDigitado();
                 atualizarPrevisualizacao();
                 atualizarIndicadoresPassos();
             } else if (tabName === 'notificacoes') {
-                tabStats.classList.add("hidden"); 
-                tabMontar.classList.add("hidden");
                 if (tabNotif) tabNotif.classList.remove("hidden");
-
-                btnStats.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
-                btnMontar.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
-                if (btnNotif) btnNotif.className = "px-3 sm:px-4 py-2 font-bold text-amber-600 border-b-2 border-amber-500 transition flex items-center gap-1.5 text-xs sm:text-sm";
+                if (btnNotif) btnNotif.className = CLASSE_ATIVA_AMBAR;
                 
                 carregarHistoricoNotificacoesAdmin();
                 carregarNotificacoesAgendadas();
                 solicitarPermissaoNotificacaoNativa();
-            } else {
-                tabMontar.classList.add("hidden"); 
-                if (tabNotif) tabNotif.classList.add("hidden");
-                tabStats.classList.remove("hidden");
+            } else if (tabName === 'aniversariantes') {
+                if (tabAniv) tabAniv.classList.remove("hidden");
+                if (btnAniv) btnAniv.className = CLASSE_ATIVA_ROSA;
 
-                btnMontar.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
-                if (btnNotif) btnNotif.className = "px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
-                btnStats.className = "px-3 sm:px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm";
+                carregarListaAniversariantesAdmin();
+            } else {
+                tabStats.classList.remove("hidden");
+                btnStats.className = CLASSE_ATIVA_VERDE;
             }
         }
 
@@ -4217,6 +4571,10 @@
             escutarEventosEmTempoReal();
             escutarNotificacoesEmTempoReal();
             verificarPermissaoNotificacaoAoCarregar();
+
+            /* ===== SISTEMA DE ANIVERSARIANTES ===== */
+            verificarAniversariantesHoje();
+            setTimeout(function() { verificarCadastroAniversarianteAoAbrir(); }, 4500);
 
             /* ===== AJUSTE PARA O TECLADO DO CELULAR NÃO CORTAR CAMPOS/BOTÕES ===== */
             document.addEventListener('focusin', function (e) {
