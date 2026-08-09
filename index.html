@@ -133,7 +133,7 @@
     <script>
         (function() {
             // AUMENTE ESSE NÚMERO/TEXTO SEMPRE QUE PUBLICAR UMA ATUALIZAÇÃO NO index.html
-            var APP_VERSION = "2026-08-09.5";
+            var APP_VERSION = "2026-08-09.8";
             try {
                 var versaoSalva = localStorage.getItem("app_versao_atual");
                 if (versaoSalva !== APP_VERSION) {
@@ -1844,17 +1844,17 @@
     </div>
 
     <!-- CARTAZ PRINCIPAL -->
-    <div class="print-container max-w-5xl mx-auto bg-umbanda-cream rounded-xl sm:rounded-2xl shadow-xl border border-amber-900/10 relative">
-        <div class="h-1.5 sm:h-2 bg-gradient-to-r from-umbanda-green via-umbanda-gold to-umbanda-green rounded-t-xl sm:rounded-t-2xl"></div>
+    <div class="print-container max-w-5xl mx-auto bg-umbanda-cream rounded-xl sm:rounded-2xl shadow-xl border border-amber-900/10 relative overflow-hidden">
+        <div class="h-1.5 sm:h-2 bg-gradient-to-r from-umbanda-green via-umbanda-gold to-umbanda-green"></div>
 
         <header class="p-0 text-center relative border-b border-amber-900/10 bg-[#fdfaf3] overflow-hidden">
-            <div onclick="abrirModalZoomBanner()" title="Clique para ampliar o banner" class="w-full relative overflow-hidden cursor-zoom-in group flex items-center justify-center p-1 sm:p-0">
+            <div onclick="abrirModalZoomBanner()" title="Clique para ampliar o banner" class="w-full relative overflow-hidden cursor-zoom-in group flex items-center justify-center">
                 <picture class="w-full block overflow-hidden">
                     <source media="(max-width: 639px)" srcset="https://lh3.googleusercontent.com/d/1L7NUC6mEVvIit2ASNPfNp8G66uGVLW9s">
                     <img id="drive-header-banner" 
                          src="https://lh3.googleusercontent.com/d/1ui9CS1TIpXVsOGomqIRrK8Z3Jt5M2WZE" 
                          alt="Banner Templo de Umbanda Vovó Maria Conga" 
-                         class="w-full h-auto object-cover sm:object-cover object-center block transition duration-300 group-hover:scale-102 scale-125 sm:scale-100 my-4 sm:my-0"
+                         class="w-full h-auto object-cover sm:object-cover object-center block transition duration-300 group-hover:scale-102 scale-125 sm:scale-100"
                          onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=1L7NUC6mEVvIit2ASNPfNp8G66uGVLW9s&sz=w1000';">
                 </picture>
                 <div class="shine-effect"></div>
@@ -1968,6 +1968,7 @@
             <span>© 2026 Templo de Umbanda Vovó Maria Conga - Todos os direitos reservados.</span>
             <span class="text-stone-500"><i class="fa-solid fa-leaf text-umbanda-gold"></i> Fé, Amor e Caridade</span>
         </footer>
+        <div class="h-1.5 sm:h-2 bg-gradient-to-r from-umbanda-green via-umbanda-gold to-umbanda-green"></div>
     </div>
 
     <!-- JS separado em arquivos externos (ordem importa: variaveis/funcoes globais compartilhadas) -->
@@ -3817,6 +3818,13 @@
             console.log("[NOTIF-DEBUG] Registro NOVO encontrado, processando:", notif);
             ULTIMO_ID_NOTIFICACAO_EXIBIDO = idStr;
             localStorage.setItem("ultimo_id_notificacao_exibido", idStr);
+
+            // Notificação de aniversário: abre direto o card bonito de "Hoje é aniversário de..."
+            // em vez do aviso genérico, pra quem já está com o site aberto na hora do disparo.
+            if (notif.categoria === "aniversario") {
+                verificarAniversariantesHoje();
+                return;
+            }
 
             exibirToastNotificacaoCliente(notif);
         }
