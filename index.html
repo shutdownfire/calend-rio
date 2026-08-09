@@ -177,7 +177,7 @@
         }
         .premium-medallion-ring {
             border: 1px solid rgba(216,178,100,0.55);
-            box-shadow: 0 0 0 5px rgba(216,178,100,0.07), 0 10px 22px rgba(0,0,0,0.55);
+            box-shadow: 0 0 0 5px rgba(216,178,100,0.07), 0 10px 22px rgba(0,0,0,0.55), 0 0 26px -4px color-mix(in srgb, var(--accent) 65%, transparent);
         }
         .premium-rule {
             height: 1px;
@@ -186,6 +186,7 @@
         .premium-plate {
             background: linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0) 45%), #110d08;
             border: 1px solid rgba(216,178,100,0.38);
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent) inset, 0 14px 30px -16px color-mix(in srgb, var(--accent) 55%, transparent);
         }
         .premium-corner {
             position: absolute; width: 9px; height: 9px;
@@ -202,6 +203,20 @@
         .premium-quote-block {
             border-top: 1px solid rgba(216,178,100,0.28);
             border-bottom: 1px solid rgba(216,178,100,0.28);
+        }
+        .premium-badge-tag {
+            display: inline-flex;
+            background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 20%, transparent), color-mix(in srgb, var(--accent) 6%, transparent));
+            border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+            border-radius: 9999px;
+            padding: 5px 14px;
+            box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--accent) 60%, transparent);
+        }
+        .premium-saudacao-quote {
+            background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 75%);
+            border-left: 2px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 8px 10px;
         }
         .premium-cta {
             display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -2566,10 +2581,12 @@
                 : '';
             var fraseAutomaticaExtraHtml = temObservacaoCustom
                 ? `<div class="mt-3 pt-3 border-t" style="border-color:rgba(216,178,100,0.18)">
-                        <span class="text-[8px] uppercase font-cinzel font-bold tracking-[0.3em] block mb-1.5 opacity-70" style="color:var(--accent)">Saudação da Linha</span>
-                        <p class="font-serif italic text-[#d9c9a3]/65 text-xs sm:text-[13px] leading-relaxed">
-                            “${estilo.saudacao}”
-                        </p>
+                        <span class="text-[8px] uppercase font-cinzel font-bold tracking-[0.3em] inline-flex items-center gap-1.5 mb-1.5" style="color:var(--accent)"><span class="premium-diamond"></span>Saudação da Linha</span>
+                        <div class="premium-saudacao-quote">
+                            <p class="font-serif italic text-[#f3e7cf]/95 text-xs sm:text-[13px] leading-relaxed text-left">
+                                <span style="color:var(--accent)" class="not-italic">“</span>${estilo.saudacao}<span style="color:var(--accent)" class="not-italic">”</span>
+                            </p>
+                        </div>
                    </div>`
                 : '';
 
@@ -2581,7 +2598,7 @@
                         <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-[11px] w-7 h-7 rounded-full border flex items-center justify-center transition hover:scale-110 active:scale-95 z-30" style="color:var(--accent); border-color:var(--accent); opacity:0.85">&times;</button>
 
                         <div class="relative z-10 pt-1">
-                            <span class="text-[9px] sm:text-[10px] uppercase font-cinzel font-bold tracking-[0.35em] inline-flex items-center gap-2" style="color:var(--accent)">
+                            <span class="premium-badge-tag text-[9px] sm:text-[10px] uppercase font-cinzel font-bold tracking-[0.35em] items-center gap-2" style="color:var(--accent)">
                                 <span class="premium-diamond"></span>${estilo.linhaTag}<span class="premium-diamond"></span>
                             </span>
                         </div>
@@ -2605,7 +2622,7 @@
                                 <div class="premium-corner premium-corner-bl"></div>
                                 <div class="premium-corner premium-corner-br"></div>
                                 <span class="text-[8px] sm:text-[9px] uppercase font-cinzel font-bold tracking-[0.3em] block mb-1" style="color:var(--accent)">GIRA DE</span>
-                                <h4 class="font-serif font-bold text-[#f3e7cf] text-base sm:text-lg tracking-wide uppercase leading-snug">${ev.titulo.replace('Gira de ', '')}</h4>
+                                <h4 class="font-serif font-bold text-[#f3e7cf] text-base sm:text-lg tracking-wide uppercase leading-snug" style="text-shadow:0 0 18px color-mix(in srgb, var(--accent) 45%, transparent)">${ev.titulo.replace('Gira de ', '')}</h4>
                             </div>
                         </div>
 
@@ -3801,16 +3818,18 @@
             var temObservacaoCustomPrev = descricaoDigitada !== "";
             var descTextoPrev = temObservacaoCustomPrev ? descricaoDigitada : estilo.saudacao;
             var fraseAutomaticaExtraPrevHtml = temObservacaoCustomPrev
-                ? `<p class="font-sans font-medium text-[#f0e3c8] text-sm sm:text-base leading-relaxed tracking-wide mt-2.5">
-                        <span style="color:var(--accent)" class="not-italic">“</span>${estilo.saudacao}<span style="color:var(--accent)" class="not-italic">”</span>
-                   </p>`
+                ? `<div class="premium-saudacao-quote mt-2.5">
+                        <p class="font-serif italic text-[#f3e7cf]/95 text-sm sm:text-base leading-relaxed tracking-wide text-left">
+                            <span style="color:var(--accent)" class="not-italic">“</span>${estilo.saudacao}<span style="color:var(--accent)" class="not-italic">”</span>
+                        </p>
+                   </div>`
                 : '';
 
             prevBox.innerHTML = `
                 <div class="premium-detail-card rounded-[24px] p-5 sm:p-6 text-center relative overflow-hidden" style="--accent:${estilo.accent}">
                     <div class="absolute top-0 left-0 right-0 h-[3px]" style="background:linear-gradient(90deg, transparent, var(--accent), transparent)"></div>
 
-                    <span class="text-[10px] uppercase font-cinzel font-bold tracking-[0.35em] inline-flex items-center gap-2 pt-1" style="color:var(--accent)">
+                    <span class="premium-badge-tag text-[10px] uppercase font-cinzel font-bold tracking-[0.35em] items-center gap-2" style="color:var(--accent)">
                         <span class="premium-diamond"></span>${estilo.linhaTag}<span class="premium-diamond"></span>
                     </span>
 
@@ -3833,7 +3852,7 @@
                             <div class="premium-corner premium-corner-bl"></div>
                             <div class="premium-corner premium-corner-br"></div>
                             <span class="text-[8px] uppercase font-cinzel font-bold tracking-[0.3em] block mb-1" style="color:var(--accent)">GIRA DE</span>
-                            <h4 class="font-serif font-bold text-[#f3e7cf] text-lg sm:text-xl tracking-wide uppercase leading-snug">${titulo ? titulo.replace('Gira de ', '') : 'SELECIONE O TÍTULO'}</h4>
+                            <h4 class="font-serif font-bold text-[#f3e7cf] text-lg sm:text-xl tracking-wide uppercase leading-snug" style="text-shadow:0 0 18px color-mix(in srgb, var(--accent) 45%, transparent)">${titulo ? titulo.replace('Gira de ', '') : 'SELECIONE O TÍTULO'}</h4>
                         </div>
                     </div>
 
