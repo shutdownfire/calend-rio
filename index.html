@@ -265,6 +265,45 @@
             border: 1px solid rgba(110,200,150,0.5);
             color: #a9e6bf;
         }
+
+        /* ===== DECORAÇÃO DE FESTA — BALÕES E CONFETE (card de aniversariante) ===== */
+        @keyframes festaBalaoFloat {
+            0%, 100% { transform: translateY(0) rotate(-4deg); }
+            50% { transform: translateY(-12px) rotate(4deg); }
+        }
+        @keyframes festaConfeteBrilho {
+            0%, 100% { opacity: 0.18; transform: scale(0.75) rotate(0deg); }
+            50% { opacity: 0.95; transform: scale(1.15) rotate(25deg); }
+        }
+        .festa-decoracao { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
+        .festa-balao {
+            position: absolute;
+            border-radius: 50% 50% 46% 46%;
+            animation: festaBalaoFloat 4.2s ease-in-out infinite;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.4));
+            opacity: 0.9;
+        }
+        .festa-balao::after {
+            content: '';
+            position: absolute;
+            left: 50%; top: 100%;
+            width: 1px; height: 20px;
+            background: rgba(255,255,255,0.22);
+            transform: translateX(-50%);
+        }
+        .festa-confete {
+            position: absolute;
+            border-radius: 2px;
+            animation: festaConfeteBrilho 2.6s ease-in-out infinite;
+        }
+        .festa-bandeirinhas { display: flex; justify-content: center; align-items: flex-start; gap: 5px; }
+        .festa-bandeira {
+            width: 0; height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 9px solid var(--cor-bandeira);
+            opacity: 0.9;
+        }
         .premium-whatsapp-btn {
             display: inline-flex; align-items: center; gap: 8px;
             background: linear-gradient(180deg, #123a2a 0%, #0a1f16 100%);
@@ -863,6 +902,7 @@
                 <div class="relative z-10 mt-4 space-y-2.5 text-left">
                     <input type="text" id="cadastro-aniv-nome" placeholder="Seu nome" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition">
                     <input type="text" id="cadastro-aniv-sobrenome" placeholder="Seu sobrenome" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition">
+                    <input type="tel" id="cadastro-aniv-telefone" placeholder="Seu WhatsApp (com DDD)" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition">
                     <button type="button" id="cadastro-aniv-data-btn" onclick="abrirModalDataNascimento()" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-stone-500 text-sm text-left flex items-center justify-between gap-2 outline-none focus:border-[color:var(--accent)] transition">
                         <span id="cadastro-aniv-data-texto">Data de nascimento (dia, mês e ano)</span>
                         <i class="fa-solid fa-calendar-days flex-shrink-0" style="color:var(--accent)"></i>
@@ -1708,7 +1748,7 @@
                                 <p class="text-stone-500 text-xs font-medium">Pra filhos da casa que não usam o app, cadastre aqui manualmente</p>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+                        <div class="grid grid-cols-2 sm:grid-cols-6 gap-3 text-xs">
                             <div class="col-span-2 sm:col-span-1">
                                 <label class="font-bold text-stone-800 block mb-1">Nome *</label>
                                 <input type="text" id="admin-aniv-nome" placeholder="Ex: Camila" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
@@ -1716,6 +1756,10 @@
                             <div class="col-span-2 sm:col-span-1">
                                 <label class="font-bold text-stone-800 block mb-1">Sobrenome *</label>
                                 <input type="text" id="admin-aniv-sobrenome" placeholder="Ex: Souza" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="font-bold text-stone-800 block mb-1">WhatsApp</label>
+                                <input type="tel" id="admin-aniv-telefone" placeholder="(11) 98765-4321" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
                             </div>
                             <div class="sm:col-span-1">
                                 <label class="font-bold text-stone-800 block mb-1">Dia *</label>
@@ -1735,6 +1779,7 @@
                                 <input type="number" min="1900" max="2100" id="admin-aniv-ano" placeholder="1985" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
                             </div>
                         </div>
+                        <p class="text-[10px] text-stone-400 -mt-2">O WhatsApp é usado para o botão de mensagem no card de aniversariante. Sem ele, a mensagem cai no contato geral do Templo.</p>
                         <div class="flex flex-col sm:flex-row gap-2">
                             <button type="button" onclick="salvarAniversarianteAdmin()" id="btn-add-aniversariante" class="w-full sm:w-auto px-5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-plus"></i> Cadastrar Aniversariante
@@ -2958,16 +3003,25 @@
             fecharModalDataNascimento();
         }
 
+        // ---- Normaliza telefone digitado (DDD + número) para o formato usado pelo wa.me (com DDI 55) ----
+        function normalizarTelefoneWhats(valor) {
+            var digitos = String(valor || "").replace(/\D/g, "");
+            if (!digitos) return "";
+            if (digitos.length <= 11) digitos = "55" + digitos;
+            return digitos;
+        }
+
         async function salvarCadastroAniversariante() {
             var nome = document.getElementById("cadastro-aniv-nome").value.trim();
             var sobrenome = document.getElementById("cadastro-aniv-sobrenome").value.trim();
+            var telefone = normalizarTelefoneWhats(document.getElementById("cadastro-aniv-telefone").value);
             var dia = parseInt(document.getElementById("cadastro-aniv-dia").value, 10);
             var mes = parseInt(document.getElementById("cadastro-aniv-mes").value, 10);
             var ano = parseInt(document.getElementById("cadastro-aniv-ano").value, 10);
             var elErro = document.getElementById("cadastro-aniv-erro");
 
-            if (!nome || !sobrenome || !dia || !mes || !ano || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900) {
-                if (elErro) { elErro.textContent = "Preencha nome, sobrenome e sua data de nascimento completa (dia, mês e ano)."; elErro.classList.remove("hidden"); }
+            if (!nome || !sobrenome || !telefone || telefone.length < 12 || !dia || !mes || !ano || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900) {
+                if (elErro) { elErro.textContent = "Preencha nome, sobrenome, um WhatsApp válido (com DDD) e sua data de nascimento completa (dia, mês e ano)."; elErro.classList.remove("hidden"); }
                 return;
             }
             if (elErro) elErro.classList.add("hidden");
@@ -2981,7 +3035,7 @@
 
             try {
                 const { error } = await supabaseClient.from('aniversariantes').insert([{
-                    nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, aniversario_ano: ano, ativo: true
+                    nome: nome, sobrenome: sobrenome, aniversario_telefone: telefone, aniversario_dia: dia, aniversario_mes: mes, aniversario_ano: ano, ativo: true
                 }]);
                 if (error) {
                     if (elErro) { elErro.textContent = "Não foi possível salvar: " + (error.message || "erro desconhecido"); elErro.classList.remove("hidden"); }
@@ -3008,7 +3062,7 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('aniversariantes')
-                    .select('nome, sobrenome')
+                    .select('nome, sobrenome, aniversario_telefone')
                     .eq('aniversario_dia', diaHoje)
                     .eq('aniversario_mes', mesHoje)
                     .eq('ativo', true);
@@ -3029,20 +3083,52 @@
             }
         }
 
+        var ULTIMOS_ANIVERSARIANTES_PESSOAS = [];
+
         function renderizarCardAniversario(pessoas) {
-            var nomes = pessoas.map(function (p) { return p.nome; });
-            var listaNomesHtml = pessoas.map(function (p) {
+            ULTIMOS_ANIVERSARIANTES_PESSOAS = pessoas;
+            var listaNomesHtml = pessoas.map(function (p, i) {
                 return '<div class="premium-plate rounded-xl p-3 text-left flex items-center gap-3">' +
                             '<div class="w-9 h-9 rounded-full flex items-center justify-center text-sm flex-shrink-0" style="background:color-mix(in srgb, var(--accent) 20%, transparent); color:var(--accent)"><i class="fa-solid fa-cake-candles"></i></div>' +
-                            '<strong class="text-[#f3e7cf] font-bold text-sm sm:text-base font-serif">' + p.nome + ' ' + p.sobrenome + '</strong>' +
+                            '<strong class="text-[#f3e7cf] font-bold text-sm sm:text-base font-serif flex-1 min-w-0 truncate">' + p.nome + ' ' + p.sobrenome + '</strong>' +
+                            '<button type="button" onclick="enviarMensagemParaAniversariante(' + i + ')" title="Enviar mensagem pelo WhatsApp" class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition hover:scale-110 active:scale-95" style="background:rgba(79,212,138,0.15); border:1px solid rgba(79,212,138,0.4)"><i class="fa-brands fa-whatsapp text-base" style="color:#4fd48a"></i></button>' +
                         '</div>';
             }).join('<div class="h-2"></div>');
 
             var tituloCard = pessoas.length === 1 ? 'Hoje é aniversário de' : 'Hoje são aniversariantes';
 
+            var decoracaoFesta = '<div class="festa-decoracao">' +
+                    '<div class="festa-balao" style="left:4%; top:9%; width:24px; height:30px; background:linear-gradient(160deg,#e8a4c0,#a85a80); animation-delay:0s;"></div>' +
+                    '<div class="festa-balao" style="right:5%; top:5%; width:20px; height:26px; background:linear-gradient(160deg,#f0d18a,#c9932f); animation-delay:0.5s;"></div>' +
+                    '<div class="festa-balao" style="left:10%; top:36%; width:16px; height:21px; background:linear-gradient(160deg,#d98fae,#7a2b43); animation-delay:1s;"></div>' +
+                    '<div class="festa-balao" style="right:9%; top:32%; width:18px; height:23px; background:linear-gradient(160deg,#eccf86,#a97a28); animation-delay:1.4s;"></div>' +
+                    '<div class="festa-balao" style="left:2%; top:64%; width:15px; height:19px; background:linear-gradient(160deg,#e8a4c0,#a85a80); animation-delay:1.9s;"></div>' +
+                    '<div class="festa-balao" style="right:3%; top:60%; width:17px; height:22px; background:linear-gradient(160deg,#f0d18a,#c9932f); animation-delay:2.3s;"></div>' +
+                    '<span class="festa-confete" style="left:22%; top:12%; width:5px; height:5px; background:#e8c67a; animation-delay:.1s;"></span>' +
+                    '<span class="festa-confete" style="left:78%; top:18%; width:4px; height:4px; background:#e39dbb; animation-delay:.6s;"></span>' +
+                    '<span class="festa-confete" style="left:35%; top:6%; width:4px; height:4px; background:#f3e7cf; animation-delay:1.1s;"></span>' +
+                    '<span class="festa-confete" style="left:65%; top:10%; width:5px; height:5px; background:#d8b264; animation-delay:1.6s;"></span>' +
+                    '<span class="festa-confete" style="left:12%; top:50%; width:4px; height:4px; background:#e39dbb; animation-delay:.3s;"></span>' +
+                    '<span class="festa-confete" style="left:88%; top:46%; width:5px; height:5px; background:#e8c67a; animation-delay:.9s;"></span>' +
+                    '<span class="festa-confete" style="left:45%; top:76%; width:4px; height:4px; background:#f3e7cf; animation-delay:1.4s;"></span>' +
+                    '<span class="festa-confete" style="left:58%; top:82%; width:4px; height:4px; background:#d8b264; animation-delay:2s;"></span>' +
+                '</div>';
+
+            var bandeirinhasHtml = '<div class="relative z-10 festa-bandeirinhas pt-1 pb-0.5">' +
+                    '<span class="festa-bandeira" style="--cor-bandeira:#cf83a3"></span>' +
+                    '<span class="festa-bandeira" style="--cor-bandeira:#d8b264"></span>' +
+                    '<span class="festa-bandeira" style="--cor-bandeira:#7a2b43"></span>' +
+                    '<span class="festa-bandeira" style="--cor-bandeira:#d8b264"></span>' +
+                    '<span class="festa-bandeira" style="--cor-bandeira:#cf83a3"></span>' +
+                    '<span class="festa-bandeira" style="--cor-bandeira:#d8b264"></span>' +
+                    '<span class="festa-bandeira" style="--cor-bandeira:#7a2b43"></span>' +
+                '</div>';
+
             var html = '<div class="premium-detail-card rounded-[20px] sm:rounded-[22px] p-5 sm:p-6 text-center relative overflow-hidden max-h-[92vh] max-h-[92dvh] overflow-y-auto" style="--accent:#cf83a3">' +
                 '<div class="absolute top-0 left-0 right-0 h-[3px]" style="background:linear-gradient(90deg, transparent, var(--accent), transparent)"></div>' +
+                decoracaoFesta +
                 '<button type="button" onclick="fecharModalAniversariantesHoje()" class="absolute top-3 right-3 text-[11px] w-7 h-7 rounded-full border flex items-center justify-center transition hover:scale-110 active:scale-95 z-30" style="color:var(--accent); border-color:var(--accent); opacity:0.85">&times;</button>' +
+                bandeirinhasHtml +
                 '<div class="relative z-10 pt-1">' +
                     '<span class="premium-badge-tag text-[10px] uppercase font-cinzel font-bold tracking-[0.35em] items-center gap-2 inline-flex" style="color:var(--accent)"><span class="premium-diamond"></span>CELEBRAÇÃO DA CASA<span class="premium-diamond"></span></span>' +
                 '</div>' +
@@ -3057,11 +3143,22 @@
                 '</div>' +
                 '<div class="relative z-10 mt-4 space-y-2">' + listaNomesHtml + '</div>' +
                 '<div class="z-10 relative mt-4">' +
+                    '<p class="font-cinzel font-black text-lg sm:text-xl tracking-wide" style="color:var(--accent)">Feliz aniversário!!! 🎉</p>' +
+                    '<p class="text-[#f3e7cf] text-sm sm:text-base font-serif font-semibold mt-0.5">Que seu dia seja especial.</p>' +
+                '</div>' +
+                '<div class="z-10 relative mt-4">' +
                     '<div class="premium-quote-block py-3 px-1">' +
                         '<p class="font-sans font-medium text-[#f7ecd4] text-sm sm:text-base leading-relaxed tracking-wide">' +
                             '<span style="color:var(--accent)" class="not-italic">“</span>Que os Orixás e a proteção dos Guias abençoem sua caminhada com muita luz, saúde e axé!<span style="color:var(--accent)" class="not-italic">”</span>' +
                         '</p>' +
                     '</div>' +
+                '</div>' +
+                '<div class="z-10 relative mt-4 text-left">' +
+                    '<label for="aniversario-msg-textarea" class="text-[10px] font-bold uppercase tracking-wider block mb-1.5" style="color:var(--accent)">Deixe sua mensagem</label>' +
+                    '<textarea id="aniversario-msg-textarea" rows="2" placeholder="Escreva uma mensagem carinhosa para o aniversariante..." class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition resize-none"></textarea>' +
+                    '<button type="button" onclick="enviarMensagemAniversarioWhatsApp()" class="premium-whatsapp-btn w-full justify-center mt-2.5">' +
+                        '<i class="fa-brands fa-whatsapp text-base"></i> Enviar Mensagem pelo WhatsApp' +
+                    '</button>' +
                 '</div>' +
             '</div>';
 
@@ -3129,6 +3226,7 @@
                     var idade = calcularIdadeAniversariante(p.aniversario_dia, p.aniversario_mes, p.aniversario_ano);
                     var idadeHtml = idade !== null ? ' <span class="text-pink-600 font-bold">- ' + idade + (idade === 1 ? ' ano' : ' anos') + '</span>' : '';
                     var nascimentoHtml = p.aniversario_ano ? '<span class="block text-[10px] text-stone-400 font-medium">Nascimento: ' + diaFmt + '/' + mesFmt + '/' + p.aniversario_ano + '</span>' : '';
+                    var telefoneHtml = p.aniversario_telefone ? '<span class="block text-[10px] text-stone-400 font-medium"><i class="fa-brands fa-whatsapp" style="color:#4fd48a"></i> +' + p.aniversario_telefone + '</span>' : '<span class="block text-[10px] text-amber-500 font-medium italic">Sem WhatsApp cadastrado</span>';
                     html += '<div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border ' + (p.ativo ? 'border-stone-200 bg-white' : 'border-stone-200 bg-stone-100 opacity-60') + '">' +
                             '<div class="flex items-center gap-2.5 min-w-0">' +
                                 '<div class="w-9 h-9 rounded-lg bg-pink-100 text-pink-700 flex flex-col items-center justify-center text-[10px] font-black leading-none flex-shrink-0">' +
@@ -3137,6 +3235,7 @@
                                 '<div class="min-w-0">' +
                                     '<span class="font-bold text-stone-800 text-xs sm:text-sm truncate block">' + p.nome + ' ' + p.sobrenome + idadeHtml + '</span>' +
                                     nascimentoHtml +
+                                    telefoneHtml +
                                 '</div>' +
                             '</div>' +
                             '<div class="flex items-center gap-1.5 flex-shrink-0">' +
@@ -3156,6 +3255,7 @@
         async function salvarAniversarianteAdmin() {
             var nome = document.getElementById("admin-aniv-nome").value.trim();
             var sobrenome = document.getElementById("admin-aniv-sobrenome").value.trim();
+            var telefone = normalizarTelefoneWhats(document.getElementById("admin-aniv-telefone").value);
             var dia = parseInt(document.getElementById("admin-aniv-dia").value, 10);
             var mes = parseInt(document.getElementById("admin-aniv-mes").value, 10);
             var ano = parseInt(document.getElementById("admin-aniv-ano").value, 10);
@@ -3174,11 +3274,11 @@
                 var resultado;
                 if (editando) {
                     resultado = await supabaseClient.from('aniversariantes')
-                        .update({ nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, aniversario_ano: ano })
+                        .update({ nome: nome, sobrenome: sobrenome, aniversario_telefone: telefone, aniversario_dia: dia, aniversario_mes: mes, aniversario_ano: ano })
                         .eq('id', aniversarianteSendoEditadoId);
                 } else {
                     resultado = await supabaseClient.from('aniversariantes').insert([{
-                        nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, aniversario_ano: ano, ativo: true
+                        nome: nome, sobrenome: sobrenome, aniversario_telefone: telefone, aniversario_dia: dia, aniversario_mes: mes, aniversario_ano: ano, ativo: true
                     }]);
                 }
                 if (resultado.error) {
@@ -3205,6 +3305,7 @@
 
             document.getElementById("admin-aniv-nome").value = pessoa.nome || "";
             document.getElementById("admin-aniv-sobrenome").value = pessoa.sobrenome || "";
+            document.getElementById("admin-aniv-telefone").value = pessoa.aniversario_telefone || "";
             document.getElementById("admin-aniv-dia").value = pessoa.aniversario_dia || "";
             document.getElementById("admin-aniv-mes").value = pessoa.aniversario_mes || "1";
             document.getElementById("admin-aniv-ano").value = pessoa.aniversario_ano || "";
@@ -3226,6 +3327,7 @@
             aniversarianteSendoEditadoId = null;
             document.getElementById("admin-aniv-nome").value = "";
             document.getElementById("admin-aniv-sobrenome").value = "";
+            document.getElementById("admin-aniv-telefone").value = "";
             document.getElementById("admin-aniv-dia").value = "";
             document.getElementById("admin-aniv-mes").value = "1";
             document.getElementById("admin-aniv-ano").value = "";
@@ -4219,6 +4321,18 @@
         function cancelarNotificacaoAgendada(id) {
             _idAgendamentoParaCancelar = id;
             document.getElementById("confirmar-cancelamento-agendamento-modal").classList.remove("hidden");
+        }
+
+        function enviarMensagemAniversarioWhatsApp() {
+            var textarea = document.getElementById("aniversario-msg-textarea");
+            var mensagemPessoal = textarea ? textarea.value.trim() : "";
+            var nomes = ULTIMOS_ANIVERSARIANTES_NOMES.length ? ULTIMOS_ANIVERSARIANTES_NOMES.join(" e ") : "";
+            var hora = new Date().getHours(); var saudacao = (hora >= 12 && hora < 18) ? "Boa tarde!" : ((hora >= 18 || hora < 5) ? "Boa noite!" : "Bom dia!");
+
+            var msg = saudacao + (nomes ? " Hoje é aniversário de " + nomes + "! " : " ");
+            msg += mensagemPessoal ? mensagemPessoal : "Feliz aniversário! Que seu dia seja especial, com muita luz, saúde e axé!";
+
+            window.open("https://wa.me/" + PAULA_WHATSAPP_NUMERO + "?text=" + encodeURIComponent(msg), "_blank");
         }
 
         function agendarConsultaWhatsApp(dataEvento, entidade, tipo) {
