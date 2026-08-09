@@ -863,18 +863,13 @@
                 <div class="relative z-10 mt-4 space-y-2.5 text-left">
                     <input type="text" id="cadastro-aniv-nome" placeholder="Seu nome" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition">
                     <input type="text" id="cadastro-aniv-sobrenome" placeholder="Seu sobrenome" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition">
-                    <div class="flex gap-2.5">
-                        <input type="number" min="1" max="31" id="cadastro-aniv-dia" placeholder="Dia" class="w-1/2 p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] placeholder-stone-500 text-sm outline-none focus:border-[color:var(--accent)] transition">
-                        <select id="cadastro-aniv-mes" class="w-1/2 p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] text-sm outline-none focus:border-[color:var(--accent)] transition">
-                            <option value="" class="bg-stone-800">Mês</option>
-                            <option value="1" class="bg-stone-800">Janeiro</option><option value="2" class="bg-stone-800">Fevereiro</option>
-                            <option value="3" class="bg-stone-800">Março</option><option value="4" class="bg-stone-800">Abril</option>
-                            <option value="5" class="bg-stone-800">Maio</option><option value="6" class="bg-stone-800">Junho</option>
-                            <option value="7" class="bg-stone-800">Julho</option><option value="8" class="bg-stone-800">Agosto</option>
-                            <option value="9" class="bg-stone-800">Setembro</option><option value="10" class="bg-stone-800">Outubro</option>
-                            <option value="11" class="bg-stone-800">Novembro</option><option value="12" class="bg-stone-800">Dezembro</option>
-                        </select>
-                    </div>
+                    <button type="button" id="cadastro-aniv-data-btn" onclick="abrirModalDataNascimento()" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-stone-500 text-sm text-left flex items-center justify-between gap-2 outline-none focus:border-[color:var(--accent)] transition">
+                        <span id="cadastro-aniv-data-texto">Data de nascimento (dia, mês e ano)</span>
+                        <i class="fa-solid fa-calendar-days flex-shrink-0" style="color:var(--accent)"></i>
+                    </button>
+                    <input type="hidden" id="cadastro-aniv-dia">
+                    <input type="hidden" id="cadastro-aniv-mes">
+                    <input type="hidden" id="cadastro-aniv-ano">
                 </div>
                 <p id="cadastro-aniv-erro" class="text-red-400 text-[11px] font-semibold mt-2 hidden"></p>
 
@@ -883,6 +878,54 @@
                         <i class="fa-solid fa-check text-sm"></i> Confirmar Cadastro
                     </button>
                     <button type="button" onclick="fecharModalCadastroAniversariante()" class="w-full py-2 text-[11px] text-stone-400 hover:text-stone-200 transition font-semibold">Agora não, me lembre depois</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SELEÇÃO DE DATA DE NASCIMENTO -->
+    <div id="data-nasc-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[80] hidden flex items-center justify-center p-4 no-print">
+        <div class="max-w-sm w-full modal-animate-slide">
+            <div class="premium-detail-card rounded-[20px] p-5 sm:p-6 text-center relative overflow-hidden" style="--accent:#cf83a3">
+                <div class="absolute top-0 left-0 right-0 h-[3px]" style="background:linear-gradient(90deg, transparent, var(--accent), transparent)"></div>
+                <button type="button" onclick="fecharModalDataNascimento()" class="absolute top-3 right-3 text-[11px] w-7 h-7 rounded-full border flex items-center justify-center transition hover:scale-110 active:scale-95 z-30" style="color:var(--accent); border-color:var(--accent); opacity:0.85">&times;</button>
+
+                <div class="relative w-14 h-14 mx-auto mt-1 z-10">
+                    <div class="premium-medallion-ring w-full h-full rounded-full bg-[#0d0b08] flex items-center justify-center overflow-hidden">
+                        <i class="fa-solid fa-calendar-days text-2xl" style="color:var(--accent)"></i>
+                    </div>
+                </div>
+
+                <div class="mt-3 space-y-1 z-10 relative">
+                    <span class="premium-badge-tag text-[9px] uppercase font-cinzel font-bold tracking-[0.35em] items-center gap-2 inline-flex" style="color:var(--accent)">
+                        <span class="premium-diamond"></span>DATA DE NASCIMENTO<span class="premium-diamond"></span>
+                    </span>
+                    <h3 class="text-lg sm:text-xl font-serif font-bold text-[#f3e7cf] tracking-tight pt-1">Quando você nasceu?</h3>
+                </div>
+
+                <div class="relative z-10 mt-4 grid grid-cols-3 gap-2 text-left">
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase tracking-wider mb-1" style="color:var(--accent)">Dia</label>
+                        <select id="data-nasc-dia-select" onchange="atualizarPreviaDataNascimento()" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] text-sm outline-none focus:border-[color:var(--accent)] transition"></select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase tracking-wider mb-1" style="color:var(--accent)">Mês</label>
+                        <select id="data-nasc-mes-select" onchange="atualizarPreviaDataNascimento()" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] text-sm outline-none focus:border-[color:var(--accent)] transition"></select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold uppercase tracking-wider mb-1" style="color:var(--accent)">Ano</label>
+                        <select id="data-nasc-ano-select" onchange="atualizarPreviaDataNascimento()" class="w-full p-3 rounded-xl bg-black/30 border border-[#d8b264]/30 text-[#f3e7cf] text-sm outline-none focus:border-[color:var(--accent)] transition"></select>
+                    </div>
+                </div>
+
+                <div class="relative z-10 mt-3 premium-quote-block py-2.5 px-2">
+                    <p id="data-nasc-previa-texto" class="font-serif font-bold text-[#f7ecd4] text-sm">Selecione dia, mês e ano</p>
+                </div>
+
+                <div class="mt-4 z-10 relative">
+                    <button type="button" onclick="confirmarDataNascimento()" class="premium-cta w-full py-3 active:scale-95 font-bold rounded-full text-xs transition-all duration-300 tracking-[0.15em] uppercase font-cinzel cursor-pointer">
+                        <i class="fa-solid fa-check text-sm"></i> Confirmar Data
+                    </button>
                 </div>
             </div>
         </div>
@@ -1665,12 +1708,12 @@
                                 <p class="text-stone-500 text-xs font-medium">Pra filhos da casa que não usam o app, cadastre aqui manualmente</p>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-                            <div class="sm:col-span-1">
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+                            <div class="col-span-2 sm:col-span-1">
                                 <label class="font-bold text-stone-800 block mb-1">Nome *</label>
                                 <input type="text" id="admin-aniv-nome" placeholder="Ex: Camila" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
                             </div>
-                            <div class="sm:col-span-1">
+                            <div class="col-span-2 sm:col-span-1">
                                 <label class="font-bold text-stone-800 block mb-1">Sobrenome *</label>
                                 <input type="text" id="admin-aniv-sobrenome" placeholder="Ex: Souza" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
                             </div>
@@ -1686,6 +1729,10 @@
                                     <option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option>
                                     <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
                                 </select>
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label class="font-bold text-stone-800 block mb-1">Ano *</label>
+                                <input type="number" min="1900" max="2100" id="admin-aniv-ano" placeholder="1985" class="w-full p-2.5 rounded-xl border border-stone-300 focus:border-pink-500 outline-none transition">
                             </div>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2">
@@ -2837,15 +2884,90 @@
             } catch (e) {}
         }
 
+        // ---- Modal "legal" de seleção de data de nascimento (dia/mês/ano) ----
+        var MESES_NOMES_CADASTRO = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+        function popularSelectsDataNascimento() {
+            var diaSel = document.getElementById("data-nasc-dia-select");
+            var mesSel = document.getElementById("data-nasc-mes-select");
+            var anoSel = document.getElementById("data-nasc-ano-select");
+            if (!diaSel || !mesSel || !anoSel || diaSel.options.length) return;
+
+            var diaHtml = '<option value="" class="bg-stone-800">Dia</option>';
+            for (var d = 1; d <= 31; d++) diaHtml += '<option value="' + d + '" class="bg-stone-800">' + d + '</option>';
+            diaSel.innerHTML = diaHtml;
+
+            var mesHtml = '<option value="" class="bg-stone-800">Mês</option>';
+            for (var m = 1; m <= 12; m++) mesHtml += '<option value="' + m + '" class="bg-stone-800">' + MESES_NOMES_CADASTRO[m] + '</option>';
+            mesSel.innerHTML = mesHtml;
+
+            var anoAtual = new Date().getFullYear();
+            var anoHtml = '<option value="" class="bg-stone-800">Ano</option>';
+            for (var a = anoAtual; a >= anoAtual - 100; a--) anoHtml += '<option value="' + a + '" class="bg-stone-800">' + a + '</option>';
+            anoSel.innerHTML = anoHtml;
+        }
+
+        function abrirModalDataNascimento() {
+            popularSelectsDataNascimento();
+            var diaAtual = document.getElementById("cadastro-aniv-dia").value;
+            var mesAtual = document.getElementById("cadastro-aniv-mes").value;
+            var anoAtual = document.getElementById("cadastro-aniv-ano").value;
+            if (diaAtual) document.getElementById("data-nasc-dia-select").value = diaAtual;
+            if (mesAtual) document.getElementById("data-nasc-mes-select").value = mesAtual;
+            if (anoAtual) document.getElementById("data-nasc-ano-select").value = anoAtual;
+            atualizarPreviaDataNascimento();
+            var modal = document.getElementById("data-nasc-modal");
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalDataNascimento() {
+            var modal = document.getElementById("data-nasc-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
+        function atualizarPreviaDataNascimento() {
+            var dia = document.getElementById("data-nasc-dia-select").value;
+            var mes = document.getElementById("data-nasc-mes-select").value;
+            var ano = document.getElementById("data-nasc-ano-select").value;
+            var previa = document.getElementById("data-nasc-previa-texto");
+            if (!previa) return;
+            if (dia && mes && ano) {
+                previa.textContent = dia + ' de ' + MESES_NOMES_CADASTRO[parseInt(mes, 10)] + ' de ' + ano;
+            } else {
+                previa.textContent = 'Selecione dia, mês e ano';
+            }
+        }
+
+        function confirmarDataNascimento() {
+            var dia = document.getElementById("data-nasc-dia-select").value;
+            var mes = document.getElementById("data-nasc-mes-select").value;
+            var ano = document.getElementById("data-nasc-ano-select").value;
+            if (!dia || !mes || !ano) {
+                atualizarPreviaDataNascimento();
+                return;
+            }
+            document.getElementById("cadastro-aniv-dia").value = dia;
+            document.getElementById("cadastro-aniv-mes").value = mes;
+            document.getElementById("cadastro-aniv-ano").value = ano;
+
+            var btnTexto = document.getElementById("cadastro-aniv-data-texto");
+            if (btnTexto) btnTexto.textContent = dia + ' de ' + MESES_NOMES_CADASTRO[parseInt(mes, 10)] + ' de ' + ano;
+            var btn = document.getElementById("cadastro-aniv-data-btn");
+            if (btn) { btn.classList.remove("text-stone-500"); btn.classList.add("text-[#f3e7cf]"); }
+
+            fecharModalDataNascimento();
+        }
+
         async function salvarCadastroAniversariante() {
             var nome = document.getElementById("cadastro-aniv-nome").value.trim();
             var sobrenome = document.getElementById("cadastro-aniv-sobrenome").value.trim();
             var dia = parseInt(document.getElementById("cadastro-aniv-dia").value, 10);
             var mes = parseInt(document.getElementById("cadastro-aniv-mes").value, 10);
+            var ano = parseInt(document.getElementById("cadastro-aniv-ano").value, 10);
             var elErro = document.getElementById("cadastro-aniv-erro");
 
-            if (!nome || !sobrenome || !dia || !mes || dia < 1 || dia > 31 || mes < 1 || mes > 12) {
-                if (elErro) { elErro.textContent = "Preencha nome, sobrenome, dia e mês corretamente."; elErro.classList.remove("hidden"); }
+            if (!nome || !sobrenome || !dia || !mes || !ano || dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900) {
+                if (elErro) { elErro.textContent = "Preencha nome, sobrenome e sua data de nascimento completa (dia, mês e ano)."; elErro.classList.remove("hidden"); }
                 return;
             }
             if (elErro) elErro.classList.add("hidden");
@@ -2859,7 +2981,7 @@
 
             try {
                 const { error } = await supabaseClient.from('aniversariantes').insert([{
-                    nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, ativo: true
+                    nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, aniversario_ano: ano, ativo: true
                 }]);
                 if (error) {
                     if (elErro) { elErro.textContent = "Não foi possível salvar: " + (error.message || "erro desconhecido"); elErro.classList.remove("hidden"); }
@@ -2957,6 +3079,17 @@
             if (modal) modal.classList.add("hidden");
         }
 
+        // ---- Calcula automaticamente a idade a partir da data de nascimento (uso exclusivo do admin) ----
+        function calcularIdadeAniversariante(dia, mes, ano) {
+            if (!ano || !dia || !mes) return null;
+            var hoje = new Date();
+            var idade = hoje.getFullYear() - ano;
+            var mesAtual = hoje.getMonth() + 1;
+            var diaAtual = hoje.getDate();
+            if (mesAtual < mes || (mesAtual === mes && diaAtual < dia)) idade--;
+            return idade >= 0 ? idade : null;
+        }
+
         // ---- CRUD administrativo ----
         async function carregarListaAniversariantesAdmin() {
             var container = document.getElementById("admin-aniversariantes-lista");
@@ -2992,12 +3125,19 @@
                                 '</div>';
                     }
                     var diaFmt = String(p.aniversario_dia).padStart(2, '0');
+                    var mesFmt = String(p.aniversario_mes).padStart(2, '0');
+                    var idade = calcularIdadeAniversariante(p.aniversario_dia, p.aniversario_mes, p.aniversario_ano);
+                    var idadeHtml = idade !== null ? ' <span class="text-pink-600 font-bold">- ' + idade + (idade === 1 ? ' ano' : ' anos') + '</span>' : '';
+                    var nascimentoHtml = p.aniversario_ano ? '<span class="block text-[10px] text-stone-400 font-medium">Nascimento: ' + diaFmt + '/' + mesFmt + '/' + p.aniversario_ano + '</span>' : '';
                     html += '<div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border ' + (p.ativo ? 'border-stone-200 bg-white' : 'border-stone-200 bg-stone-100 opacity-60') + '">' +
                             '<div class="flex items-center gap-2.5 min-w-0">' +
                                 '<div class="w-9 h-9 rounded-lg bg-pink-100 text-pink-700 flex flex-col items-center justify-center text-[10px] font-black leading-none flex-shrink-0">' +
                                     '<span>' + diaFmt + '</span><span class="text-[8px] font-bold uppercase">' + MESES_ABREV[p.aniversario_mes] + '</span>' +
                                 '</div>' +
-                                '<span class="font-bold text-stone-800 text-xs sm:text-sm truncate">' + p.nome + ' ' + p.sobrenome + '</span>' +
+                                '<div class="min-w-0">' +
+                                    '<span class="font-bold text-stone-800 text-xs sm:text-sm truncate block">' + p.nome + ' ' + p.sobrenome + idadeHtml + '</span>' +
+                                    nascimentoHtml +
+                                '</div>' +
                             '</div>' +
                             '<div class="flex items-center gap-1.5 flex-shrink-0">' +
                                 '<button onclick="carregarParaEditarAniversariante(\'' + p.id + '\')" title="Editar" class="w-7 h-7 rounded-lg text-pink-600 hover:bg-pink-50 border border-pink-200 flex items-center justify-center text-xs transition"><i class="fa-solid fa-pen"></i></button>' +
@@ -3018,9 +3158,10 @@
             var sobrenome = document.getElementById("admin-aniv-sobrenome").value.trim();
             var dia = parseInt(document.getElementById("admin-aniv-dia").value, 10);
             var mes = parseInt(document.getElementById("admin-aniv-mes").value, 10);
+            var ano = parseInt(document.getElementById("admin-aniv-ano").value, 10);
 
-            if (!nome || !sobrenome || !dia || dia < 1 || dia > 31) {
-                alert("Preencha nome, sobrenome e um dia válido (1 a 31).");
+            if (!nome || !sobrenome || !dia || dia < 1 || dia > 31 || !ano || ano < 1900) {
+                alert("Preencha nome, sobrenome, um dia válido (1 a 31) e o ano de nascimento.");
                 return;
             }
             if (!supabaseClient) { alert("Supabase não inicializado."); return; }
@@ -3033,11 +3174,11 @@
                 var resultado;
                 if (editando) {
                     resultado = await supabaseClient.from('aniversariantes')
-                        .update({ nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes })
+                        .update({ nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, aniversario_ano: ano })
                         .eq('id', aniversarianteSendoEditadoId);
                 } else {
                     resultado = await supabaseClient.from('aniversariantes').insert([{
-                        nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, ativo: true
+                        nome: nome, sobrenome: sobrenome, aniversario_dia: dia, aniversario_mes: mes, aniversario_ano: ano, ativo: true
                     }]);
                 }
                 if (resultado.error) {
@@ -3066,6 +3207,7 @@
             document.getElementById("admin-aniv-sobrenome").value = pessoa.sobrenome || "";
             document.getElementById("admin-aniv-dia").value = pessoa.aniversario_dia || "";
             document.getElementById("admin-aniv-mes").value = pessoa.aniversario_mes || "1";
+            document.getElementById("admin-aniv-ano").value = pessoa.aniversario_ano || "";
 
             var btn = document.getElementById("btn-add-aniversariante");
             if (btn) btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Salvar Alterações';
@@ -3086,6 +3228,7 @@
             document.getElementById("admin-aniv-sobrenome").value = "";
             document.getElementById("admin-aniv-dia").value = "";
             document.getElementById("admin-aniv-mes").value = "1";
+            document.getElementById("admin-aniv-ano").value = "";
 
             var btn = document.getElementById("btn-add-aniversariante");
             if (btn) btn.innerHTML = '<i class="fa-solid fa-plus"></i> Cadastrar Aniversariante';
