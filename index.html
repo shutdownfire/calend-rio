@@ -978,6 +978,17 @@
         </div>
     </div>
 
+    <!-- MODAL DE AVISO SIMPLES (substitui alert() nativo) -->
+    <div id="aviso-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[97] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalAviso()">
+        <div class="max-w-xs w-full modal-animate-slide bg-[#141110] border border-[#d8b264]/30 rounded-2xl p-6 text-center relative" onclick="event.stopPropagation()">
+            <div class="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style="background:rgba(216,178,100,0.15); border:1px solid rgba(216,178,100,0.4)">
+                <i class="fa-solid fa-circle-info text-lg" style="color:#d8b264"></i>
+            </div>
+            <p id="aviso-modal-texto" class="text-[#f3e7cf] font-sans text-sm leading-relaxed mb-4"></p>
+            <button type="button" onclick="fecharModalAviso()" class="w-full py-2.5 rounded-xl font-bold text-sm text-black transition hover:opacity-90" style="background:#d8b264">OK</button>
+        </div>
+    </div>
+
     <!-- MODAL SUCESSO PRESENÇA -->
     <div id="sucesso-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4 no-print">
         <div id="sucesso-card" class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-emerald-400">
@@ -2760,7 +2771,7 @@
                 }
             } else {
                 acaoBtnHtml = '<div class="flex justify-center pt-1">' +
-                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="premium-whatsapp-btn active:scale-95 cursor-pointer">' +
+                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || derivarEntidadeDeTitulo(ev.titulo)) + '\', \'' + ev.tipo + '\')" class="premium-whatsapp-btn active:scale-95 cursor-pointer">' +
                                     '<i class="fa-brands fa-whatsapp text-sm" style="color:#4fd48a"></i>' +
                                     '<span>Agendar</span>' +
                                 '</button>' +
@@ -4320,12 +4331,24 @@
             document.getElementById("confirmar-cancelamento-agendamento-modal").classList.remove("hidden");
         }
 
+        function abrirModalAviso(texto) {
+            var textoEl = document.getElementById("aviso-modal-texto");
+            var modal = document.getElementById("aviso-modal");
+            if (textoEl) textoEl.textContent = texto;
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalAviso() {
+            var modal = document.getElementById("aviso-modal");
+            if (modal) modal.classList.add("hidden");
+        }
+
         // ---- Abre o WhatsApp do próprio aniversariante (ícone ao lado do nome, no card do dia) ----
         function enviarMensagemParaAniversariante(indice) {
             var pessoa = ULTIMOS_ANIVERSARIANTES_PESSOAS[indice];
             if (!pessoa) return;
             if (!pessoa.aniversario_telefone) {
-                alert("Este aniversariante ainda não tem WhatsApp cadastrado.");
+                abrirModalAviso("Este aniversariante ainda não tem WhatsApp cadastrado.");
                 return;
             }
             var hora = new Date().getHours();
@@ -4818,6 +4841,13 @@
             await carregarCalendarioDoSupabase();
         }
 
+        // ---- Extrai o nome da entidade/pessoa a partir do título, evitando repetir "consulta" na mensagem do WhatsApp ----
+        function derivarEntidadeDeTitulo(titulo) {
+            if (!titulo) return '';
+            var semPrefixo = String(titulo).replace(/^consulta\s+particular\s+com\s+/i, '').trim();
+            return semPrefixo || titulo;
+        }
+
         async function carregarCalendarioDoSupabase() {
             var listaEventos = [];
 
@@ -4832,7 +4862,7 @@
                             var mesNum = obterNumeroMesDeTexto(mesAtualAtivo);
                             
                             var eventoObj = {
-                                id: idString, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || ev.titulo || '', descricao: ev.descricao || '', publico: ev.publico || '', status: ev.status || '', responsavel: ev.responsavel || '', tipo: 'whatsapp', mes_ano: ev.mes_ano
+                                id: idString, dia: ev.dia, diaTexto: 'Dia ' + diaStr + '/' + mesNum, titulo: ev.titulo || 'Atividade', categoria: ev.categoria || 'emerald', horario: ev.horario || '', valor: ev.valor || '', entidade: ev.entidade || derivarEntidadeDeTitulo(ev.titulo) || '', descricao: ev.descricao || '', publico: ev.publico || '', status: ev.status || '', responsavel: ev.responsavel || '', tipo: 'whatsapp', mes_ano: ev.mes_ano
                             };
 
                             if (indexExistente !== -1) {
@@ -4898,7 +4928,7 @@
                                     '<i class="fa-solid fa-calendar-check text-[#3e9366] text-xs"></i>' +
                                     '<span>Agendamento</span>' +
                                 '</div>' +
-                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="btn-zap-exact active:scale-95 transition-all duration-200 cursor-pointer shadow-2xs">' +
+                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || derivarEntidadeDeTitulo(ev.titulo)) + '\', \'' + ev.tipo + '\')" class="btn-zap-exact active:scale-95 transition-all duration-200 cursor-pointer shadow-2xs">' +
                                     '<i class="fa-brands fa-whatsapp text-xs"></i>' +
                                     '<span>Agendar</span>' +
                                 '</button>' +
