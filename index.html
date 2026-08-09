@@ -2675,9 +2675,9 @@
 
                     var tituloHtml = '';
                     if (tituloGrid === 'Organização e Limpeza' || ev.categoria === 'amber') {
-                        tituloHtml = '<p class="font-bold text-[8px] sm:text-[10.5px] text-stone-900 leading-tight text-center font-sans w-full whitespace-nowrap"><span class="block">Organização</span><span class="block">Limpeza</span></p>';
+                        tituloHtml = '<p class="font-bold text-[7.5px] sm:text-[10.5px] text-stone-900 leading-tight text-center font-sans w-full tracking-tight"><span class="block">Organização</span><span class="block">Limpeza</span></p>';
                     } else {
-                        tituloHtml = '<p class="font-bold text-[8px] sm:text-[11.5px] text-stone-900 leading-tight sm:leading-snug tracking-tight text-center font-sans w-full" style="overflow-wrap:normal; word-break:keep-all; hyphens:none;">' + tituloGrid + '</p>';
+                        tituloHtml = '<p class="font-bold text-[7.5px] sm:text-[11.5px] text-stone-900 leading-tight sm:leading-snug tracking-tight text-center font-sans w-full" style="overflow-wrap:normal; word-break:keep-all; hyphens:none;">' + tituloGrid + '</p>';
                     }
 
                     html += '<div onclick="abrirModalDetalhesEvento(' + d + ')" class="min-h-[84px] sm:min-h-[96px] p-0.5 sm:p-2 ' + bgClass + ' rounded-xl sm:rounded-2xl border flex flex-col justify-between items-center relative hover:shadow-md transition cursor-pointer active:scale-95 overflow-hidden shadow-2xs group">' +
@@ -2685,7 +2685,7 @@
                                     '<span class="font-extrabold text-stone-900 bg-white/95 w-[18px] h-[18px] sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[9.5px] sm:text-[11px] leading-none shadow-2xs">' + diaFmt + '</span>' +
                                     '<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ' + dotClass + ' shadow-2xs"></span>' +
                                 '</div>' +
-                                '<div class="my-auto text-center flex flex-col items-center justify-center w-full px-0.5 py-0.5 pointer-events-none">' +
+                                '<div class="my-auto text-center flex flex-col items-center justify-center w-full px-0 sm:px-0.5 py-0.5 pointer-events-none">' +
                                     tituloHtml +
                                 '</div>' +
                                 rodapeHtml +
