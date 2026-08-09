@@ -3299,7 +3299,7 @@
 
             localStorage.removeItem("notificacoes_historico");
 
-            processarNovaNotificacao({ id: Date.now(), titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao });
+            processarNovaNotificacao({ id: novaNotifSalva.id, titulo: titulo, mensagem: mensagem, categoria: categoria, link: linkAcao });
 
             document.getElementById("notif-titulo").value = "";
             document.getElementById("notif-mensagem").value = "";
