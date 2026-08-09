@@ -9,7 +9,7 @@ importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 //    em vez de um Blob, para não conflitar com o worker da OneSignal)
 //    AUMENTE ESSE NÚMERO SEMPRE QUE PUBLICAR UMA ATUALIZAÇÃO (isso força o navegador
 //    a perceber que o worker mudou e trocar pra versão nova sozinho).
-const CACHE_NAME = 'vovo-maria-conga-v2';
+const CACHE_NAME = 'vovo-maria-conga-v3';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
