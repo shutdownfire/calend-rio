@@ -154,36 +154,83 @@
             transform: translateY(-1px);
         }
 
-        .plate-red-gold {
-            background: linear-gradient(180deg, rgba(60, 4, 4, 0.9) 0%, rgba(20, 1, 1, 0.95) 100%);
-            border: 1.5px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
+        /* ===== CARD DE DETALHES — ESTILO SELO CERIMONIAL PREMIUM ===== */
+        .premium-detail-card {
+            --accent: #c9a227;
+            background:
+                radial-gradient(130% 85% at 50% -15%, rgba(230,196,124,0.07) 0%, rgba(230,196,124,0) 55%),
+                linear-gradient(180deg, #17130e 0%, #0a0806 100%);
+            border: 1px solid rgba(216,178,100,0.32);
+            box-shadow: 0 28px 60px -18px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04);
         }
-        .plate-emerald-gold {
-            background: linear-gradient(180deg, rgba(4, 50, 28, 0.9) 0%, rgba(1, 20, 11, 0.95) 100%);
-            border: 1.5px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
+        .premium-detail-card::before {
+            content: '';
+            position: absolute;
+            inset: 7px;
+            border: 1px solid rgba(216,178,100,0.14);
+            border-radius: 16px;
+            pointer-events: none;
         }
-        .plate-sky-gold {
-            background: linear-gradient(180deg, rgba(4, 40, 70, 0.9) 0%, rgba(1, 15, 28, 0.95) 100%);
-            border: 1.5px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
+        .premium-diamond {
+            display: inline-block; width: 4px; height: 4px; transform: rotate(45deg);
+            background: currentColor; vertical-align: middle; flex-shrink: 0;
         }
-        .plate-amber-gold {
-            background: linear-gradient(180deg, rgba(55, 30, 4, 0.9) 0%, rgba(20, 10, 1, 0.95) 100%);
-            border: 1.5px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
+        .premium-medallion-ring {
+            border: 1px solid rgba(216,178,100,0.55);
+            box-shadow: 0 0 0 5px rgba(216,178,100,0.07), 0 10px 22px rgba(0,0,0,0.55);
         }
-        .plate-pink-gold {
-            background: linear-gradient(180deg, rgba(60, 4, 38, 0.9) 0%, rgba(20, 1, 13, 0.95) 100%);
-            border: 1.5px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
+        .premium-rule {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(216,178,100,0.7), transparent);
         }
-        .plate-purple-gold {
-            background: linear-gradient(180deg, rgba(40, 4, 60, 0.9) 0%, rgba(12, 1, 20, 0.95) 100%);
-            border: 1.5px solid #f59e0b;
-            box-shadow: inset 0 0 15px rgba(245,158,11,0.2), 0 8px 20px rgba(0,0,0,0.8);
+        .premium-plate {
+            background: linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0) 45%), #110d08;
+            border: 1px solid rgba(216,178,100,0.38);
         }
+        .premium-corner {
+            position: absolute; width: 9px; height: 9px;
+            border-color: rgba(216,178,100,0.85);
+        }
+        .premium-corner-tl { top: 6px; left: 6px; border-top: 1.5px solid; border-left: 1.5px solid; }
+        .premium-corner-tr { top: 6px; right: 6px; border-top: 1.5px solid; border-right: 1.5px solid; }
+        .premium-corner-bl { bottom: 6px; left: 6px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+        .premium-corner-br { bottom: 6px; right: 6px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+        .premium-info-icon {
+            border: 1px solid rgba(216,178,100,0.35);
+            background: rgba(255,255,255,0.02);
+        }
+        .premium-quote-block {
+            border-top: 1px solid rgba(216,178,100,0.28);
+            border-bottom: 1px solid rgba(216,178,100,0.28);
+        }
+        .premium-cta {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: linear-gradient(180deg, #ecd08a 0%, #b8892f 100%);
+            color: #171310;
+            border: 1px solid rgba(255,238,200,0.7);
+            box-shadow: 0 12px 26px -10px rgba(184,137,47,0.6);
+            transition: all 0.25s ease;
+        }
+        .premium-cta:hover { filter: brightness(1.06); transform: translateY(-1px); }
+        .premium-cta-confirmed {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: #0d1512;
+            border: 1px solid rgba(110,200,150,0.5);
+            color: #a9e6bf;
+        }
+        .premium-whatsapp-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(180deg, #123a2a 0%, #0a1f16 100%);
+            border: 1px solid rgba(90,200,140,0.45);
+            color: #d9f2e3;
+            border-radius: 9999px;
+            padding: 9px 22px;
+            font-weight: 700;
+            font-size: 11.5px;
+            letter-spacing: 0.06em;
+            transition: all 0.25s ease;
+        }
+        .premium-whatsapp-btn:hover { filter: brightness(1.18); transform: translateY(-1px); }
 
         .admin-modal-card {
             height: 96vh;
@@ -2356,86 +2403,58 @@
             if (tLow.includes("exu") || tLow.includes("pombagira") || tLow.includes("caveira") || corBase === 'red' || corBase === 'joaocaveira') {
                 return {
                     linhaTag: 'ESQUERDA / EXU',
-                    bgCardStyle: 'bg-gradient-to-b from-[#1c0202] via-[#2c0505] to-[#0d0101] border-2 border-red-500/80 shadow-[0_0_35px_rgba(239,68,68,0.5)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(239,68,68,0.8)]',
-                    topIcon: '<img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" alt="Sr. João Caveira" class="w-full h-full object-cover rounded-full p-0.5" onerror="this.onerror=null; this.src=\'https://drive.google.com/thumbnail?id=18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH&sz=w1000\';">',
-                    boxTituloBg: 'plate-red-gold',
-                    symbolEmblem: '<i class="fa-solid fa-trident text-red-500 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(239,68,68,0.9)]"></i>',
-                    accentText: 'text-red-400 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.',
-                    btnStyle: 'bg-gradient-to-r from-red-950 via-red-600 to-red-950 border border-amber-400 hover:from-red-900 hover:to-red-700 text-white drop-shadow-[0_0_20px_rgba(239,68,68,0.7)]'
+                    accent: '#c66a63',
+                    topIcon: '<img src="https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH" alt="Sr. João Caveira" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null; this.src=\'https://drive.google.com/thumbnail?id=18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH&sz=w1000\';">',
+                    symbolEmblem: '<i class="fa-solid fa-trident text-lg" style="color:var(--accent)"></i>',
+                    saudacao: 'Laroyê Exu! Que a proteção e os caminhos estejam sempre abertos.'
                 };
             } else if (tLow.includes("caboclo") || tLow.includes("oxóssi") || tLow.includes("jurema") || corBase === 'emerald' || corBase === 'jurema') {
                 return {
                     linhaTag: 'LINHA DAS MATAS / CABOCLOS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#012213] via-[#02331d] to-[#01140c] border-2 border-emerald-400/80 shadow-[0_0_35px_rgba(52,211,153,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(52,211,153,0.7)]',
-                    topIcon: '<div class="text-emerald-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(52,211,153,0.9)]"><i class="fa-solid fa-leaf"></i></div>',
-                    boxTituloBg: 'plate-emerald-gold',
-                    symbolEmblem: '<i class="fa-solid fa-feather-pointed text-emerald-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(52,211,153,0.9)]"></i>',
-                    accentText: 'text-emerald-300 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Okê Arô Caboclo! Salve as forças sagradas das matas e da cura.',
-                    btnStyle: 'bg-gradient-to-r from-emerald-950 via-emerald-600 to-emerald-950 border border-amber-400 hover:from-emerald-900 hover:to-emerald-700 text-white drop-shadow-[0_0_20px_rgba(52,211,153,0.7)]'
+                    accent: '#5fae87',
+                    topIcon: '<i class="fa-solid fa-leaf text-xl sm:text-2xl" style="color:var(--accent)"></i>',
+                    symbolEmblem: '<i class="fa-solid fa-feather-pointed text-lg" style="color:var(--accent)"></i>',
+                    saudacao: 'Okê Arô Caboclo! Salve as forças sagradas das matas e da cura.'
                 };
             } else if (tLow.includes("boiadeiro")) {
                 return {
                     linhaTag: 'LINHA DOS BOIADEIROS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#261503] via-[#3a1d04] to-[#120a01] border-2 border-amber-500/80 shadow-[0_0_35px_rgba(245,158,11,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(245,158,11,0.7)]',
-                    topIcon: '<div class="text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(245,158,11,0.9)]"><i class="fa-solid fa-hat-cowboy"></i></div>',
-                    boxTituloBg: 'plate-amber-gold',
-                    symbolEmblem: '<i class="fa-solid fa-hat-cowboy-side text-amber-400 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(245,158,11,0.9)]"></i>',
-                    accentText: 'text-amber-400 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Xetruá Boiadeiro! Salve a força, a garra e o laço do sertão.',
-                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(245,158,11,0.7)]'
+                    accent: '#c99a4e',
+                    topIcon: '<i class="fa-solid fa-hat-cowboy text-xl sm:text-2xl" style="color:var(--accent)"></i>',
+                    symbolEmblem: '<i class="fa-solid fa-hat-cowboy-side text-lg" style="color:var(--accent)"></i>',
+                    saudacao: 'Xetruá Boiadeiro! Salve a força, a garra e o laço do sertão.'
                 };
             } else if (tLow.includes("marinheiro") || tLow.includes("iemanjá") || corBase === 'sky') {
                 return {
                     linhaTag: 'POVO DO MAR / MARINHEIROS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#02182b] via-[#042846] to-[#010e17] border-2 border-sky-400/80 shadow-[0_0_35px_rgba(56,189,248,0.5)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(56,189,248,0.7)]',
-                    topIcon: '<div class="text-sky-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(56,189,248,0.9)]"><i class="fa-solid fa-anchor"></i></div>',
-                    boxTituloBg: 'plate-sky-gold',
-                    symbolEmblem: '<i class="fa-solid fa-water text-sky-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(56,189,248,0.9)]"></i>',
-                    accentText: 'text-sky-300 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Émaribô! Salve o Povo do Mar e a limpeza das águas sagradas.',
-                    btnStyle: 'bg-gradient-to-r from-sky-950 via-sky-600 to-sky-950 border border-amber-400 hover:from-sky-900 hover:to-sky-700 text-white drop-shadow-[0_0_20px_rgba(56,189,248,0.7)]'
+                    accent: '#6fa8cf',
+                    topIcon: '<i class="fa-solid fa-anchor text-xl sm:text-2xl" style="color:var(--accent)"></i>',
+                    symbolEmblem: '<i class="fa-solid fa-water text-lg" style="color:var(--accent)"></i>',
+                    saudacao: 'Émaribô! Salve o Povo do Mar e a limpeza das águas sagradas.'
                 };
             } else if (tLow.includes("preto") || tLow.includes("velho") || corBase === 'amber') {
                 return {
                     linhaTag: 'SABEDORIA DOS PRETOS-VELHOS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#211403] via-[#332003] to-[#120c01] border-2 border-amber-400/80 shadow-[0_0_35px_rgba(251,191,36,0.4)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(251,191,36,0.7)]',
-                    topIcon: '<div class="text-amber-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(251,191,36,0.9)]"><i class="fa-solid fa-hands-praying"></i></div>',
-                    boxTituloBg: 'plate-amber-gold',
-                    symbolEmblem: '<i class="fa-solid fa-hands-holding text-amber-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(251,191,36,0.9)]"></i>',
-                    accentText: 'text-amber-300 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos.',
-                    btnStyle: 'bg-gradient-to-r from-amber-950 via-amber-600 to-amber-950 border border-amber-400 hover:from-amber-900 hover:to-amber-700 text-white drop-shadow-[0_0_20px_rgba(251,191,36,0.7)]'
+                    accent: '#c9a24f',
+                    topIcon: '<i class="fa-solid fa-hands-praying text-xl sm:text-2xl" style="color:var(--accent)"></i>',
+                    symbolEmblem: '<i class="fa-solid fa-hands-holding text-lg" style="color:var(--accent)"></i>',
+                    saudacao: 'Adorei as Almas! Que a sabedoria e a paciência guiem nossos passos.'
                 };
             } else if (tLow.includes("erê") || tLow.includes("criança") || corBase === 'pink') {
                 return {
                     linhaTag: 'ALEGRIA DE IBEJI / ERÊS',
-                    bgCardStyle: 'bg-gradient-to-b from-[#2b021a] via-[#420427] to-[#14000c] border-2 border-pink-400/80 shadow-[0_0_35px_rgba(244,114,182,0.5)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(244,114,182,0.7)]',
-                    topIcon: '<div class="text-pink-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(244,114,182,0.9)]"><i class="fa-solid fa-candy-cane"></i></div>',
-                    boxTituloBg: 'plate-pink-gold',
-                    symbolEmblem: '<i class="fa-solid fa-cookie-bite text-pink-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(244,114,182,0.9)]"></i>',
-                    accentText: 'text-pink-300 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Onibejada! Salve a pureza, a doçura e a alegria da linha infantil.',
-                    btnStyle: 'bg-gradient-to-r from-pink-950 via-pink-600 to-pink-950 border border-amber-400 hover:from-pink-900 hover:to-pink-700 text-white drop-shadow-[0_0_20px_rgba(244,114,182,0.7)]'
+                    accent: '#cf83a3',
+                    topIcon: '<i class="fa-solid fa-candy-cane text-xl sm:text-2xl" style="color:var(--accent)"></i>',
+                    symbolEmblem: '<i class="fa-solid fa-cookie-bite text-lg" style="color:var(--accent)"></i>',
+                    saudacao: 'Onibejada! Salve a pureza, a doçura e a alegria da linha infantil.'
                 };
             } else {
                 return {
                     linhaTag: 'TRABALHO ESPIRITUAL SACRO',
-                    bgCardStyle: 'bg-gradient-to-b from-[#1b022b] via-[#2d0347] to-[#0c0014] border-2 border-purple-400/80 shadow-[0_0_35px_rgba(192,132,252,0.5)]',
-                    medallionBorder: 'border-2 border-amber-400 bg-stone-950 shadow-[0_0_20px_rgba(192,132,252,0.7)]',
-                    topIcon: '<div class="text-purple-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(192,132,252,0.9)]"><i class="fa-solid fa-spa"></i></div>',
-                    boxTituloBg: 'plate-purple-gold',
-                    symbolEmblem: '<i class="fa-solid fa-cross text-purple-300 text-3xl sm:text-4xl drop-shadow-[0_0_15px_rgba(192,132,252,0.9)]"></i>',
-                    accentText: 'text-purple-300 font-cinzel font-black tracking-[0.3em]',
-                    saudacao: 'Haux Haux! Que as forças sagradas tragam cura, firmeza e elevação.',
-                    btnStyle: 'bg-gradient-to-r from-purple-950 via-purple-600 to-purple-950 border border-amber-400 hover:from-purple-900 hover:to-purple-700 text-white drop-shadow-[0_0_20px_rgba(192,132,252,0.7)]'
+                    accent: '#a68bd1',
+                    topIcon: '<i class="fa-solid fa-spa text-xl sm:text-2xl" style="color:var(--accent)"></i>',
+                    symbolEmblem: '<i class="fa-solid fa-cross text-lg" style="color:var(--accent)"></i>',
+                    saudacao: 'Haux Haux! Que as forças sagradas tragam cura, firmeza e elevação.'
                 };
             }
         }
@@ -2471,14 +2490,14 @@
                                         '<i class="fa-solid fa-circle-check text-emerald-400 text-sm sm:text-base"></i> PRESENÇA CONFIRMADA' +
                                    '</button>';
                 } else {
-                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="w-full py-2.5 sm:py-3 ' + estilo.btnStyle + ' active:scale-95 font-black rounded-2xl text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2.5 tracking-[0.2em] uppercase font-cinzel shadow-2xl cursor-pointer">' +
-                                        '<i class="fa-solid fa-check text-sm sm:text-base"></i> CONFIRMAR PRESENÇA' +
+                    acaoBtnHtml = '<button id="btn-presenca-modal-' + ev.id + '" onclick="confirmarPresencaGira(\'' + ev.id + '\', \'' + ev.categoria + '\')" class="premium-cta w-full py-2.5 sm:py-3 active:scale-95 font-bold rounded-full text-[11px] sm:text-xs transition-all duration-300 tracking-[0.15em] uppercase font-cinzel cursor-pointer">' +
+                                        '<i class="fa-solid fa-check text-xs sm:text-sm"></i> CONFIRMAR PRESENÇA' +
                                    '</button>';
                 }
             } else {
                 acaoBtnHtml = '<div class="flex justify-center pt-1">' +
-                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="btn-zap-exact active:scale-95 transition-all duration-200 cursor-pointer shadow-md">' +
-                                    '<i class="fa-brands fa-whatsapp text-sm"></i>' +
+                                '<button onclick="agendarConsultaWhatsApp(\'' + ev.diaTexto + '\', \'' + (ev.entidade || ev.titulo) + '\', \'' + ev.tipo + '\')" class="premium-whatsapp-btn active:scale-95 cursor-pointer">' +
+                                    '<i class="fa-brands fa-whatsapp text-sm" style="color:#4fd48a"></i>' +
                                     '<span>Agendar</span>' +
                                 '</button>' +
                                '</div>';
@@ -2488,12 +2507,12 @@
             if (ev.publico && ev.publico.trim() !== '') {
                 infoBoxRows.push(`
                     <div class="flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs shadow-inner flex-shrink-0">
+                        <div class="premium-info-icon w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] flex-shrink-0" style="color:var(--accent)">
                             <i class="fa-solid fa-users"></i>
                         </div>
                         <div class="min-w-0">
                             <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Público Alvo</span>
-                            <strong class="text-stone-100 font-bold text-xs sm:text-sm font-sans truncate block">${ev.publico.trim()}</strong>
+                            <strong class="text-[#f3e7cf] font-bold text-xs sm:text-sm font-sans truncate block">${ev.publico.trim()}</strong>
                         </div>
                     </div>
                 `);
@@ -2502,30 +2521,30 @@
             if (ev.horario && ev.horario.trim() !== '') {
                 infoBoxRows.push(`
                     <div class="flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs shadow-inner flex-shrink-0">
+                        <div class="premium-info-icon w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] flex-shrink-0" style="color:var(--accent)">
                             <i class="fa-regular fa-clock"></i>
                         </div>
                         <div class="min-w-0">
                             <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Horário de Início</span>
-                            <strong class="text-amber-300 font-bold text-xs sm:text-sm font-sans truncate block">${ev.horario.trim()}</strong>
+                            <strong class="text-[#f3e7cf] font-bold text-xs sm:text-sm font-sans truncate block">${ev.horario.trim()}</strong>
                         </div>
                     </div>
                 `);
             }
 
             if (ev.status && ev.status.trim() !== '') {
-                var statusColorClass = "text-emerald-400 bg-emerald-950/80 border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.3)]";
-                if (ev.status.toLowerCase().includes("cancel")) statusColorClass = "text-red-400 bg-red-950/80 border-red-500/50 shadow-[0_0_10px_rgba(220,38,38,0.3)]";
-                else if (ev.status.toLowerCase().includes("confirmar")) statusColorClass = "text-amber-400 bg-amber-950/80 border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.3)]";
+                var statusColorClass = "text-emerald-300 bg-emerald-950/60 border-emerald-500/40";
+                if (ev.status.toLowerCase().includes("cancel")) statusColorClass = "text-red-300 bg-red-950/60 border-red-500/40";
+                else if (ev.status.toLowerCase().includes("confirmar")) statusColorClass = "text-amber-300 bg-amber-950/60 border-amber-500/40";
 
                 infoBoxRows.push(`
                     <div class="flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-amber-500/30 flex items-center justify-center text-emerald-400 text-xs shadow-inner flex-shrink-0">
+                        <div class="premium-info-icon w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] flex-shrink-0" style="color:var(--accent)">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
                         <div class="min-w-0">
                             <span class="text-stone-400 font-medium text-[9px] uppercase tracking-widest font-cinzel block">Situação do Trabalho</span>
-                            <span class="inline-flex items-center gap-1.5 font-bold text-xs px-2.5 py-0.5 rounded-full border mt-0.5 ${statusColorClass}">
+                            <span class="inline-flex items-center gap-1.5 font-bold text-[11px] px-2.5 py-0.5 rounded-full border mt-0.5 ${statusColorClass}">
                                 ${ev.status.trim()}
                             </span>
                         </div>
@@ -2535,53 +2554,74 @@
 
             var cardInfoBoxHtml = "";
             if (infoBoxRows.length > 0) {
-                cardInfoBoxHtml = `<div class="bg-black/60 border border-amber-500/30 rounded-2xl p-2.5 sm:p-3 text-left space-y-2 text-xs sm:text-sm z-10 relative shadow-2xl backdrop-blur-xl">` +
-                                    infoBoxRows.join('<div class="h-[1px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent w-full"></div>') +
+                cardInfoBoxHtml = `<div class="premium-plate rounded-xl p-3 sm:p-3.5 text-left space-y-2.5 text-xs sm:text-sm z-10 relative">` +
+                                    infoBoxRows.join('<div class="premium-rule w-full"></div>') +
                                   `</div>`;
             }
 
             var temObservacaoCustom = ev.descricao && ev.descricao.trim() !== '';
             var descTexto = temObservacaoCustom ? ev.descricao.trim() : estilo.saudacao;
+            var eyebrowObservacaoHtml = temObservacaoCustom
+                ? `<span class="text-[8px] sm:text-[9px] uppercase font-cinzel font-bold tracking-[0.3em] block mb-1.5" style="color:var(--accent)">Observação do Terreiro</span>`
+                : '';
             var fraseAutomaticaExtraHtml = temObservacaoCustom
-                ? `<div class="bg-black/50 text-amber-100 p-2.5 sm:p-3.5 rounded-2xl border border-amber-400/30 shadow-xl font-serif italic text-xs sm:text-sm relative backdrop-blur-md mt-2">
-                        <span class="text-amber-400 font-bold text-sm leading-none">“</span>
-                        <span>${estilo.saudacao}</span>
-                        <span class="text-amber-400 font-bold text-sm leading-none">”</span>
+                ? `<div class="mt-3 pt-3 border-t" style="border-color:rgba(216,178,100,0.18)">
+                        <span class="text-[8px] uppercase font-cinzel font-bold tracking-[0.3em] block mb-1.5 opacity-70" style="color:var(--accent)">Saudação da Linha</span>
+                        <p class="font-serif italic text-[#d9c9a3]/65 text-xs sm:text-[13px] leading-relaxed">
+                            “${estilo.saudacao}”
+                        </p>
                    </div>`
                 : '';
 
             var containerModal = document.getElementById("evento-detalhe-modal-content");
             if (containerModal) {
                 containerModal.innerHTML = `
-                    <div class="${estilo.bgCardStyle} rounded-[24px] sm:rounded-[28px] p-3.5 sm:p-5 text-stone-200 text-center space-y-2 sm:space-y-2.5 relative overflow-hidden shadow-2xl backdrop-blur-3xl max-h-[92vh] max-h-[92dvh] overflow-y-auto">
-                        <div class="absolute inset-1.5 sm:inset-2 border border-amber-500/40 rounded-[22px] sm:rounded-[24px] pointer-events-none"></div>
-                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-amber-400 hover:text-white text-base font-bold w-8 h-8 rounded-full bg-black/80 border border-amber-500/40 flex items-center justify-center transition shadow-2xl z-30 cursor-pointer hover:scale-110 active:scale-95">&times;</button>
-                        <span class="text-[9px] sm:text-[11px] uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.25em] sm:tracking-[0.3em]">${estilo.linhaTag}</span>
-                        <div class="relative w-12 h-12 sm:w-14 sm:h-14 mx-auto z-10">
-                            <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
+                    <div class="premium-detail-card rounded-[20px] sm:rounded-[22px] p-4 sm:p-6 text-center relative overflow-hidden max-h-[92vh] max-h-[92dvh] overflow-y-auto" style="--accent:${estilo.accent}">
+                        <div class="absolute top-0 left-0 right-0 h-[3px]" style="background:linear-gradient(90deg, transparent, var(--accent), transparent)"></div>
+                        <button type="button" onclick="fecharModalDetalhesEvento()" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-[11px] w-7 h-7 rounded-full border flex items-center justify-center transition hover:scale-110 active:scale-95 z-30" style="color:var(--accent); border-color:var(--accent); opacity:0.85">&times;</button>
+
+                        <div class="relative z-10 pt-1">
+                            <span class="text-[9px] sm:text-[10px] uppercase font-cinzel font-bold tracking-[0.35em] inline-flex items-center gap-2" style="color:var(--accent)">
+                                <span class="premium-diamond"></span>${estilo.linhaTag}<span class="premium-diamond"></span>
+                            </span>
+                        </div>
+
+                        <div class="relative w-12 h-12 sm:w-14 sm:h-14 mx-auto mt-3 z-10">
+                            <div class="premium-medallion-ring w-full h-full rounded-full bg-[#0d0b08] flex items-center justify-center overflow-hidden">
                                 ${estilo.topIcon}
                             </div>
                         </div>
-                        <div class="space-y-0.5 z-10 relative">
-                            <span class="${estilo.accentText} uppercase block font-cinzel text-[11px] sm:text-xs tracking-[0.2em]">${nomeDiaSemana.toUpperCase()}</span>
-                            <h3 class="text-2xl sm:text-3xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+
+                        <div class="mt-3 space-y-1 z-10 relative">
+                            <span class="text-[#d9c9a3]/70 uppercase block font-cinzel text-[10px] sm:text-xs tracking-[0.3em]">${nomeDiaSemana.toUpperCase()}</span>
+                            <h3 class="text-2xl sm:text-3xl font-serif font-bold text-[#f3e7cf] tracking-tight">${diaFmt}/${mesNum}/${details.ano}</h3>
+                            <div class="premium-rule w-14 mx-auto mt-2"></div>
                         </div>
-                        <div class="relative z-10 my-1">
-                            <div class="${estilo.boxTituloBg} p-2.5 sm:p-3 rounded-2xl relative shadow-2xl">
-                                <span class="text-[8px] sm:text-[9px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.2em] sm:tracking-[0.3em] block mb-0.5">GIRA DE</span>
-                                <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">${ev.titulo.replace('Gira de ', '')}</h4>
+
+                        <div class="relative z-10 mt-4">
+                            <div class="premium-plate p-2.5 sm:p-3 rounded-xl relative">
+                                <div class="premium-corner premium-corner-tl"></div>
+                                <div class="premium-corner premium-corner-tr"></div>
+                                <div class="premium-corner premium-corner-bl"></div>
+                                <div class="premium-corner premium-corner-br"></div>
+                                <span class="text-[8px] sm:text-[9px] uppercase font-cinzel font-bold tracking-[0.3em] block mb-1" style="color:var(--accent)">GIRA DE</span>
+                                <h4 class="font-serif font-bold text-[#f3e7cf] text-base sm:text-lg tracking-wide uppercase leading-snug">${ev.titulo.replace('Gira de ', '')}</h4>
                             </div>
                         </div>
-                        ${cardInfoBoxHtml}
-                        <div class="z-10 relative pt-0.5">
-                            <div class="bg-black/70 text-amber-50 p-2.5 sm:p-3 rounded-2xl border border-amber-400/40 shadow-2xl font-serif font-semibold not-italic text-sm relative backdrop-blur-md">
-                                <span class="text-amber-400 font-bold text-base leading-none">“</span>
-                                <span>${descTexto}</span>
-                                <span class="text-amber-400 font-bold text-base leading-none">”</span>
+
+                        <div class="mt-3">${cardInfoBoxHtml}</div>
+
+                        <div class="z-10 relative mt-3.5">
+                            <div class="premium-quote-block py-3 px-1">
+                                ${eyebrowObservacaoHtml}
+                                <p class="font-sans font-medium text-[#f7ecd4] text-sm sm:text-base leading-relaxed tracking-wide">
+                                    <span style="color:var(--accent)" class="not-italic">“</span>${descTexto}<span style="color:var(--accent)" class="not-italic">”</span>
+                                </p>
+                                ${fraseAutomaticaExtraHtml}
                             </div>
-                            ${fraseAutomaticaExtraHtml}
                         </div>
-                        <div class="pt-0.5 z-10 relative">
+
+                        <div class="mt-4 z-10 relative">
                             ${acaoBtnHtml}
                         </div>
                     </div>
@@ -3559,8 +3599,8 @@
             }
             var btnModalElem = document.getElementById("btn-presenca-modal-" + id) || document.getElementById("btn-presenca-modal-supa-" + idNorm) || document.getElementById("btn-presenca-modal-loc-" + idNorm);
             if (btnModalElem) {
-                btnModalElem.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> PRESENÇA CONFIRMADA';
-                btnModalElem.className = 'w-full py-4 bg-emerald-950/90 border-2 border-emerald-500/80 text-emerald-300 font-bold rounded-2xl text-xs sm:text-sm cursor-default flex items-center justify-center gap-2 font-cinzel tracking-[0.2em]';
+                btnModalElem.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> PRESENÇA CONFIRMADA';
+                btnModalElem.className = 'premium-cta-confirmed w-full py-2.5 sm:py-3 rounded-full text-[11px] sm:text-xs cursor-default font-cinzel tracking-[0.15em] font-bold';
                 btnModalElem.disabled = true;
             }
         }
@@ -3733,41 +3773,50 @@
             var temObservacaoCustomPrev = descricaoDigitada !== "";
             var descTextoPrev = temObservacaoCustomPrev ? descricaoDigitada : estilo.saudacao;
             var fraseAutomaticaExtraPrevHtml = temObservacaoCustomPrev
-                ? `<div class="bg-black/50 text-amber-100 p-2.5 rounded-2xl border border-amber-400/30 shadow-lg font-serif italic text-xs relative backdrop-blur-md mt-2">
-                        “${estilo.saudacao}”
-                   </div>`
+                ? `<p class="font-sans font-medium text-[#f0e3c8] text-sm sm:text-base leading-relaxed tracking-wide mt-2.5">
+                        <span style="color:var(--accent)" class="not-italic">“</span>${estilo.saudacao}<span style="color:var(--accent)" class="not-italic">”</span>
+                   </p>`
                 : '';
 
             prevBox.innerHTML = `
-                <div class="${estilo.bgCardStyle} rounded-[36px] p-6 text-stone-200 text-center space-y-4 relative overflow-hidden shadow-2xl backdrop-blur-3xl">
-                    <div class="absolute inset-2 border border-amber-500/40 rounded-[30px] pointer-events-none"></div>
+                <div class="premium-detail-card rounded-[24px] p-5 sm:p-6 text-center relative overflow-hidden" style="--accent:${estilo.accent}">
+                    <div class="absolute top-0 left-0 right-0 h-[3px]" style="background:linear-gradient(90deg, transparent, var(--accent), transparent)"></div>
 
-                    <span class="text-[10px] uppercase font-cinzel text-amber-300 font-bold block pt-1 tracking-[0.3em]">${estilo.linhaTag}</span>
+                    <span class="text-[10px] uppercase font-cinzel font-bold tracking-[0.35em] inline-flex items-center gap-2 pt-1" style="color:var(--accent)">
+                        <span class="premium-diamond"></span>${estilo.linhaTag}<span class="premium-diamond"></span>
+                    </span>
 
-                    <div class="relative w-20 h-20 mx-auto z-10">
-                        <div class="w-full h-full rounded-full ${estilo.medallionBorder} flex items-center justify-center overflow-hidden">
+                    <div class="relative w-16 h-16 sm:w-[70px] sm:h-[70px] mx-auto mt-4 z-10">
+                        <div class="premium-medallion-ring w-full h-full rounded-full bg-[#0d0b08] flex items-center justify-center overflow-hidden">
                             ${estilo.topIcon}
                         </div>
                     </div>
 
-                    <div class="space-y-1 z-10 relative">
-                        <span class="${estilo.accentText} uppercase block font-cinzel text-xs tracking-[0.25em]">${nomeDiaSemana.toUpperCase()}</span>
-                        <h3 class="text-3xl sm:text-4xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-500 tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">${diaFmt}/${mesNum}/${details.ano}</h3>
+                    <div class="mt-3 space-y-1 z-10 relative">
+                        <span class="text-[#d9c9a3]/70 uppercase block font-cinzel text-xs tracking-[0.3em]">${nomeDiaSemana.toUpperCase()}</span>
+                        <h3 class="text-3xl sm:text-4xl font-serif font-bold text-[#f3e7cf] tracking-tight">${diaFmt}/${mesNum}/${details.ano}</h3>
+                        <div class="premium-rule w-16 mx-auto mt-2"></div>
                     </div>
 
-                    <div class="relative z-10 my-2">
-                        <div class="${estilo.boxTituloBg} p-3.5 rounded-2xl relative shadow-xl">
-                            <span class="text-[8px] uppercase font-cinzel font-bold text-amber-300/90 tracking-[0.25em] block mb-0.5">GIRA DE</span>
-                            <h4 class="font-serif font-extrabold text-stone-100 text-lg sm:text-xl tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-tight">${titulo ? titulo.replace('Gira de ', '') : 'SELECIONE O TÍTULO'}</h4>
+                    <div class="relative z-10 mt-4">
+                        <div class="premium-plate p-3.5 rounded-xl relative">
+                            <div class="premium-corner premium-corner-tl"></div>
+                            <div class="premium-corner premium-corner-tr"></div>
+                            <div class="premium-corner premium-corner-bl"></div>
+                            <div class="premium-corner premium-corner-br"></div>
+                            <span class="text-[8px] uppercase font-cinzel font-bold tracking-[0.3em] block mb-1" style="color:var(--accent)">GIRA DE</span>
+                            <h4 class="font-serif font-bold text-[#f3e7cf] text-lg sm:text-xl tracking-wide uppercase leading-snug">${titulo ? titulo.replace('Gira de ', '') : 'SELECIONE O TÍTULO'}</h4>
                         </div>
                     </div>
 
-                    <div class="z-10 relative pt-1">
-                        <div class="bg-black/70 text-amber-50 p-3 rounded-2xl border border-amber-400/40 shadow-xl font-serif font-semibold not-italic text-sm relative backdrop-blur-md">
-                            “${descTextoPrev}”
+                    <div class="z-10 relative mt-4">
+                        <div class="premium-quote-block py-3 px-1">
+                            <p class="font-sans font-medium text-[#f7ecd4] text-base leading-relaxed tracking-wide">
+                                <span style="color:var(--accent)" class="not-italic">“</span>${descTextoPrev}<span style="color:var(--accent)" class="not-italic">”</span>
+                            </p>
                         </div>
                         ${fraseAutomaticaExtraPrevHtml}
-                        <div class="mt-2.5 text-center">
+                        <div class="mt-3 text-center text-lg">
                             ${estilo.symbolEmblem}
                         </div>
                     </div>
