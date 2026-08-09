@@ -984,7 +984,7 @@
                                     <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-bold"><i class="fa-regular fa-calendar"></i></div>
                                 </div>
                                 <div class="flex items-baseline gap-2 mt-2 h-10">
-                                    <span class="text-3xl font-sans font-black text-stone-900 leading-none">7</span>
+                                    <span id="stat-hoje" class="text-3xl font-sans font-black text-stone-900 leading-none">--</span>
                                 </div>
                                 <span class="text-xs font-semibold text-stone-700 mt-2 block">Acessos hoje</span>
                             </div>
@@ -1000,7 +1000,7 @@
                                     <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-chart-simple"></i></div>
                                 </div>
                                 <div class="flex items-baseline gap-2 mt-2 h-10">
-                                    <span class="text-3xl font-sans font-black text-stone-900 leading-none">32</span>
+                                    <span id="stat-semana" class="text-3xl font-sans font-black text-stone-900 leading-none">--</span>
                                 </div>
                                 <span class="text-xs font-semibold text-stone-700 mt-2 block">Acessos na semana</span>
                             </div>
@@ -1025,15 +1025,15 @@
                                 <span class="text-xs sm:text-sm font-semibold text-stone-700 block">Maior volume de acessos concentrado entre:</span>
                                 <div class="flex items-center gap-2">
                                     <i class="fa-solid fa-fire text-amber-600 text-lg"></i>
-                                    <span class="text-xl sm:text-2xl font-serif font-extrabold text-umbanda-green">19:00h e 22:00h</span>
+                                    <span id="stat-horario-pico" class="text-xl sm:text-2xl font-serif font-extrabold text-umbanda-green">--</span>
                                 </div>
 
                                 <div class="pt-2">
                                     <div class="relative w-full bg-stone-100 h-3 rounded-full overflow-hidden border border-stone-200">
-                                        <div class="absolute top-0 bottom-0 left-[72%] right-[10%] bg-amber-500 rounded-full shadow-xs"></div>
+                                        <div id="stat-horario-pico-barra" class="absolute top-0 bottom-0 bg-amber-500 rounded-full shadow-xs" style="left:0%; right:100%;"></div>
                                     </div>
                                     <div class="flex justify-between text-xs text-stone-600 font-bold mt-1 px-0.5">
-                                        <span>00h</span><span>06h</span><span>12h</span><span class="text-amber-700 font-extrabold">18h (PICO)</span><span>24h</span>
+                                        <span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span>
                                     </div>
                                 </div>
                             </div>
@@ -1059,21 +1059,21 @@
                         <div class="space-y-3 text-xs">
                             <div>
                                 <div class="flex justify-between font-bold mb-1">
-                                    <span class="text-stone-800 flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-emerald-600"></i> Celular (Smartphone - Android)</span>
-                                    <span class="text-emerald-900 font-extrabold">50% <span class="text-stone-600 font-semibold">(11 acessos)</span></span>
+                                    <span class="text-stone-800 flex items-center gap-2"><i class="fa-solid fa-mobile-screen text-emerald-600"></i> Celular (Smartphone)</span>
+                                    <span id="stat-dispositivo-mobile-texto" class="text-emerald-900 font-extrabold">-- <span class="text-stone-600 font-semibold">(-- acessos)</span></span>
                                 </div>
                                 <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                                    <div class="bg-emerald-600 h-full rounded-full" style="width: 50%"></div>
+                                    <div id="stat-dispositivo-mobile-barra" class="bg-emerald-600 h-full rounded-full" style="width: 0%"></div>
                                 </div>
                             </div>
 
                             <div>
                                 <div class="flex justify-between font-bold mb-1">
-                                    <span class="text-stone-800 flex items-center gap-2"><i class="fa-solid fa-desktop text-sky-600"></i> Computador (PC / Windows)</span>
-                                    <span class="text-sky-900 font-extrabold">50% <span class="text-stone-600 font-semibold">(10 acessos)</span></span>
+                                    <span class="text-stone-800 flex items-center gap-2"><i class="fa-solid fa-desktop text-sky-600"></i> Computador</span>
+                                    <span id="stat-dispositivo-desktop-texto" class="text-sky-900 font-extrabold">-- <span class="text-stone-600 font-semibold">(-- acessos)</span></span>
                                 </div>
                                 <div class="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-                                    <div class="bg-sky-600 h-full rounded-full" style="width: 50%"></div>
+                                    <div id="stat-dispositivo-desktop-barra" class="bg-sky-600 h-full rounded-full" style="width: 0%"></div>
                                 </div>
                             </div>
                         </div>
@@ -1085,9 +1085,9 @@
                                 <h4 class="font-bold text-stone-900 mb-2 flex items-center gap-2">
                                     <i class="fa-brands fa-whatsapp text-[#3e9366]"></i> ORIGEM DOS CLIQUES
                                 </h4>
-                                <span class="text-stone-800 block font-bold">WhatsApp / Links Diretos</span><br>
-                                <span class="text-3xl font-sans font-black text-stone-900 block mt-1">100%</span>
-                                <span class="text-xs font-semibold text-stone-700 block mt-0.5">28 acessos registrados</span><br>
+                                <span id="stat-origem-nome" class="text-stone-800 block font-bold">--</span><br>
+                                <span id="stat-origem-pct" class="text-3xl font-sans font-black text-stone-900 block mt-1">--</span>
+                                <span id="stat-origem-contagem" class="text-xs font-semibold text-stone-700 block mt-0.5">-- acessos registrados</span><br>
                                 <span class="inline-block mt-2 text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded-full">
                                     • Origem principal dos acessos
                                 </span>
@@ -1095,7 +1095,7 @@
                             <div class="w-16 h-16 flex-shrink-0">
                                 <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                                     <path class="text-stone-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                    <path class="text-[#3e9366]" stroke-dasharray="100, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path id="stat-origem-anel" class="text-[#3e9366]" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                                 </svg>
                             </div>
                         </div>
@@ -1105,9 +1105,9 @@
                                 <h4 class="font-bold text-stone-900 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-earth-americas text-sky-600"></i> PAÍS DOS ACESSOS
                                 </h4>
-                                <span class="text-stone-800 block font-bold">Brasil <span class="text-xs bg-sky-100 text-sky-900 font-bold px-1.5 py-0.5 rounded font-mono ml-1">BR</span></span><br>
-                                <span class="text-3xl font-sans font-black text-stone-900 block mt-1">100%</span>
-                                <span class="text-xs font-semibold text-stone-700 block mt-0.5">28 acessos registrados</span><br>
+                                <span id="stat-pais-nome" class="text-stone-800 block font-bold">--</span><br>
+                                <span id="stat-pais-pct" class="text-3xl font-sans font-black text-stone-900 block mt-1">--</span>
+                                <span id="stat-pais-contagem" class="text-xs font-semibold text-stone-700 block mt-0.5">-- acessos registrados</span><br>
                                 <span class="inline-block mt-2 text-xs font-bold text-sky-900 bg-sky-50 border border-sky-300 px-2 py-0.5 rounded-full">
                                     • Origem principal dos acessos
                                 </span>
@@ -1115,7 +1115,7 @@
                             <div class="w-16 h-16 flex-shrink-0">
                                 <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                                     <path class="text-stone-100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                    <path class="text-sky-600" stroke-dasharray="100, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path id="stat-pais-anel" class="text-sky-600" stroke-dasharray="0, 100" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                                 </svg>
                             </div>
                         </div>
@@ -1700,7 +1700,7 @@
         </footer>
     </div>
 
-    <!-- JS separado em arquivo proprio (antes era inline) -->
+    <!-- JS separado em arquivos externos (ordem importa: variaveis/funcoes globais compartilhadas) -->
     <script>
         var SUPABASE_URL = "https://ndkooiyqhafsinxawzxe.supabase.co";
         var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ka29vaXlxaGFmc2lueGF3enhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzNjk3MzAsImV4cCI6MjEwMDk0NTczMH0.eorPKHoQbKYk1DyONuAdBp9noAUzncFtsXGaxaBwTIM";
@@ -2946,7 +2946,7 @@
             if (elFrase) elFrase.innerText = '"' + f.frase + '"';
             if (elOrixa) elOrixa.innerText = "BÊNÇÃO DE " + f.orixa.toUpperCase();
 
-            fetchRealGoatCounterData(); carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
+            fetchRealGoatCounterData(); carregarEstatisticasReaisGoatCounter(); carregarCategoriasCustomizadas(); carregarListaAtividadesAdmin();
             atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
             atualizarIndicadoresPassos();
@@ -4276,6 +4276,98 @@
                     .catch(() => tryEndpoint(index + 1));
             }
             tryEndpoint(0);
+        }
+        // ====================================================================
+        // ESTATÍSTICAS REAIS DO GOATCOUNTER (via Edge Function segura)
+        // --------------------------------------------------------------------
+        // Só o "Total de pessoas que abriram o site" era buscado de verdade
+        // (função fetchRealGoatCounterData, em 07-init-app.js). Todo o resto
+        // do painel (Hoje, Esta semana, horário de pico, dispositivo, origem
+        // dos cliques, país) era número fixo digitado no HTML.
+        //
+        // Esta função busca os dados reais na Edge Function "goatcounter-stats"
+        // (que guarda a chave secreta da API do GoatCounter no servidor) e
+        // preenche os elementos correspondentes no painel administrativo.
+        // ====================================================================
+
+        function formatarHorarioPico(horaInicio, horaFim) {
+            var pad2 = function (n) { return String(n).padStart(2, "0"); };
+            return pad2(horaInicio) + ":00h e " + pad2(horaFim) + ":00h";
+        }
+
+        async function carregarEstatisticasReaisGoatCounter() {
+            var elHoje = document.getElementById("stat-hoje");
+            var elSemana = document.getElementById("stat-semana");
+            var elHorarioPico = document.getElementById("stat-horario-pico");
+            var elHorarioPicoBarra = document.getElementById("stat-horario-pico-barra");
+            var elMobileTexto = document.getElementById("stat-dispositivo-mobile-texto");
+            var elMobileBarra = document.getElementById("stat-dispositivo-mobile-barra");
+            var elDesktopTexto = document.getElementById("stat-dispositivo-desktop-texto");
+            var elDesktopBarra = document.getElementById("stat-dispositivo-desktop-barra");
+            var elOrigemNome = document.getElementById("stat-origem-nome");
+            var elOrigemPct = document.getElementById("stat-origem-pct");
+            var elOrigemContagem = document.getElementById("stat-origem-contagem");
+            var elOrigemAnel = document.getElementById("stat-origem-anel");
+            var elPaisNome = document.getElementById("stat-pais-nome");
+            var elPaisPct = document.getElementById("stat-pais-pct");
+            var elPaisContagem = document.getElementById("stat-pais-contagem");
+            var elPaisAnel = document.getElementById("stat-pais-anel");
+
+            if (!elHoje) return; // painel de estatísticas não está na tela
+
+            try {
+                var url = SUPABASE_URL + "/functions/v1/goatcounter-stats";
+                var resposta = await fetch(url);
+                if (!resposta.ok) throw new Error("HTTP " + resposta.status);
+                var dados = await resposta.json();
+                if (dados.error) throw new Error(dados.error);
+
+                if (elHoje) elHoje.innerText = dados.hoje;
+                if (elSemana) elSemana.innerText = dados.semana;
+
+                if (dados.horario_pico) {
+                    var hi = dados.horario_pico.hora_inicio, hf = dados.horario_pico.hora_fim;
+                    if (elHorarioPico) elHorarioPico.innerText = formatarHorarioPico(hi, hf);
+                    if (elHorarioPicoBarra) {
+                        var posicaoPct = (hi / 24) * 100;
+                        var larguraPct = (1 / 24) * 100;
+                        elHorarioPicoBarra.style.left = posicaoPct + "%";
+                        elHorarioPicoBarra.style.right = (100 - posicaoPct - larguraPct) + "%";
+                    }
+                }
+
+                if (dados.dispositivos) {
+                    var mob = dados.dispositivos.mobile, desk = dados.dispositivos.desktop;
+                    if (elMobileTexto) elMobileTexto.innerHTML = mob.pct + "% <span class=\"text-stone-600 font-semibold\">(" + mob.count + " acessos)</span>";
+                    if (elMobileBarra) elMobileBarra.style.width = mob.pct + "%";
+                    if (elDesktopTexto) elDesktopTexto.innerHTML = desk.pct + "% <span class=\"text-stone-600 font-semibold\">(" + desk.count + " acessos)</span>";
+                    if (elDesktopBarra) elDesktopBarra.style.width = desk.pct + "%";
+                }
+
+                if (dados.origem_cliques) {
+                    if (elOrigemNome) elOrigemNome.innerText = dados.origem_cliques.nome;
+                    if (elOrigemPct) elOrigemPct.innerText = dados.origem_cliques.pct + "%";
+                    if (elOrigemContagem) elOrigemContagem.innerText = dados.origem_cliques.count + " acessos registrados";
+                    if (elOrigemAnel) elOrigemAnel.setAttribute("stroke-dasharray", dados.origem_cliques.pct + ", 100");
+                } else {
+                    if (elOrigemNome) elOrigemNome.innerText = "Sem dados suficientes";
+                }
+
+                if (dados.pais) {
+                    if (elPaisNome) elPaisNome.innerText = dados.pais.nome;
+                    if (elPaisPct) elPaisPct.innerText = dados.pais.pct + "%";
+                    if (elPaisContagem) elPaisContagem.innerText = dados.pais.count + " acessos registrados";
+                    if (elPaisAnel) elPaisAnel.setAttribute("stroke-dasharray", dados.pais.pct + ", 100");
+                } else {
+                    if (elPaisNome) elPaisNome.innerText = "Sem dados suficientes";
+                }
+            } catch (erro) {
+                console.warn("Não foi possível carregar as estatísticas reais do GoatCounter:", erro);
+                [elHoje, elSemana].forEach(function (el) { if (el) el.innerText = "?"; });
+                if (elHorarioPico) elHorarioPico.innerText = "Indisponível";
+                if (elOrigemNome) elOrigemNome.innerText = "Indisponível";
+                if (elPaisNome) elPaisNome.innerText = "Indisponível";
+            }
         }
     </script>
 </body>
