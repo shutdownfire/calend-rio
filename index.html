@@ -133,7 +133,7 @@
     <script>
         (function() {
             // AUMENTE ESSE NÚMERO/TEXTO SEMPRE QUE PUBLICAR UMA ATUALIZAÇÃO NO index.html
-            var APP_VERSION = "2026-08-09.10";
+            var APP_VERSION = "2026-08-09.11";
             try {
                 var versaoSalva = localStorage.getItem("app_versao_atual");
                 if (versaoSalva !== APP_VERSION) {
@@ -1155,8 +1155,8 @@
                 </div>
             </div>
 
-            <div class="bg-stone-100 border-b border-stone-200 px-3 sm:px-4 pt-2 flex flex-wrap justify-between items-center gap-2 text-xs sm:text-sm flex-shrink-0">
-                <div class="flex gap-1 sm:gap-2 overflow-x-auto max-w-full [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div class="bg-stone-100 border-b border-stone-200 px-3 sm:px-4 pt-2 flex flex-wrap justify-between items-center gap-2 text-xs sm:text-sm flex-shrink-0 relative">
+                <div id="admin-tabs-scroll" class="flex gap-1 sm:gap-2 overflow-x-auto max-w-full [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                     <button id="tab-btn-stats" onclick="switchAdminTab('stats')" class="px-3 sm:px-4 py-2 font-bold text-umbanda-green border-b-2 border-umbanda-green transition flex items-center gap-1.5 text-xs sm:text-sm whitespace-nowrap flex-shrink-0">
                         <i class="fa-solid fa-chart-pie"></i> Estatísticas
                     </button>
@@ -1169,6 +1169,9 @@
                     <button id="tab-btn-aniversariantes" onclick="switchAdminTab('aniversariantes')" class="px-3 sm:px-4 py-2 font-bold text-stone-600 border-b-2 border-transparent hover:text-pink-600 transition flex items-center gap-1.5 text-xs sm:text-sm whitespace-nowrap flex-shrink-0">
                         <i class="fa-solid fa-cake-candles text-pink-500"></i> Aniversariantes
                     </button>
+                </div>
+                <div id="admin-tabs-scroll-hint" class="hidden sm:hidden pointer-events-none absolute right-0 top-0 bottom-2 w-9 items-center justify-end pr-0.5 bg-gradient-to-l from-stone-100 via-stone-100/90 to-transparent">
+                    <i class="fa-solid fa-chevron-right text-stone-500 text-[10px] animate-pulse"></i>
                 </div>
             </div>
 
@@ -3694,12 +3697,47 @@
             atualizarInfoDiaDigitado();
             atualizarPrevisualizacao();
             atualizarIndicadoresPassos();
+            iniciarDicaScrollAbasAdmin();
         }
 
         function closeAdminStats() { 
             var adminModal = document.getElementById("admin-modal"); if (adminModal) adminModal.classList.add("hidden"); 
             document.body.classList.remove("overflow-hidden");
             cancelarEdicaoAniversariante();
+        }
+
+        function iniciarDicaScrollAbasAdmin() {
+            var trilho = document.getElementById("admin-tabs-scroll");
+            var dica = document.getElementById("admin-tabs-scroll-hint");
+            if (!trilho || !dica) return;
+
+            function temMaisConteudoPraVer() {
+                return trilho.scrollWidth > trilho.clientWidth + 4;
+            }
+
+            function atualizarVisibilidadeDica() {
+                var chegouNoFim = trilho.scrollLeft + trilho.clientWidth >= trilho.scrollWidth - 4;
+                var mostrar = temMaisConteudoPraVer() && !chegouNoFim;
+                dica.classList.toggle("hidden", !mostrar);
+                dica.classList.toggle("flex", mostrar);
+            }
+
+            setTimeout(function () {
+                atualizarVisibilidadeDica();
+
+                // pequeno "empurrão" nas abas pra pessoa perceber, na hora, que dá pra arrastar
+                if (temMaisConteudoPraVer() && trilho.scrollLeft === 0) {
+                    trilho.scrollTo({ left: 46, behavior: "smooth" });
+                    setTimeout(function () {
+                        trilho.scrollTo({ left: 0, behavior: "smooth" });
+                    }, 550);
+                }
+            }, 400);
+
+            trilho.removeEventListener("scroll", atualizarVisibilidadeDica);
+            trilho.addEventListener("scroll", atualizarVisibilidadeDica, { passive: true });
+            window.removeEventListener("resize", atualizarVisibilidadeDica);
+            window.addEventListener("resize", atualizarVisibilidadeDica);
         }
 
         function switchAdminTab(tabName) {
