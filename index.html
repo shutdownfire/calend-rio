@@ -4317,8 +4317,17 @@
 
             try {
                 var url = SUPABASE_URL + "/functions/v1/goatcounter-stats";
-                var resposta = await fetch(url);
-                if (!resposta.ok) throw new Error("HTTP " + resposta.status);
+                var resposta = await fetch(url, {
+                    headers: {
+                        "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+                        "apikey": SUPABASE_ANON_KEY
+                    }
+                });
+                if (!resposta.ok) {
+                    var corpoErro = "";
+                    try { corpoErro = await resposta.text(); } catch (e2) {}
+                    throw new Error("HTTP " + resposta.status + (corpoErro ? " - " + corpoErro : ""));
+                }
                 var dados = await resposta.json();
                 if (dados.error) throw new Error(dados.error);
 
