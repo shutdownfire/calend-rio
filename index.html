@@ -2675,9 +2675,9 @@
 
                     var tituloHtml = '';
                     if (tituloGrid === 'Organização e Limpeza' || ev.categoria === 'amber') {
-                        tituloHtml = '<p class="font-bold text-[7.5px] sm:text-[10.5px] text-stone-900 leading-tight text-center font-sans w-full tracking-tight"><span class="block">Organização</span><span class="block">Limpeza</span></p>';
+                        tituloHtml = '<p class="js-fit-title font-bold text-[7.5px] sm:text-[10.5px] text-stone-900 leading-tight text-center font-sans w-full tracking-tight"><span class="block">Organização</span><span class="block">Limpeza</span></p>';
                     } else {
-                        tituloHtml = '<p class="font-bold text-[7.5px] sm:text-[11.5px] text-stone-900 leading-tight sm:leading-snug tracking-tight text-center font-sans w-full" style="overflow-wrap:normal; word-break:keep-all; hyphens:none;">' + tituloGrid + '</p>';
+                        tituloHtml = '<p class="js-fit-title font-bold text-[7.5px] sm:text-[11.5px] text-stone-900 leading-tight sm:leading-snug tracking-tight text-center font-sans w-full" style="overflow-wrap:normal; word-break:keep-all; hyphens:none;">' + tituloGrid + '</p>';
                     }
 
                     html += '<div onclick="abrirModalDetalhesEvento(' + d + ')" class="min-h-[84px] sm:min-h-[96px] p-0.5 sm:p-2 ' + bgClass + ' rounded-xl sm:rounded-2xl border flex flex-col justify-between items-center relative hover:shadow-md transition cursor-pointer active:scale-95 overflow-hidden shadow-2xs group">' +
@@ -2697,7 +2697,35 @@
                 }
             }
             gridContainer.innerHTML = html;
+            ajustarTextosCalendarioParaCaber();
         }
+
+        // Encolhe automaticamente o texto de cada card do calendario ate ele caber
+        // por completo na largura disponivel, sem cortar nenhuma palavra.
+        // Roda depois de toda renderizacao da grade e tambem quando a tela muda de tamanho.
+        function ajustarTextosCalendarioParaCaber() {
+            requestAnimationFrame(function() {
+                var elementos = document.querySelectorAll('#grid-dias-calendario .js-fit-title');
+                elementos.forEach(function(el) {
+                    el.style.fontSize = '';
+                    var tamanhoAtual = parseFloat(window.getComputedStyle(el).fontSize);
+                    var tentativas = 0;
+                    while (el.scrollWidth > el.clientWidth + 0.5 && tamanhoAtual > 5.5 && tentativas < 24) {
+                        tamanhoAtual -= 0.3;
+                        el.style.fontSize = tamanhoAtual + 'px';
+                        tentativas++;
+                    }
+                });
+            });
+        }
+
+        (function() {
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(ajustarTextosCalendarioParaCaber, 150);
+            });
+        })();
 
         function formatarValorMoeda(input) {
             var val = input.value.trim();
