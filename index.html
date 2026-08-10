@@ -140,8 +140,25 @@
                 // correr o risco de ficar recarregando em loop. Espera um momento
                 // seguro (sem modal aberto e sem interação recente) antes de recarregar,
                 // pra não cortar a experiência da pessoa no meio.
+                //
+                // IMPORTANTE: na PRIMEIRA instalação do worker (cache limpo, 1ª visita),
+                // ele também assume o controle da página na hora (por causa do
+                // "clients.claim()" no próprio arquivo do worker) — só que aí não é uma
+                // atualização de verdade, é só o app nascendo. Recarregar nesse momento
+                // fazia o OneSignal.init() rodar de novo em seguida, e a Welcome
+                // Notification da OneSignal saía 2x em vez de 1x. Por isso só recarrega
+                // quando JÁ existia um worker controlando a página antes (ou seja, é
+                // realmente uma atualização substituindo uma versão antiga).
+                var tinhaControllerAoCarregar = !!navigator.serviceWorker.controller;
                 var recargaPorSwJaAgendada = false;
                 navigator.serviceWorker.addEventListener('controllerchange', function () {
+                    if (!tinhaControllerAoCarregar) {
+                        // Primeira instalação — não é atualização, não recarrega.
+                        // Qualquer controllerchange seguinte já conta como atualização real.
+                        tinhaControllerAoCarregar = true;
+                        return;
+                    }
+
                     var jaRecarregou = false;
                     try { jaRecarregou = sessionStorage.getItem('sw_reload_ja_feito') === '1'; } catch(e) {}
                     if (jaRecarregou || recargaPorSwJaAgendada) return;
