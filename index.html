@@ -116,7 +116,23 @@
                     // ARQUIVO REAL "OneSignalSDKWorker.js" (na raiz do site) faz tanto o
                     // cache offline do PWA quanto o push da OneSignal, num único worker,
                     // evitando conflito de scope entre os dois.
-                    navigator.serviceWorker.register('./OneSignalSDKWorker.js').catch(function(){});
+                    //
+                    // A OneSignal já registra esse MESMO arquivo sozinha (via
+                    // "serviceWorkerPath" no OneSignal.init lá em cima). Registrar de novo
+                    // aqui na mão criava uma SEGUNDA inscrição de push quase simultânea,
+                    // e cada inscrição nova dispara a "Welcome Notification" da OneSignal —
+                    // por isso a notificação de boas-vindas/teste vinha 2x em vez de 1x.
+                    // Então só registra na mão se a OneSignal ainda não tiver registrado.
+                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                        var jaRegistradoPelaOneSignal = regs.some(function(r) {
+                            return r.active && r.active.scriptURL && r.active.scriptURL.indexOf('OneSignalSDKWorker.js') !== -1;
+                        });
+                        if (!jaRegistradoPelaOneSignal) {
+                            navigator.serviceWorker.register('./OneSignalSDKWorker.js').catch(function(){});
+                        }
+                    }).catch(function() {
+                        navigator.serviceWorker.register('./OneSignalSDKWorker.js').catch(function(){});
+                    });
                 });
 
                 // Assim que um worker novo assume o controle da página, recarrega
