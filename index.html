@@ -3884,6 +3884,10 @@
 
         var GLOBAL_PUSH_CHANNEL = null;
         var ULTIMO_ID_NOTIFICACAO_EXIBIDO = localStorage.getItem("ultimo_id_notificacao_exibido") || null;
+        // Enquanto isso for false, NENHUMA notificação é disparada automaticamente.
+        // Evita que, no instante em que o app abre (cache limpo, 1ª visita, reinstalação),
+        // ele "descubra" notificações antigas do banco e as dispare achando que são novas.
+        var NOTIFICACOES_PRONTAS_PARA_DISPARAR = false;
 
         function solicitarPermissaoNotificacaoNativa() {
             if (window.OneSignalDeferred) {
@@ -3908,10 +3912,59 @@
             }
         }
 
+        // Se o app abre "sem memória" (cache limpo, 1ª visita, reinstalação), busca no banco
+        // qual é a notificação mais recente JÁ EXISTENTE e marca ela como "já vista" — sem
+        // exibir nada. Só depois disso o disparo automático é liberado. Isso resolve a causa
+        // raiz: antes, sem essa memória, o app achava que o último registro do histórico era
+        // "novo" e disparava ele de novo assim que abria.
+        async function inicializarUltimaNotificacaoVista() {
+            if (ULTIMO_ID_NOTIFICACAO_EXIBIDO || !supabaseClient) {
+                NOTIFICACOES_PRONTAS_PARA_DISPARAR = true;
+                return;
+            }
+            try {
+                const { data, error } = await supabaseClient
+                    .from('notificacoes')
+                    .select('id')
+                    .order('id', { ascending: false })
+                    .limit(1);
+                if (!error && data && data.length > 0) {
+                    ULTIMO_ID_NOTIFICACAO_EXIBIDO = String(data[0].id);
+                    localStorage.setItem("ultimo_id_notificacao_exibido", ULTIMO_ID_NOTIFICACAO_EXIBIDO);
+                    console.log("[NOTIF-DEBUG] Memória local vazia — marcando notificação #" + ULTIMO_ID_NOTIFICACAO_EXIBIDO + " como já vista, sem disparar.");
+                }
+            } catch (e) {
+                console.warn("[NOTIF-DEBUG] Falha ao inicializar última notificação vista:", e);
+            }
+            NOTIFICACOES_PRONTAS_PARA_DISPARAR = true;
+        }
+
         function processarNovaNotificacao(notif) {
             if (!notif || !notif.id) return;
+
+            // Ainda inicializando (checando qual é a última notificação já existente):
+            // ignora qualquer disparo pra não mostrar coisa antiga por engano.
+            if (!NOTIFICACOES_PRONTAS_PARA_DISPARAR) {
+                console.log("[NOTIF-DEBUG] Ignorado — ainda inicializando a memória de notificações.");
+                return;
+            }
+
             var idStr = String(notif.id);
             if (ULTIMO_ID_NOTIFICACAO_EXIBIDO === idStr) return;
+
+            // Trava extra de segurança: só dispara automaticamente se a notificação foi
+            // criada há pouco tempo (últimos 3 minutos). Se for antiga, apenas atualiza
+            // a memória (marca como vista) sem exibir — nunca deve "reaparecer".
+            var bruta = notif.criado_em || notif.created_at || notif.inserted_at || notif.data_criacao || notif.data_envio || null;
+            if (bruta) {
+                var idadeMs = Date.now() - new Date(bruta).getTime();
+                if (isFinite(idadeMs) && idadeMs > 3 * 60 * 1000) {
+                    console.log("[NOTIF-DEBUG] Notificação #" + idStr + " é antiga (" + Math.round(idadeMs / 60000) + " min) — marcando como vista sem disparar.");
+                    ULTIMO_ID_NOTIFICACAO_EXIBIDO = idStr;
+                    localStorage.setItem("ultimo_id_notificacao_exibido", idStr);
+                    return;
+                }
+            }
 
             console.log("[NOTIF-DEBUG] Registro NOVO encontrado, processando:", notif);
             ULTIMO_ID_NOTIFICACAO_EXIBIDO = idStr;
@@ -3927,12 +3980,16 @@
             exibirToastNotificacaoCliente(notif);
         }
 
-        function escutarNotificacoesEmTempoReal() {
+        async function escutarNotificacoesEmTempoReal() {
             console.log("[NOTIF-DEBUG] escutarNotificacoesEmTempoReal() foi chamada.");
             if (!supabaseClient) {
                 console.error("[NOTIF-DEBUG] supabaseClient é null/undefined! Biblioteca do Supabase não carregou.");
                 return;
             }
+
+            // Antes de ligar qualquer listener/polling, garante que sabemos qual foi a
+            // última notificação já existente — só assim liberamos o disparo automático.
+            await inicializarUltimaNotificacaoVista();
 
             // 1. Escuta em Tempo Real via WebSocket (Broadcast + Postgres Changes)
             GLOBAL_PUSH_CHANNEL = supabaseClient.channel('global_push_broadcast');
