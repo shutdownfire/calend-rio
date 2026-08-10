@@ -164,7 +164,7 @@
     <script>
         (function() {
             // AUMENTE ESSE NÚMERO/TEXTO SEMPRE QUE PUBLICAR UMA ATUALIZAÇÃO NO index.html
-            var APP_VERSION = "2026-08-09.14";
+            var APP_VERSION = "2026-08-09.15";
             try {
                 var versaoSalva = localStorage.getItem("app_versao_atual");
                 if (versaoSalva !== APP_VERSION) {
@@ -1041,6 +1041,20 @@
             </div>
             <p id="aviso-modal-texto" class="text-[#f3e7cf] font-sans text-sm leading-relaxed mb-4"></p>
             <button type="button" onclick="fecharModalAviso()" class="w-full py-2.5 rounded-xl font-bold text-sm text-black transition hover:opacity-90" style="background:#d8b264">OK</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO GENÉRICO (substitui confirm() nativo do navegador) -->
+    <div id="confirmacao-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[98] hidden flex items-center justify-center p-4 no-print" onclick="fecharModalConfirmacao()">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xs w-full p-6 text-center space-y-4 relative border-2 border-red-400 modal-animate-slide" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-full bg-red-100 text-red-700 flex items-center justify-center text-3xl mx-auto shadow-inner">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <p id="confirmacao-modal-texto" class="text-sm text-stone-700 font-semibold leading-relaxed"></p>
+            <div class="flex gap-2">
+                <button type="button" onclick="fecharModalConfirmacao()" class="flex-1 py-2.5 bg-stone-200 hover:bg-stone-300 active:scale-95 text-stone-700 font-bold rounded-xl text-xs transition">Cancelar</button>
+                <button type="button" id="confirmacao-modal-btn-ok" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-xl text-xs transition shadow-md">Excluir</button>
+            </div>
         </div>
     </div>
 
@@ -2253,11 +2267,11 @@
         }
 
         function excluirTituloCustomModal(id) {
-            if (confirm("Deseja realmente excluir este título personalizado?")) {
+            abrirModalConfirmacao("Deseja realmente excluir este título personalizado?", function () {
                 var custom = JSON.parse(localStorage.getItem("custom_titulos") || "[]").filter(t => t.id != id);
                 localStorage.setItem("custom_titulos", JSON.stringify(custom));
                 renderizarListaTitulosModal(document.getElementById("modal-titulo-busca") ? document.getElementById("modal-titulo-busca").value : "");
-            }
+            });
         }
 
         function abrirModalCategoria() {
@@ -2343,11 +2357,11 @@
         }
 
         function excluirCategoriaCustomModal(id) {
-            if (confirm("Deseja realmente excluir esta categoria personalizada?")) {
+            abrirModalConfirmacao("Deseja realmente excluir esta categoria personalizada?", function () {
                 var custom = JSON.parse(localStorage.getItem("custom_categorias") || "[]").filter(c => c.id != id);
                 localStorage.setItem("custom_categorias", JSON.stringify(custom));
                 renderizarListaCategoriasModal();
-            }
+            });
         }
 
         function abrirModalRepeticao() {
@@ -3413,15 +3427,16 @@
 
         async function excluirAniversarianteAdmin(id) {
             if (!supabaseClient || !id) return;
-            if (!confirm("Tem certeza que deseja excluir esse aniversariante da lista?")) return;
-            try {
-                const { error } = await supabaseClient.from('aniversariantes').delete().eq('id', id);
-                if (error) { alert("Erro ao excluir: " + error.message); return; }
-                if (String(aniversarianteSendoEditadoId) === String(id)) cancelarEdicaoAniversariante();
-                carregarListaAniversariantesAdmin();
-            } catch (e) {
-                alert("Erro: " + String(e && e.message ? e.message : e));
-            }
+            abrirModalConfirmacao("Tem certeza que deseja excluir esse aniversariante da lista?", async function () {
+                try {
+                    const { error } = await supabaseClient.from('aniversariantes').delete().eq('id', id);
+                    if (error) { abrirModalAviso("Erro ao excluir: " + error.message); return; }
+                    if (String(aniversarianteSendoEditadoId) === String(id)) cancelarEdicaoAniversariante();
+                    carregarListaAniversariantesAdmin();
+                } catch (e) {
+                    abrirModalAviso("Erro: " + String(e && e.message ? e.message : e));
+                }
+            });
         }
 
         function renderizarGradeCalendario(mesAno) {
@@ -4446,6 +4461,29 @@
             if (modal) modal.classList.add("hidden");
         }
 
+        // ---- Modal genérico de confirmação (substitui confirm() nativo) ----
+        var _acaoConfirmadaPendente = null;
+        function abrirModalConfirmacao(texto, aoConfirmar, textoBotao) {
+            var textoEl = document.getElementById("confirmacao-modal-texto");
+            var modal = document.getElementById("confirmacao-modal");
+            var btnOk = document.getElementById("confirmacao-modal-btn-ok");
+            if (textoEl) textoEl.textContent = texto;
+            if (btnOk) btnOk.textContent = textoBotao || "Excluir";
+            _acaoConfirmadaPendente = aoConfirmar;
+            if (btnOk) btnOk.onclick = function () {
+                var acao = _acaoConfirmadaPendente;
+                fecharModalConfirmacao();
+                if (typeof acao === "function") acao();
+            };
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function fecharModalConfirmacao() {
+            var modal = document.getElementById("confirmacao-modal");
+            if (modal) modal.classList.add("hidden");
+            _acaoConfirmadaPendente = null;
+        }
+
         // ---- Abre o WhatsApp do próprio aniversariante (ícone ao lado do nome, no card do dia) ----
         function enviarMensagemParaAniversariante(indice) {
             var pessoa = ULTIMOS_ANIVERSARIANTES_PESSOAS[indice];
@@ -4923,25 +4961,25 @@
             container.innerHTML = html + '</div>';
         }
 
-        async function deletarAtividade(id) {
-            if (!confirm("Tem certeza que deseja excluir esta atividade?")) return;
-            
-            var realSupaId = normalizarEventoId(id);
-            if (supabaseClient) {
-                try { 
-                    const { error } = await supabaseClient
-                        .from('eventos')
-                        .delete()
-                        .eq('id', realSupaId); 
-                        
-                    if (error) console.error("Erro ao excluir do Supabase:", error);
-                } catch(e) {
-                    console.error("Erro na requisição de exclusão:", e);
-                }
-            }
+        function deletarAtividade(id) {
+            abrirModalConfirmacao("Tem certeza que deseja excluir esta atividade?", async function () {
+                var realSupaId = normalizarEventoId(id);
+                if (supabaseClient) {
+                    try {
+                        const { error } = await supabaseClient
+                            .from('eventos')
+                            .delete()
+                            .eq('id', realSupaId);
 
-            await carregarListaAtividadesAdmin(); 
-            await carregarCalendarioDoSupabase();
+                        if (error) console.error("Erro ao excluir do Supabase:", error);
+                    } catch(e) {
+                        console.error("Erro na requisição de exclusão:", e);
+                    }
+                }
+
+                await carregarListaAtividadesAdmin();
+                await carregarCalendarioDoSupabase();
+            });
         }
 
         // ---- Extrai o nome da entidade/pessoa a partir do título, evitando repetir "consulta" na mensagem do WhatsApp ----
