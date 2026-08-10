@@ -4064,34 +4064,12 @@
         }
 
         function exibirToastNotificacaoCliente(notif) {
-            // NOTIFICAÇÃO DO SISTEMA ANDROID / APK / NAVEGADOR
-            if ('Notification' in window && Notification.permission === 'granted') {
-                try {
-                    if ('serviceWorker' in navigator) {
-                        navigator.serviceWorker.ready.then(function(reg) {
-                            reg.showNotification(notif.titulo || "Templo Vovó Maria Conga", {
-                                body: notif.mensagem,
-                                icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
-                                badge: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH",
-                                vibrate: [200, 100, 200],
-                                tag: "notif-gira-" + Date.now()
-                            });
-                        }).catch(function() {
-                            new Notification(notif.titulo || "Templo Vovó Maria Conga", {
-                                body: notif.mensagem,
-                                icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
-                            });
-                        });
-                    } else {
-                        new Notification(notif.titulo || "Templo Vovó Maria Conga", {
-                            body: notif.mensagem,
-                            icon: "https://lh3.googleusercontent.com/d/18zC_hP66hgDk6QJlLmBLiGyS6inoMtnH"
-                        });
-                    }
-                } catch(e) {
-                    console.warn("Erro ao exibir notificação nativa:", e);
-                }
-            }
+            // IMPORTANTE: NÃO chamamos mais reg.showNotification()/new Notification() aqui.
+            // O push de verdade (notificação de sistema/Android) já é entregue pela própria
+            // OneSignal, direto pelo Service Worker dela, assim que a Edge Function envia.
+            // Chamar showNotification aqui de novo criava uma SEGUNDA notificação de sistema
+            // pra cada notificação real enviada — por isso toda mensagem nova vinha 2x.
+            // Aqui só cuidamos do aviso visual dentro da própria página (toast).
 
             var toast = document.getElementById("toast-notificacao-cliente");
             var titleElem = document.getElementById("toast-notif-title");
