@@ -29,11 +29,13 @@ input,select{background:rgba(127,127,160,.12);border:1px solid var(--bd);color:v
 input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(124,92,255,.25)}
 button{border:0;border-radius:11px;padding:11px 16px;font:inherit;font-weight:600;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--ac),#5b8cff);transition:.2s}
 button:hover{filter:brightness(1.12)}
-button.sm{background:var(--card);border:1px solid var(--bd);color:var(--tx);padding:6px 11px;font-size:12px;font-weight:500;border-radius:9px}
+button.sm{background:var(--card);border:1px solid var(--bd);color:var(--tx);padding:6px 11px;font-size:12px;font-weight:500;border-radius:99px}
 button.sm:hover{border-color:var(--ac)}
 button.test{background:transparent;border:1px dashed var(--wa);color:var(--wa)}
 button.ok{background:linear-gradient(135deg,#10b981,#34d399);padding:7px 11px;font-size:12px}
 button.un{background:rgba(251,191,36,.15);color:var(--wa);padding:7px 11px;font-size:12px}
+button.pr{background:rgba(34,211,238,.15);color:#0284c7;padding:7px 11px;font-size:12px}
+@media(prefers-color-scheme:dark){button.pr{color:var(--ac2)}}
 button.x{background:transparent;color:var(--mu);padding:7px 9px;font-size:12px}
 .bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.bar input,.bar select{flex:1;min-width:160px}
 .tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px;min-width:780px}
@@ -53,8 +55,8 @@ dialog{margin:auto;position:fixed;inset:0;max-height:90vh;overflow:auto}
 #lgt th,#lgt td{padding:10px 8px;font-size:13px}
 #lgt td{white-space:normal;word-break:break-word;overflow-wrap:anywhere;vertical-align:top}
 #lgt td:first-child{white-space:nowrap;width:1%}
-#lgt td:nth-child(2){width:1%;white-space:nowrap}
-#lgt td:last-child{width:1%;white-space:nowrap}
+#lgt td:nth-child(2){white-space:nowrap}
+#lgt td:last-child{white-space:nowrap}
 dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
 dialog label{margin-bottom:12px}pre{background:rgba(127,127,160,.15);padding:12px;border-radius:10px;font-size:11px;overflow:auto;white-space:pre-wrap}
 details{margin:4px 0 14px;font-size:13px;color:var(--mu)}
@@ -105,7 +107,6 @@ tr.r-pendente td:first-child{box-shadow:inset 4px 0 0 var(--ac)}
 tr.r-concluido td:first-child{box-shadow:inset 4px 0 0 var(--ok)}
 .ctl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;font-size:13px;background:rgba(124,92,255,.17);color:var(--ac);padding:5px 11px;border-radius:9px;display:inline-block;margin-left:6px}
 @media(prefers-color-scheme:dark){.ctl{color:#a99bff}}
-/* Modificado aqui para a Razão Social quebrar linha sem alargar a tabela */
 td{white-space:nowrap}
 td.rz{font-weight:700;white-space:normal;min-width:200px;line-height:1.4}
 .pill{padding:5px 12px}
@@ -251,7 +252,6 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
     <button class="sm" onclick="exportCSV()" title="Baixa todos os registros em uma planilha (CSV) para abrir no Excel">⬇ Baixar planilha</button>
     <button class="sm" onclick="hist.showModal()" title="Consultar quando e para quem cada e-mail foi disparado">📨 Histórico</button>
     <button class="sm" onclick="openCfg()" title="Definir quem recebe os e-mails e ligar o envio automático">✉ Configurar e-mails</button>
-    <!-- TESTE TEMPORÁRIO: remover este botão quando estiver tudo ok -->
     <button class="sm test" onclick="testMail()" title="Dispara um e-mail de teste (temporário)">🧪 Teste de disparo</button>
   </div>
 </header>
@@ -317,7 +317,6 @@ const $=s=>document.querySelector(s);
 let S={recs:[],to:[],url:'https://script.google.com/macros/s/AKfycbzqC9vf08YnTovouJV1pHVMwUJhTcKDCFZByBRA_4UTp9_ScHsp6vnnygc_HrjTsMKj/exec',sla:5,log:[]};
 try{
   S=Object.assign(S,JSON.parse(localStorage.getItem('cj')||'{}'));
-  /* Forçar a URL fixa independentemente do que estava salvo anteriormente */
   S.url = 'https://script.google.com/macros/s/AKfycbzqC9vf08YnTovouJV1pHVMwUJhTcKDCFZByBRA_4UTp9_ScHsp6vnnygc_HrjTsMKj/exec';
 }catch(e){}
 if(typeof S.to==='string')S.to=S.to.split(/[,;\s]+/).filter(Boolean);
@@ -331,8 +330,91 @@ function titleCase(t){return t.trim().toLowerCase().split(/\s+/).map((w,i)=>i&&M
 function saudacao(){const h=new Date().getHours();return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'}
 S.recs.forEach(r=>{r.rz=titleCase(r.rz)});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function addBD(s,n){const d=D(s);while(n>0){d.setDate(d.getDate()+1);if(d.getDay()%6)n--}return iso(d)}
-function bdBetween(a,b){let d=D(a),e=D(b),n=0;const sg=d<=e?1:-1;while(iso(d)!==iso(e)){d.setDate(d.getDate()+sg);if(d.getDay()%6)n+=sg}return n}
+
+/* ===== CÁLCULO AUTOMÁTICO DE FERIADOS DE SÃO PAULO ===== */
+function getEaster(year) {
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(year, month - 1, day);
+}
+
+function isHolidaySP(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const md = `${m}-${day}`;
+
+  // Feriados Fixos (Nacionais, Estadual SP e Municipais de SP)
+  const fixedHolidays = [
+    '01-01', // Confraternização Universal
+    '01-25', // Aniversário de São Paulo
+    '04-21', // Tiradentes
+    '05-01', // Dia do Trabalhador
+    '07-09', // Revolução Constitucionalista
+    '09-07', // Independência do Brasil
+    '10-12', // Nossa Senhora Aparecida
+    '11-02', // Finados
+    '11-15', // Proclamação da República
+    '11-20', // Dia da Consciência Negra
+    '12-25'  // Natal
+  ];
+
+  if (fixedHolidays.includes(md)) return true;
+
+  // Feriados Móveis (baseados na Páscoa)
+  const easter = getEaster(y);
+  
+  // Sexta-feira Santa (-2 dias da Páscoa)
+  const goodFriday = new Date(easter);
+  goodFriday.setDate(easter.getDate() - 2);
+  
+  // Corpus Christi (+60 dias da Páscoa)
+  const corpusChristi = new Date(easter);
+  corpusChristi.setDate(easter.getDate() + 60);
+
+  if (iso(d) === iso(goodFriday) || iso(d) === iso(corpusChristi)) return true;
+
+  return false;
+}
+
+function isBusinessDay(d) {
+  const dayOfWeek = d.getDay();
+  if (dayOfWeek === 0 || dayOfWeek === 6) return false; // Fim de semana
+  if (isHolidaySP(d)) return false; // Feriado SP
+  return true;
+}
+
+function addBD(s, n) {
+  const d = D(s);
+  while (n > 0) {
+    d.setDate(d.getDate() + 1);
+    if (isBusinessDay(d)) n--;
+  }
+  return iso(d);
+}
+
+function bdBetween(a, b) {
+  let d = D(a), e = D(b), n = 0;
+  const sg = d <= e ? 1 : -1;
+  while (iso(d) !== iso(e)) {
+    d.setDate(d.getDate() + sg);
+    if (isBusinessDay(d)) n += sg;
+  }
+  return n;
+}
+
 function toast(m,act,ms=5000){const t=document.createElement('div');t.className='t';t.append(m);
   if(act){const b=document.createElement('button');b.textContent=act.label;b.onclick=()=>{act.fn();t.remove()};t.append(b)}
   $('#toast').append(t);setTimeout(()=>t.remove(),ms)}
@@ -396,7 +478,7 @@ $('#f').onsubmit=e=>{
   S.recs.unshift(r);PY=r.dt.slice(0,4);PM=+r.dt.slice(5,7);save();render();
   mail('Nova solicitação','Registro de análise de contrato inserido – '+r.ctrl+' – '+r.rz,premium('Nova solicitação',[['Número de controle',esc(r.ctrl)],['Empresa',esc(r.rz)],['Data de inserção',br(r.ins)],['Data limite de retorno','<span style="color:#5b3df5">'+br(r.prazo)+'</span> <span style="font-size:12px;color:#8b90b0;font-weight:400">('+r.sla+' dias úteis)</span>']],{title:'Registro de análise de contrato inserido'}));
   e.target.reset();$('[name=dt]').value=today();upPrazo();
-  checkOverdue(); /* registro antigo: dispara o aviso de prazo vencido na hora */
+  checkOverdue();
 };
 
 const T={};
@@ -414,6 +496,15 @@ function reopen(id){
   if(T[id]){clearTimeout(T[id]);delete T[id]}
   r.done=null;r.dias=null;save();render();toast('Conclusão desfeita. Registro voltou para a lista.');
 }
+function extendDeadline(id){
+  const r=S.recs.find(x=>x.id===id);
+  if(!r || r.done) return;
+  r.prazo = addBD(r.prazo, 5);
+  r.alerted = false;
+  save();
+  render();
+  toast(`Prazo prorrogado em +5 dias úteis para: ${r.ctrl}`);
+}
 function del(id){if(confirm('Excluir este registro?')){S.recs=S.recs.filter(x=>x.id!==id);save();render()}}
 function checkOverdue(){
   S.recs.forEach(r=>{if(!r.done&&!r.alerted&&today()>r.prazo){r.alerted=true;save();
@@ -430,7 +521,7 @@ $('#q').oninput=render;
 /* período (ano / mês da solicitação) */
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MABR=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-let PY=null,PM=0; // PY: ano ('' = todos) | PM: 0 = ano inteiro, 1-12 = mês
+let PY=null,PM=0;
 const inPeriod=r=>(!PY||r.dt.slice(0,4)===PY)&&(!PM||+r.dt.slice(5,7)===PM);
 function setYear(y){PY=y;PM=(y===today().slice(0,4))?+today().slice(5,7):0;render()}
 function setMonth(m){PM=m;render()}
@@ -571,7 +662,7 @@ function render(){
   $('#tb').innerHTML=rows.length?rows.map(r=>{
     const s=status(r),left=bdBetween(today(),r.prazo);
     const pill=s==='concluido'?'<span class="pill p-ok">Concluído</span>':s==='atrasado'?`<span class="pill p-er">Atrasado ${-left}d</span>`:`<span class="pill ${left<=1?'p-wa':'p-pe'}">${left} dia(s) restante(s)</span>`;
-    return`<tr class="r-${s}"><td><span class="ctl">${esc(r.ctrl)}</span></td><td class="rz">${esc(r.rz)}</td><td>${br(r.dt)}</td><td style="${s==='atrasado'?'color:var(--er);font-weight:700':'font-weight:600'}">${br(r.prazo)}</td><td>${pill}</td><td>${br(r.done)}</td><td>${r.dias==null?'—':r.dias+' dia(s) útil(eis)'}</td><td style="white-space:nowrap">${r.done?`<button class="un" onclick="reopen(${r.id})" title="Reabrir (concluído por engano)">↩ Desfazer</button>`:`<button class="ok" onclick="conclude(${r.id})">✓ Concluir</button>`} <button class="x" onclick="del(${r.id})" title="Excluir">✕</button></td></tr>`}).join('')
+    return`<tr class="r-${s}"><td><span class="ctl">${esc(r.ctrl)}</span></td><td class="rz">${esc(r.rz)}</td><td>${br(r.dt)}</td><td style="${s==='atrasado'?'color:var(--er);font-weight:700':'font-weight:600'}">${br(r.prazo)}</td><td>${pill}</td><td>${br(r.done)}</td><td>${r.dias==null?'—':r.dias+' dia(s) útil(eis)'}</td><td style="white-space:nowrap">${r.done?`<button class="un" onclick="reopen(${r.id})" title="Reabrir (concluído por engano)">↩ Desfazer</button>`:`<button class="pr" style="margin-right:4px" onclick="extendDeadline(${r.id})" title="Adicionar +5 dias úteis ao prazo">⏳ Prorrogar</button><button class="ok" onclick="conclude(${r.id})">✓ Concluir</button>`} <button class="x" onclick="del(${r.id})" title="Excluir">✕</button></td></tr>`}).join('')
    :'<tr class="emptyrow"><td colspan="8" class="empty"><div>🗂️</div>Nenhum registro encontrado.</td></tr>';
 }
 function renderLog(){
