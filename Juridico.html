@@ -105,7 +105,9 @@ tr.r-pendente td:first-child{box-shadow:inset 4px 0 0 var(--ac)}
 tr.r-concluido td:first-child{box-shadow:inset 4px 0 0 var(--ok)}
 .ctl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;font-size:13px;background:rgba(124,92,255,.17);color:var(--ac);padding:5px 11px;border-radius:9px;display:inline-block;margin-left:6px}
 @media(prefers-color-scheme:dark){.ctl{color:#a99bff}}
-td{white-space:nowrap}td.rz{font-weight:700}
+/* Modificado aqui para a Razão Social quebrar linha sem alargar a tabela */
+td{white-space:nowrap}
+td.rz{font-weight:700;white-space:normal;min-width:200px;line-height:1.4}
 .pill{padding:5px 12px}
 .pill::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:7px;vertical-align:middle}
 button.x:hover{background:rgba(248,113,113,.18);color:var(--er)}
@@ -155,7 +157,7 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
 .rp *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .rp-hero{position:relative;overflow:hidden;border-radius:16px;padding:18px 22px;color:#fff;display:flex;justify-content:space-between;align-items:flex-end;gap:18px;
   background:radial-gradient(420px 240px at 100% -30%,rgba(34,211,238,.50),transparent 70%),radial-gradient(420px 280px at 0% 130%,rgba(124,92,255,.75),transparent 70%),linear-gradient(135deg,#0a0c18 0%,#171548 100%)}
-.rp-hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:linear-gradient(120deg,transparent 35%,#000 100%);mask-image:linear-gradient(120deg,transparent 35%,#000 100%);pointer-events:none}
+.rp-hero::after{content:"absolute";inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:linear-gradient(120deg,transparent 35%,#000 100%);mask-image:linear-gradient(120deg,transparent 35%,#000 100%);pointer-events:none}
 .rp-hero>*{position:relative;z-index:1}
 .rp-eyebrow{display:flex;align-items:center;gap:8px;font-size:9.5px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:rgba(255,255,255,.7)}
 .rp-eyebrow i{width:26px;height:2px;border-radius:2px;background:linear-gradient(90deg,#7c5cff,#22d3ee)}
@@ -298,7 +300,7 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
   <div class="hint">Digite um e-mail e pressione Enter (ou vírgula) para adicionar. Pode incluir quantos quiser.</div>
   <input id="em" type="email" placeholder="nome@empresa.com" style="width:100%">
   <div class="chips" id="chips"></div>
-  <label>URL do Google Apps Script (envio automático)<input id="url" placeholder="https://script.google.com/macros/s/.../exec"></label>
+  <label>URL do Google Apps Script (envio automático)<input id="url" value="https://script.google.com/macros/s/AKfycbzqC9vf08YnTovouJV1pHVMwUJhTcKDCFZByBRA_4UTp9_ScHsp6vnnygc_HrjTsMKj/exec" readonly style="background:rgba(127,127,160,.05);color:var(--mu);cursor:not-allowed" title="A URL está fixada no código conforme solicitado"></label>
   <details><summary>Como obter a URL (código do Apps Script)</summary>
 <pre>function doPost(e){
   var d = JSON.parse(e.postData.contents);
@@ -312,8 +314,12 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
 
 <script>
 const $=s=>document.querySelector(s);
-let S={recs:[],to:[],url:'',sla:5,log:[]};
-try{S=Object.assign(S,JSON.parse(localStorage.getItem('cj')||'{}'))}catch(e){}
+let S={recs:[],to:[],url:'https://script.google.com/macros/s/AKfycbzqC9vf08YnTovouJV1pHVMwUJhTcKDCFZByBRA_4UTp9_ScHsp6vnnygc_HrjTsMKj/exec',sla:5,log:[]};
+try{
+  S=Object.assign(S,JSON.parse(localStorage.getItem('cj')||'{}'));
+  /* Forçar a URL fixa independentemente do que estava salvo anteriormente */
+  S.url = 'https://script.google.com/macros/s/AKfycbzqC9vf08YnTovouJV1pHVMwUJhTcKDCFZByBRA_4UTp9_ScHsp6vnnygc_HrjTsMKj/exec';
+}catch(e){}
 if(typeof S.to==='string')S.to=S.to.split(/[,;\s]+/).filter(Boolean);
 const save=()=>{try{localStorage.setItem('cj',JSON.stringify(S))}catch(e){}};
 const D=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
