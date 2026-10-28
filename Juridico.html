@@ -11,7 +11,7 @@
 *{box-sizing:border-box;margin:0}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding:28px;
 background-image:radial-gradient(600px 400px at 10% -10%,rgba(124,92,255,.35),transparent),radial-gradient(500px 400px at 100% 0,rgba(34,211,238,.22),transparent);background-attachment:fixed}
-.wrap{max-width:1150px;margin:auto}
+.wrap{max-width:1320px;margin:auto}
 header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:22px}
 h1{font-size:26px;letter-spacing:-.5px}h1 span{background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;color:transparent}
 .sub{color:var(--mu);font-size:13px;margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -25,8 +25,8 @@ h1{font-size:26px;letter-spacing:-.5px}h1 span{background:linear-gradient(90deg,
 .stat.active{border-color:var(--ac);box-shadow:0 0 0 2px rgba(124,92,255,.35)}
 form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;align-items:end;margin-bottom:18px}
 label{font-size:12px;color:var(--mu);display:flex;flex-direction:column;gap:6px}
-input,select{background:rgba(127,127,160,.12);border:1px solid var(--bd);color:var(--tx);border-radius:11px;padding:11px 12px;font:inherit;outline:none}
-input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(124,92,255,.25)}
+input,select,textarea{background:rgba(127,127,160,.12);border:1px solid var(--bd);color:var(--tx);border-radius:11px;padding:11px 12px;font:inherit;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(124,92,255,.25)}
 button{border:0;border-radius:11px;padding:11px 16px;font:inherit;font-weight:600;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--ac),#5b8cff);transition:.2s}
 button:hover{filter:brightness(1.12)}
 button.sm{background:var(--card);border:1px solid var(--bd);color:var(--tx);padding:6px 11px;font-size:12px;font-weight:500;border-radius:99px}
@@ -38,7 +38,7 @@ button.pr{background:rgba(34,211,238,.15);color:#0284c7;padding:7px 11px;font-si
 @media(prefers-color-scheme:dark){button.pr{color:var(--ac2)}}
 button.x{background:transparent;color:var(--mu);padding:7px 9px;font-size:12px}
 .bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.bar input,.bar select{flex:1;min-width:160px}
-.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px;min-width:780px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px;min-width:900px}
 th{text-align:left;color:var(--mu);font-size:11px;text-transform:uppercase;letter-spacing:.8px;padding:10px;border-bottom:1px solid var(--bd)}
 td{padding:12px 10px;border-bottom:1px solid var(--bd)}tr:last-child td{border:0}
 .pill{padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
@@ -57,6 +57,9 @@ dialog{margin:auto;position:fixed;inset:0;max-height:90vh;overflow:auto}
 #lgt td:first-child{white-space:nowrap;width:1%}
 #lgt td:nth-child(2){white-space:nowrap}
 #lgt td:last-child{white-space:nowrap}
+.mng-row{display:flex;gap:6px}.mng-row select{flex:1;min-width:0}
+form button.mng{height:auto;box-shadow:none;padding:0 13px;background:var(--card);border:1px solid var(--bd);color:var(--tx);font-size:15px}
+textarea{resize:vertical;min-height:78px;width:100%}
 dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
 dialog label{margin-bottom:12px}pre{background:rgba(127,127,160,.15);padding:12px;border-radius:10px;font-size:11px;overflow:auto;white-space:pre-wrap}
 details{margin:4px 0 14px;font-size:13px;color:var(--mu)}
@@ -158,7 +161,7 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
 .rp *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .rp-hero{position:relative;overflow:hidden;border-radius:16px;padding:18px 22px;color:#fff;display:flex;justify-content:space-between;align-items:flex-end;gap:18px;
   background:radial-gradient(420px 240px at 100% -30%,rgba(34,211,238,.50),transparent 70%),radial-gradient(420px 280px at 0% 130%,rgba(124,92,255,.75),transparent 70%),linear-gradient(135deg,#0a0c18 0%,#171548 100%)}
-.rp-hero::after{content:"absolute";inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:linear-gradient(120deg,transparent 35%,#000 100%);mask-image:linear-gradient(120deg,transparent 35%,#000 100%);pointer-events:none}
+.rp-hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:linear-gradient(120deg,transparent 35%,#000 100%);mask-image:linear-gradient(120deg,transparent 35%,#000 100%);pointer-events:none}
 .rp-hero>*{position:relative;z-index:1}
 .rp-eyebrow{display:flex;align-items:center;gap:8px;font-size:9.5px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:rgba(255,255,255,.7)}
 .rp-eyebrow i{width:26px;height:2px;border-radius:2px;background:linear-gradient(90deg,#7c5cff,#22d3ee)}
@@ -238,6 +241,88 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
   .rp-k,.rp-s,.rp-c,.rp-v,.rp-hero{break-inside:avoid}
   .rp-tw{overflow:visible}
 }
+
+/* ===== v3: formulário, tabela sem rolagem lateral, painel de observações ===== */
+#f{grid-template-columns:minmax(110px,.9fr) minmax(170px,1.8fr) minmax(190px,1.5fr) minmax(130px,1fr) minmax(120px,.9fr) auto;align-items:end}
+#f>button{height:44px;padding:0 22px;white-space:nowrap;font-size:14px;box-shadow:0 6px 16px rgba(124,92,255,.35)}
+button.ob{background:rgba(127,127,160,.15);color:var(--tx);padding:7px 10px;font-size:12px}
+button.ob.has{background:rgba(124,92,255,.2);color:var(--ac)}
+button.ob.open{background:var(--ac);color:#fff}
+.acts{display:flex;gap:4px;align-items:center;justify-content:flex-end}
+.acts button{padding:7px 9px;font-size:12px}.acts button.ok{padding:7px 11px}.acts button.un{padding:7px 10px}
+#tbl{min-width:0;width:100%}
+#tbl th{padding:6px 8px}
+#tbl td{padding:12px 8px;white-space:normal;font-size:13px}
+#tbl td.nw{white-space:nowrap}
+#tbl td.rz{min-width:140px}
+#tbl td:first-child{padding-left:10px}
+#tbl .ctl{margin-left:0}
+.dsub{font-size:11px;color:var(--mu);margin-top:2px;font-weight:500}
+.dt-row td{background:none!important;padding:0 0 2px!important;white-space:normal!important}
+.dp{margin:-2px 0 4px 6px;padding:14px 16px;border-radius:12px;border:1px solid var(--bd);border-left:3px solid var(--ac);background:rgba(124,92,255,.06);display:grid;gap:12px}
+.dp-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.dp-h b{font-size:13px}
+.dp-h label{flex-direction:row;align-items:center;gap:8px}
+.dp-h select{padding:6px 10px;font-size:13px;border-radius:9px}
+.dp-add{display:flex;gap:8px}
+.dp-add input{flex:1;min-width:0}
+.dp-add button{padding:0 18px}
+.dp-i{display:grid;grid-template-columns:128px 1fr auto;gap:12px;align-items:start;padding:9px 2px;border-top:1px solid var(--bd);font-size:13px;line-height:1.45}
+.dp-i time{color:var(--mu);font-size:12px;font-variant-numeric:tabular-nums;padding-top:1px}
+.dp-i span{overflow-wrap:anywhere;white-space:pre-wrap}
+.dp-i button{opacity:.5;padding:2px 7px}.dp-i:hover button{opacity:1}
+.dp-e{color:var(--mu);font-size:13px;padding:2px}
+@media(max-width:1000px){
+ #f{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}#f>button{width:100%}
+ #tbl thead{display:none}
+ #tbl,#tbl tbody{display:block;width:100%}
+ #tbl tr{display:block;margin-bottom:10px;border-radius:12px;overflow:hidden;background:rgba(127,127,160,.07)}
+ #tbl td{display:flex;justify-content:space-between;align-items:center;gap:12px;border-radius:0!important;background:none!important;padding:8px 14px;text-align:right}
+ #tbl td::before{content:attr(data-l);color:var(--mu);font-size:11px;text-transform:uppercase;letter-spacing:.6px;text-align:left;flex:none}
+ #tbl td.acts-td::before{display:none}
+ #tbl tr.dt-row{background:none;margin-top:-6px}
+ #tbl tr.dt-row td{display:block;padding:0!important;text-align:left}
+ #tbl tr.dt-row td::before{display:none}
+ #tbl tr.emptyrow td{display:block;text-align:center}
+ .dp-i{grid-template-columns:1fr auto}.dp-i time{grid-column:1/-1}
+}
+
+/* ===== v4: relatório com mais respiro ===== */
+#rep{padding:30px 30px}
+#rep>.noprint{margin-bottom:26px!important}
+.rp-hero{padding:26px 30px}
+.rp-hero h2{margin:16px 0 12px}
+.rp-hero p{line-height:1.5}
+.rp-kpis{gap:16px;margin:24px 0 16px}
+.rp-k{padding:18px 20px 18px 26px}
+.rp-k::before{top:20px;bottom:20px}
+.rp-k b{margin-top:12px}
+.rp-k em{margin-top:10px;line-height:1.5}
+.rp-r2{gap:16px}
+.rp-s{padding:20px 22px}
+.rp-s b{margin-top:12px}
+.rp-s em{margin-top:10px;line-height:1.5}
+.rp-ringrow{margin-top:14px;gap:18px}
+.rp-range{margin-top:12px;gap:18px}
+.rp-sh{margin:38px 0 18px;padding-bottom:12px}
+.rp-v{padding:20px 22px}
+.rp-vs{margin-top:8px;line-height:1.55}
+.rp-t th{padding:12px 9px;letter-spacing:.7px}
+.rp-t td{padding:15px 9px;line-height:1.5}
+.rp-pill{padding:5px 12px}
+.rp-f{margin-top:34px;padding-top:16px}
+@media print{.rp-kpis{margin:18px 0 12px;gap:12px}.rp-r2{gap:12px}.rp-sh{margin:24px 0 12px}.rp-t td{padding:10px 12px}.rp-k,.rp-s{padding-top:14px;padding-bottom:14px}}
+/* ===== v5: destinatários com opções ===== */
+#chips{flex-direction:column;flex-wrap:nowrap;gap:8px;max-height:300px;overflow:auto}
+.rc{display:flex;align-items:center;gap:14px;padding:9px 12px;border:1px solid var(--bd);border-radius:12px;background:rgba(127,127,160,.08)}
+.rc .em{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px;font-weight:600}
+dialog .tg{flex-direction:row;align-items:center;gap:6px;margin:0;font-size:12px;color:var(--tx);white-space:nowrap;cursor:pointer}
+.tg input{width:16px;height:16px;padding:0;margin:0;accent-color:var(--ac);cursor:pointer}
+@media(max-width:520px){.rc{flex-wrap:wrap;gap:8px 14px}.rc .em{flex-basis:100%}}
+/* ===== v6: indicador de sincronização ===== */
+.sync{font-size:12px;color:var(--mu);display:inline-flex;align-items:center;gap:6px;padding:0 8px;cursor:pointer;user-select:none}
+.sync::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--mu);flex:none}
+.sync.ok::before{background:var(--ok)}.sync.er::before{background:var(--er)}.sync.wa::before{background:var(--wa)}
 </style>
 </head>
 <body>
@@ -253,6 +338,7 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
     <button class="sm" onclick="hist.showModal()" title="Consultar quando e para quem cada e-mail foi disparado">📨 Histórico</button>
     <button class="sm" onclick="openCfg()" title="Definir quem recebe os e-mails e ligar o envio automático">✉ Configurar e-mails</button>
     <button class="sm test" onclick="testMail()" title="Dispara um e-mail de teste (temporário)">🧪 Teste de disparo</button>
+    <span id="sync" class="sync" onclick="cloudPull()" title="Estado da sincronização com o Google. Clique para sincronizar agora."></span>
   </div>
 </header>
 
@@ -265,8 +351,9 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
   <form id="f">
     <label>Controle do cliente<input name="ctrl" required placeholder="Nº do cliente"></label>
     <label>Razão social<input name="rz" required placeholder="Nome da empresa"></label>
+    <label>Solicitante<div class="mng-row"><select name="sol" id="sol"></select><button type="button" class="mng" onclick="openUsr()" title="Adicionar ou remover usuários">👥</button></div></label>
     <label>Data da solicitação<input name="dt" type="date" required></label>
-    <label>Prazo de retorno (automático)<input id="prazo" disabled></label>
+    <label>Prazo (automático)<input id="prazo" disabled></label>
     <button>+ Registrar</button>
   </form>
 </div>
@@ -274,15 +361,15 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
 <div class="card">
   <div class="sec"><h3>Solicitações<span id="cnt"></span><span id="per" class="per"></span></h3></div>
   <div class="bar">
-    <input id="q" placeholder="🔍 Buscar cliente ou razão social…">
+    <input id="q" placeholder="🔍 Buscar cliente, razão social, solicitante ou observação…">
     <select id="fl"><option value="">Todos</option><option value="pendente">Pendentes</option><option value="atrasado">Atrasados</option><option value="concluido">Concluídos</option></select>
   </div>
-  <div class="tw"><table><thead><tr><th>Controle</th><th>Razão social</th><th>Solicitação</th><th>Prazo</th><th>Status</th><th>Conclusão</th><th>Dias gastos</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+  <div class="tw" style="overflow:visible"><table id="tbl"><thead><tr><th>Controle</th><th>Razão social</th><th>Solicitante</th><th>Solicitação</th><th>Prazo</th><th>Status</th><th>Conclusão</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
 </div>
 
 </div>
 
-<dialog id="rep" style="max-width:880px">
+<dialog id="rep" style="max-width:1040px">
   <div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
     <div style="display:flex;gap:8px;align-items:center"><h3 style="margin-right:6px">📄 Relatório mensal</h3>
       <select id="rm" onchange="repRender()" style="width:auto"></select><select id="ry" onchange="repRender()" style="width:auto"></select></div>
@@ -298,29 +385,107 @@ h1 span.h1-sub{font-size:15px;font-weight:500;letter-spacing:.2px;color:var(--mu
 <dialog id="cfg">
   <h3>Destinatários dos e-mails</h3>
   <div class="hint">Digite um e-mail e pressione Enter (ou vírgula) para adicionar. Pode incluir quantos quiser.</div>
+  <div class="hint" style="margin-top:-6px">Para cada pessoa, marque quais avisos ela recebe: <b>Inserção</b> (nova solicitação) e/ou <b>Atraso</b> (prazo vencido). Os avisos de conclusão e o teste vão para todos.</div>
   <input id="em" type="email" placeholder="nome@empresa.com" style="width:100%">
   <div class="chips" id="chips"></div>
-  <label>URL do Google Apps Script (envio automático)<input id="url" value="https://script.google.com/macros/s/AKfycbzqC9vf08YnTovouJV1pHVMwUJhTcKDCFZByBRA_4UTp9_ScHsp6vnnygc_HrjTsMKj/exec" readonly style="background:rgba(127,127,160,.05);color:var(--mu);cursor:not-allowed" title="A URL está fixada no código conforme solicitado"></label>
-  <details><summary>Como obter a URL (código do Apps Script)</summary>
-<pre>function doPost(e){
+  <label>URL do Google Apps Script (envio automático)<input id="url" value="https://script.google.com/macros/s/AKfycbwUtKduXSXzqQneIFSn8Rz-AjiZRfseK1Y2yYVuTIhdhnciQPdNVRVG8N-LFcap1Lke/exec" readonly style="background:rgba(127,127,160,.05);color:var(--mu);cursor:not-allowed" title="A URL está fixada no código conforme solicitado"></label>
+  <details id="gsd"><summary>Código do Apps Script (copiar e colar) e como instalar</summary>
+<div style="display:flex;justify-content:flex-end;margin:8px 0 6px"><button type="button" class="sm" onclick="copyGs(this)">📋 Copiar código</button></div>
+<pre id="gs" style="max-height:260px">/**
+ * Controle Jurídico – Apps Script
+ * 1) Envia e-mails (igual à versão anterior)
+ * 2) Guarda e devolve os dados da página (registros, observações, usuários, e-mails)
+ *    num arquivo JSON no seu Google Drive: "controle-juridico-dados.json"
+ */
+var NOME_ARQUIVO = 'controle-juridico-dados.json';
+
+// Rode esta função UMA vez no editor (botão ▶) para autorizar Drive e e-mail.
+function autorizar() {
+  getArquivo_();
+  MailApp.getRemainingDailyQuota();
+}
+
+function json_(o) {
+  return ContentService.createTextOutput(JSON.stringify(o))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getArquivo_() {
+  var props = PropertiesService.getScriptProperties();
+  var id = props.getProperty('ARQUIVO_ID');
+  if (id) {
+    try { return DriveApp.getFileById(id); } catch (e) {}
+  }
+  var f = DriveApp.createFile(NOME_ARQUIVO, JSON.stringify({ rev: 0, data: null }), MimeType.PLAIN_TEXT);
+  props.setProperty('ARQUIVO_ID', f.getId());
+  return f;
+}
+
+function ler_() {
+  var txt = getArquivo_().getBlob().getDataAsString();
+  return txt ? JSON.parse(txt) : { rev: 0, data: null };
+}
+
+// Página pergunta: "tem novidade?" (?rev=N) ou carrega tudo.
+function doGet(e) {
+  var rev = Number(PropertiesService.getScriptProperties().getProperty('REV') || 0);
+  var pedido = e &amp;&amp; e.parameter &amp;&amp; e.parameter.rev;
+  if (rev &gt; 0 &amp;&amp; pedido !== undefined &amp;&amp; Number(pedido) === rev) {
+    return json_({ ok: true, rev: rev, unchanged: true });
+  }
+  var s = ler_();
+  return json_({ ok: true, rev: s.rev, data: s.data });
+}
+
+function doPost(e) {
   var d = JSON.parse(e.postData.contents);
-  MailApp.sendEmail({to: d.to, subject: d.subject, body: d.body, htmlBody: d.html});
-  return ContentService.createTextOutput("ok");
+
+  // Salvar dados da página
+  if (d.action === 'save') {
+    var lock = LockService.getScriptLock();
+    lock.waitLock(20000);
+    try {
+      var atual = ler_();
+      if (Number(d.baseRev) !== atual.rev) {
+        // alguém salvou antes: devolve a versão atual para a página mesclar
+        return json_({ ok: false, conflict: true, rev: atual.rev, data: atual.data });
+      }
+      var novo = { rev: atual.rev + 1, data: d.data, atualizado: new Date().toISOString() };
+      getArquivo_().setContent(JSON.stringify(novo));
+      PropertiesService.getScriptProperties().setProperty('REV', String(novo.rev));
+      return json_({ ok: true, rev: novo.rev });
+    } finally {
+      lock.releaseLock();
+    }
+  }
+
+  // Padrão: enviar e-mail
+  MailApp.sendEmail({ to: d.to, subject: d.subject, body: d.body, htmlBody: d.html });
+  return json_({ ok: true });
 }</pre>
-  <p style="margin-top:8px">Em script.google.com crie um projeto, cole o código, vá em Implantar → Nova implantação → App da Web (acesso: Qualquer pessoa) e copie a URL. Se já tinha criado o script antes, troque o código por este e reimplante: Implantar → Gerenciar implantações → editar → Nova versão.</p></details>
+<ol style="margin:10px 0 0 18px;line-height:1.6"><li>Em script.google.com abra o seu projeto, apague o código atual e cole o código acima.</li><li>Escolha a função <b>autorizar</b> e clique em ▶ Executar (aceite as permissões de Drive e e-mail, só uma vez).</li><li>Implantar → Gerenciar implantações → ✏️ editar → Versão: <b>Nova versão</b> → Implantar (a URL continua a mesma).</li><li>Abra esta página: ao lado do botão de teste deve aparecer <b>Sincronizado</b>.</li></ol></details>
   <div style="display:flex;gap:8px;justify-content:flex-end"><button class="sm" onclick="cfg.close()">Cancelar</button><button onclick="saveCfg()">Salvar</button></div>
+</dialog>
+<dialog id="usr" style="max-width:460px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3>👥 Usuários solicitantes</h3><button class="sm" onclick="usr.close()">Fechar</button></div>
+  <div class="hint">Digite o nome e pressione Enter para adicionar. Ao remover alguém, os registros antigos continuam mostrando o nome.</div>
+  <div style="display:flex;gap:8px"><input id="un" placeholder="Nome do usuário" style="flex:1" autocomplete="off"><button onclick="addUsr()">+ Adicionar</button></div>
+  <div class="chips" id="uchips"></div>
 </dialog>
 <div id="toast"></div>
 
 <script>
 const $=s=>document.querySelector(s);
-let S={recs:[],to:[],url:'https://script.google.com/macros/s/AKfycbzqC9vf08YnTovouJV1pHVMwUJhTcKDCFZByBRA_4UTp9_ScHsp6vnnygc_HrjTsMKj/exec',sla:5,log:[]};
+let S={recs:[],to:[],url:'https://script.google.com/macros/s/AKfycbwUtKduXSXzqQneIFSn8Rz-AjiZRfseK1Y2yYVuTIhdhnciQPdNVRVG8N-LFcap1Lke/exec',sla:5,log:[]};
 try{
   S=Object.assign(S,JSON.parse(localStorage.getItem('cj')||'{}'));
-  S.url = 'https://script.google.com/macros/s/AKfycbzqC9vf08YnTovouJV1pHVMwUJhTcKDCFZByBRA_4UTp9_ScHsp6vnnygc_HrjTsMKj/exec';
+  S.url = 'https://script.google.com/macros/s/AKfycbwUtKduXSXzqQneIFSn8Rz-AjiZRfseK1Y2yYVuTIhdhnciQPdNVRVG8N-LFcap1Lke/exec';
 }catch(e){}
 if(typeof S.to==='string')S.to=S.to.split(/[,;\s]+/).filter(Boolean);
-const save=()=>{try{localStorage.setItem('cj',JSON.stringify(S))}catch(e){}};
+const lsSave=()=>{try{localStorage.setItem('cj',JSON.stringify(S))}catch(e){}};
+const save=()=>{S.dirty=true;lsSave();cloudQueue()};
+var BASE={recs:{},k:{}},Q=Promise.resolve(),CL={t:null};
+try{BASE=JSON.parse(localStorage.getItem('cj_base'))||BASE}catch(e){}
 const D=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const br=s=>s?s.split('-').reverse().join('/'):'—';
@@ -328,7 +493,10 @@ const today=()=>iso(new Date());
 const MIN=['de','da','do','das','dos','e'];
 function titleCase(t){return t.trim().toLowerCase().split(/\s+/).map((w,i)=>i&&MIN.includes(w)?w:w.replace(/(^|[-\/(.])(\p{L})/gu,(m,a,b)=>a+b.toUpperCase())).join(' ')}
 function saudacao(){const h=new Date().getHours();return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'}
-S.recs.forEach(r=>{r.rz=titleCase(r.rz)});
+if(!Array.isArray(S.users))S.users=[];
+if(!S.pf||typeof S.pf!=='object')S.pf={};
+if(typeof S.rev!=='number')S.rev=0;
+S.recs.forEach(r=>{r.rz=titleCase(r.rz);if(!Array.isArray(r.obs))r.obs=[]});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ===== CÁLCULO AUTOMÁTICO DE FERIADOS DE SÃO PAULO ===== */
@@ -448,21 +616,24 @@ function premium(tipo,rows,extra){
   +'<tr><td style="padding:20px 30px 24px"><table role="presentation" width="100%"><tr><td style="border-top:1px solid #eceef6;padding-top:14px;font-size:11px;line-height:1.6;color:#9a9eba;text-align:center">Mensagem automática do painel <b style="color:#5b3df5">Controle Jurídico</b><br>Enviada em '+new Date().toLocaleString('pt-BR')+' · Não responda este e-mail</td></tr></table></td></tr>'
   +'</table></td></tr></table></div>';
 }
+const PFK={'Nova solicitação':'ins','Prazo vencido':'atr'};
+const recips=tipo=>{const k=PFK[tipo];return k?S.to.filter(m=>(S.pf[m]||{})[k]!==false):S.to};
 async function mail(tipo,subject,html){
+  const TO=recips(tipo);
   const text=html.replace(/<(br|\/tr|\/div|\/p)[^>]*>/g,'\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/\n\s*\n+/g,'\n').trim();
-  const e={ts:Date.now(),tipo,subject,to:S.to.join(', ')};
-  if(!S.to.length){e.res='Não enviado – sem destinatários';e.cls='er'}
+  const e={ts:Date.now(),tipo,subject,to:TO.join(', ')};
+  if(!TO.length){e.res=S.to.length?'Não enviado – ninguém recebe este aviso':'Não enviado – sem destinatários';e.cls=S.to.length?'wa':'er'}
   else if(S.url){
-    try{await fetch(S.url,{method:'POST',mode:'no-cors',body:JSON.stringify({to:S.to.join(','),subject,body:text,html})});e.res='Disparado';e.cls='ok'}
+    try{await fetch(S.url,{method:'POST',mode:'no-cors',body:JSON.stringify({to:TO.join(','),subject,body:text,html})});e.res='Disparado';e.cls='ok'}
     catch(x){e.res='Falha no disparo';e.cls='er'}
-  }else{window.open('mailto:'+S.to.join(',')+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(text));e.res='Aberto no e-mail manual';e.cls='wa'}
+  }else{window.open('mailto:'+TO.join(',')+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(text));e.res='Aberto no e-mail manual';e.cls='wa'}
   S.log.unshift(e);S.log=S.log.slice(0,200);save();renderLog();
   toast((e.cls==='ok'?'📧 ':'⚠ ')+e.res+': '+subject);
 }
 function testMail(){mail('Teste','🧪 Teste – Controle Jurídico',premium('Teste',[['Status','Disparo de teste'],['Enviado em',new Date().toLocaleString('pt-BR')]],{title:'Teste de disparo',note:'Se você recebeu este e-mail, o envio automático está funcionando.'}))}
 
 const status=r=>r.done?'concluido':(today()>r.prazo?'atrasado':'pendente');
-const dataRows=r=>[['Controle',esc(r.ctrl)],['Razão social',esc(r.rz)],['Data da solicitação',br(r.dt)],['Prazo de retorno',br(r.prazo)+' <span style="font-size:12px;color:#8b90b0;font-weight:400">('+r.sla+' dias úteis)</span>']];
+const dataRows=r=>[['Controle',esc(r.ctrl)],['Razão social',esc(r.rz)]].concat(r.sol?[['Solicitante',esc(r.sol)]]:[]).concat([['Data da solicitação',br(r.dt)],['Prazo de retorno',br(r.prazo)+' <span style="font-size:12px;color:#8b90b0;font-weight:400">('+r.sla+' dias úteis)</span>']]);
 
 /* prazo editável */
 $('#sla').value=S.sla;
@@ -474,10 +645,11 @@ $('[name=rz]').onblur=e=>{e.target.value=titleCase(e.target.value)};
 
 $('#f').onsubmit=e=>{
   e.preventDefault();const f=new FormData(e.target);
-  const r={id:Date.now(),ctrl:f.get('ctrl').trim(),rz:titleCase(f.get('rz')),dt:f.get('dt'),ins:today(),sla:S.sla,prazo:addBD(f.get('dt'),S.sla),done:null,dias:null,alerted:false};
+  const sol=f.get('sol');if(!sol){toast(S.users.length?'Selecione o solicitante.':'Cadastre ao menos um usuário solicitante.');if(!S.users.length)openUsr();return}
+  const r={id:Date.now(),ctrl:f.get('ctrl').trim(),rz:titleCase(f.get('rz')),sol,obs:[],dt:f.get('dt'),ins:today(),sla:S.sla,prazo:addBD(f.get('dt'),S.sla),done:null,dias:null,alerted:false};
   S.recs.unshift(r);PY=r.dt.slice(0,4);PM=+r.dt.slice(5,7);save();render();
-  mail('Nova solicitação','Registro de análise de contrato inserido – '+r.ctrl+' – '+r.rz,premium('Nova solicitação',[['Número de controle',esc(r.ctrl)],['Empresa',esc(r.rz)],['Data de inserção',br(r.ins)],['Data limite de retorno','<span style="color:#5b3df5">'+br(r.prazo)+'</span> <span style="font-size:12px;color:#8b90b0;font-weight:400">('+r.sla+' dias úteis)</span>']],{title:'Registro de análise de contrato inserido'}));
-  e.target.reset();$('[name=dt]').value=today();upPrazo();
+  mail('Nova solicitação','Registro de análise de contrato inserido – '+r.ctrl+' – '+r.rz,premium('Nova solicitação',[['Número de controle',esc(r.ctrl)],['Empresa',esc(r.rz)],['Solicitante',esc(r.sol)],['Data de inserção',br(r.ins)],['Data limite de retorno','<span style="color:#5b3df5">'+br(r.prazo)+'</span> <span style="font-size:12px;color:#8b90b0;font-weight:400">('+r.sla+' dias úteis)</span>']],{title:'Registro de análise de contrato inserido'}));
+  e.target.reset();renderSol(sol);$('[name=dt]').value=today();upPrazo();
   checkOverdue();
 };
 
@@ -505,10 +677,27 @@ function extendDeadline(id){
   render();
   toast(`Prazo prorrogado em +5 dias úteis para: ${r.ctrl}`);
 }
-function del(id){if(confirm('Excluir este registro?')){S.recs=S.recs.filter(x=>x.id!==id);save();render()}}
-function checkOverdue(){
-  S.recs.forEach(r=>{if(!r.done&&!r.alerted&&today()>r.prazo){r.alerted=true;save();
-    mail('Prazo vencido','⚠ PRAZO VENCIDO – '+r.ctrl+' – '+r.rz,premium('Prazo vencido',dataRows(r).concat([['Dias úteis de atraso','<span style="color:#dc2626">'+bdBetween(r.prazo,today())+'</span>']]),{title:'Prazo de '+r.sla+' dias úteis ultrapassado'}))}});
+function del(id){
+  const i=S.recs.findIndex(x=>x.id===id);if(i<0)return;
+  const r=S.recs[i];S.recs.splice(i,1);save();render();
+  toast('Registro excluído: '+r.ctrl+' – '+r.rz,{label:'Desfazer',fn:()=>{
+    if(S.recs.some(x=>x.id===r.id))return;
+    S.recs.splice(Math.min(i,S.recs.length),0,r);save();render();toast('Registro restaurado.');
+  }},15000);
+}
+let CK=false;
+async function checkOverdue(){
+  if(CK)return;CK=true;
+  try{
+    await cloudPull();
+    for(const r0 of S.recs.slice()){
+      const r=S.recs.find(x=>x.id===r0.id);
+      if(!r||r.done||r.alerted||today()<=r.prazo)continue;
+      r.alerted=true;save();
+      await cloudFlush();
+      mail('Prazo vencido','⚠ PRAZO VENCIDO – '+r.ctrl+' – '+r.rz,premium('Prazo vencido',dataRows(r).concat([['Dias úteis de atraso','<span style="color:#dc2626">'+bdBetween(r.prazo,today())+'</span>']]),{title:'Prazo de '+r.sla+' dias úteis ultrapassado'}));
+    }
+  }finally{CK=false}
   render();
 }
 
@@ -632,8 +821,8 @@ function repRender(){
     +`</div>`
     +repCmp(d)
     +`<div class="rp-sh"><h3>Contratos do mês</h3><span>${d.ins} registro(s)</span></div>`
-    +`<div class="rp-tw"><table class="rp-t"><thead><tr><th>Controle</th><th>Razão social</th><th>Solicitação</th><th>Prazo</th><th>Conclusão</th><th style="text-align:center">Dias úteis</th><th>Situação</th></tr></thead><tbody>`
-    +(d.L.length?d.L.map(r=>{const[c,l]=st(r);return `<tr><td>${esc(r.ctrl)}</td><td class="rz">${esc(r.rz)}</td><td>${br(r.dt)}</td><td>${br(r.prazo)}</td><td>${br(r.done)}</td><td class="num">${r.dias==null?'—':r.dias}</td><td><span class="rp-pill ${c}">${l}</span></td></tr>`}).join(''):'<tr><td colspan="7" class="rp-empty">Nenhum contrato solicitado neste mês.</td></tr>')
+    +`<div class="rp-tw"><table class="rp-t"><thead><tr><th>Controle</th><th>Razão social</th><th>Solicitante</th><th>Solicitação</th><th>Prazo</th><th>Conclusão</th><th style="text-align:center">Dias úteis</th><th>Situação</th></tr></thead><tbody>`
+    +(d.L.length?d.L.map(r=>{const[c,l]=st(r);return `<tr><td>${esc(r.ctrl)}</td><td class="rz">${esc(r.rz)}</td><td>${r.sol?esc(r.sol):'—'}</td><td>${br(r.dt)}</td><td>${br(r.prazo)}</td><td>${br(r.done)}</td><td class="num">${r.dias==null?'—':r.dias}</td><td><span class="rp-pill ${c}">${l}</span></td></tr>`}).join(''):'<tr><td colspan="8" class="rp-empty">Nenhum contrato solicitado neste mês.</td></tr>')
     +`</tbody></table></div>`
     +`<div class="rp-f"><span>Controle Jurídico · Contratos</span><span>Emitido em ${br(today())}</span></div>`
     +`</div>`;
@@ -645,8 +834,8 @@ function repCSV(){
   let c='Relatório mensal;'+MESES[d.m-1]+' '+d.y+'\n'
    +'Contratos inseridos;'+d.ins+'\nConcluídos;'+d.con+'\nPendentes;'+d.pen+'\nAtrasados;'+d.atr+'\n'
    +'Média de retorno (dias úteis);'+(d.media==null?'':fmt1(d.media))+'\nNo prazo;'+(d.noPrazo==null?'':d.noPrazo+'%')+'\n\n'
-   +'Controle;Razão social;Solicitação;Prazo;Conclusão;Dias úteis;Situação\n'
-   +d.L.map(r=>[q(r.ctrl),q(r.rz),br(r.dt),br(r.prazo),r.done?br(r.done):'',r.dias==null?'':r.dias,stLbl(r)].join(';')).join('\n');
+   +'Controle;Razão social;Solicitante;Solicitação;Prazo;Conclusão;Dias úteis;Situação\n'
+   +d.L.map(r=>[q(r.ctrl),q(r.rz),q(r.sol||''),br(r.dt),br(r.prazo),r.done?br(r.done):'',r.dias==null?'':r.dias,stLbl(r)].join(';')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+c],{type:'text/csv'}));a.download='relatorio-'+d.y+'-'+pad2(d.m)+'.csv';a.click();
 }
 
@@ -658,12 +847,17 @@ function render(){
   $('#stats').innerHTML=cards.map(([l,v,f,c,ic])=>`<div class="card stat k-${c}${f!==null?' click':''}${f!==null&&f===FL?' active':''}" ${f!==null?`data-f="${f}"`:''}><div class="si">${ic}</div><small>${l}</small><b${c==='atr'&&v>0?' class="alert"':''}>${v}</b></div>`).join('');
   const cnt=k=>A.filter(r=>status(r)===k).length;
   $('#cnt').textContent=A.length;
-  const rows=A.filter(r=>(!FL||status(r)===FL)&&(r.ctrl+r.rz).toLowerCase().includes(q));
+  const rows=A.filter(r=>(!FL||status(r)===FL)&&(r.ctrl+r.rz+(r.sol||'')+(r.obs||[]).map(o=>o.txt).join(' ')).toLowerCase().includes(q));
+  const dr={};document.querySelectorAll('.dp-add input').forEach(i=>dr[i.id]=i.value);
   $('#tb').innerHTML=rows.length?rows.map(r=>{
-    const s=status(r),left=bdBetween(today(),r.prazo);
+    const s=status(r),left=bdBetween(today(),r.prazo),n=(r.obs||[]).length,op=EX.has(r.id);
     const pill=s==='concluido'?'<span class="pill p-ok">Concluído</span>':s==='atrasado'?`<span class="pill p-er">Atrasado ${-left}d</span>`:`<span class="pill ${left<=1?'p-wa':'p-pe'}">${left} dia(s) restante(s)</span>`;
-    return`<tr class="r-${s}"><td><span class="ctl">${esc(r.ctrl)}</span></td><td class="rz">${esc(r.rz)}</td><td>${br(r.dt)}</td><td style="${s==='atrasado'?'color:var(--er);font-weight:700':'font-weight:600'}">${br(r.prazo)}</td><td>${pill}</td><td>${br(r.done)}</td><td>${r.dias==null?'—':r.dias+' dia(s) útil(eis)'}</td><td style="white-space:nowrap">${r.done?`<button class="un" onclick="reopen(${r.id})" title="Reabrir (concluído por engano)">↩ Desfazer</button>`:`<button class="pr" style="margin-right:4px" onclick="extendDeadline(${r.id})" title="Adicionar +5 dias úteis ao prazo">⏳ Prorrogar</button><button class="ok" onclick="conclude(${r.id})">✓ Concluir</button>`} <button class="x" onclick="del(${r.id})" title="Excluir">✕</button></td></tr>`}).join('')
+    const acts=`<div class="acts"><button class="ob${n?' has':''}${op?' open':''}" onclick="toggleObs(${r.id})" title="Observações do cliente">💬${n?' '+n:''}</button>`
+      +(r.done?`<button class="un" onclick="reopen(${r.id})" title="Reabrir (concluído por engano)">↩ Desfazer</button>`:`<button class="pr" onclick="extendDeadline(${r.id})" title="Prorrogar +5 dias úteis">⏳</button><button class="ok" onclick="conclude(${r.id})">✓ Concluir</button>`)
+      +`<button class="x" onclick="del(${r.id})" title="Excluir">✕</button></div>`;
+    return `<tr class="r-${s}"><td class="nw" data-l="Controle"><span class="ctl">${esc(r.ctrl)}</span></td><td class="rz" data-l="Razão social">${esc(r.rz)}</td><td data-l="Solicitante">${r.sol?esc(r.sol):'<span style="color:var(--mu)">—</span>'}</td><td class="nw" data-l="Solicitação">${br(r.dt)}</td><td class="nw" data-l="Prazo" style="${s==='atrasado'?'color:var(--er);font-weight:700':'font-weight:600'}">${br(r.prazo)}</td><td class="nw" data-l="Status">${pill}</td><td class="nw" data-l="Conclusão">${r.done?br(r.done)+`<div class="dsub">${r.dias} dia(s) útil(eis)</div>`:'—'}</td><td class="nw acts-td">${acts}</td></tr>`+(op?detailRow(r):'')}).join('')
    :'<tr class="emptyrow"><td colspan="8" class="empty"><div>🗂️</div>Nenhum registro encontrado.</td></tr>';
+  Object.keys(dr).forEach(k=>{const i=document.getElementById(k);if(i)i.value=dr[k]});
 }
 function renderLog(){
   $('#lg').innerHTML=S.log.length?S.log.map(e=>`<tr><td style="white-space:nowrap">${new Date(e.ts).toLocaleString('pt-BR')}</td><td>${esc(e.tipo)}</td><td>${esc(e.subject)}</td><td style="font-size:12px;color:var(--mu)">${esc(e.to||'—')}</td><td><span class="pill p-${e.cls==='ok'?'ok':e.cls==='er'?'er':'wa'}">${esc(e.res)}</span></td></tr>`).join('')
@@ -671,21 +865,137 @@ function renderLog(){
 }
 
 /* configuração: vários e-mails */
-let tmp=[];
-function openCfg(){tmp=[...S.to];$('#url').value=S.url;$('#em').value='';chips();cfg.showModal()}
-function chips(){$('#chips').innerHTML=tmp.map((m,i)=>`<span class="chip">${esc(m)}<button onclick="tmp.splice(${i},1);chips()">×</button></span>`).join('')||'<span class="hint">Nenhum destinatário.</span>'}
+let tmp=[],tmpPf={};
+function openCfg(){tmp=[...S.to];tmpPf=JSON.parse(JSON.stringify(S.pf));$('#url').value=S.url;$('#em').value='';chips();cfg.showModal()}
+function chips(){
+  $('#chips').innerHTML=tmp.map((m,i)=>{const p=tmpPf[m]||{};
+    return `<div class="rc"><span class="em">${esc(m)}</span><label class="tg"><input type="checkbox"${p.ins!==false?' checked':''} onchange="setPf(${i},'ins',this.checked)">Inserção</label><label class="tg"><input type="checkbox"${p.atr!==false?' checked':''} onchange="setPf(${i},'atr',this.checked)">Atraso</label><button class="x" onclick="rmEm(${i})" title="Remover e-mail">✕</button></div>`}).join('')||'<span class="hint">Nenhum destinatário.</span>'}
+function setPf(i,k,v){const m=tmp[i];tmpPf[m]=Object.assign({ins:true,atr:true},tmpPf[m],{[k]:v})}
+function rmEm(i){delete tmpPf[tmp[i]];tmp.splice(i,1);chips()}
 function addEm(){const parts=$('#em').value.split(/[,;\s]+/).filter(Boolean);
   parts.forEach(m=>{if(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)){if(!tmp.includes(m))tmp.push(m)}else toast('E-mail inválido: '+m)});
   $('#em').value='';chips()}
 $('#em').onkeydown=e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();addEm()}};
 $('#em').onblur=addEm;
-function saveCfg(){addEm();S.to=tmp;S.url=$('#url').value.trim();save();cfg.close();toast('Configuração salva ('+S.to.length+' destinatário(s)).')}
+function saveCfg(){addEm();S.to=tmp;S.pf={};tmp.forEach(m=>{if(tmpPf[m])S.pf[m]=tmpPf[m]});S.url=$('#url').value.trim();save();cfg.close();toast('Configuração salva ('+S.to.length+' destinatário(s)).')}
 function exportCSV(){
-  const h='Controle;Razão social;Solicitação;Prazo;Conclusão;Dias úteis gastos\n';
-  const b=S.recs.map(r=>[r.ctrl,r.rz,br(r.dt),br(r.prazo),br(r.done),r.dias??''].join(';')).join('\n');
+  const h='Controle;Razão social;Solicitante;Solicitação;Prazo;Conclusão;Dias úteis gastos;Observações\n';
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  const b=S.recs.map(r=>[r.ctrl,q(r.rz),q(r.sol||''),br(r.dt),br(r.prazo),br(r.done),r.dias??'',q((r.obs||[]).map(o=>fmtTs(o.ts)+' - '+o.txt.replace(/\s+/g,' ')).join(' | '))].join(';')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+h+b],{type:'text/csv'}));a.download='controle-juridico.csv';a.click();
 }
-renderLog();checkOverdue();setInterval(checkOverdue,60*60*1000);
+/* ===== usuários solicitantes ===== */
+function renderSol(keep){
+  const cur=keep!==undefined?keep:$('#sol').value;
+  $('#sol').innerHTML='<option value="">Selecione…</option>'+S.users.map(u=>`<option value="${esc(u)}"${u===cur?' selected':''}>${esc(u)}</option>`).join('');
+}
+function openUsr(){uchips();$('#un').value='';usr.showModal();$('#un').focus()}
+function uchips(){$('#uchips').innerHTML=S.users.map((u,i)=>`<span class="chip">${esc(u)}<button onclick="rmUsr(${i})" title="Remover">×</button></span>`).join('')||'<span class="hint">Nenhum usuário cadastrado.</span>'}
+function addUsr(){
+  const nomes=$('#un').value.split(/[;,]+/).map(n=>n.trim().replace(/\s+/g,' ')).filter(Boolean);
+  nomes.forEach(n=>{if(!S.users.some(u=>u.toLowerCase()===n.toLowerCase()))S.users.push(n)});
+  S.users.sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  $('#un').value='';save();uchips();renderSol();$('#un').focus();
+}
+function rmUsr(i){S.users.splice(i,1);save();uchips();renderSol()}
+$('#un').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addUsr()}};
+
+/* ===== observações por cliente ===== */
+const fmtTs=ts=>new Date(ts).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
+const EX=new Set();
+function detailRow(r){
+  const opts=S.users.slice();if(r.sol&&!opts.includes(r.sol))opts.push(r.sol);
+  const L=(r.obs||[]).map(o=>`<div class="dp-i"><time>${fmtTs(o.ts)}</time><span>${esc(o.txt)}</span><button class="x" onclick="delObs(${r.id},${o.ts})" title="Excluir observação">✕</button></div>`).join('')||'<div class="dp-e">Nenhuma observação ainda.</div>';
+  return `<tr class="dt-row"><td colspan="8"><div class="dp"><div class="dp-h"><b>Observações</b><label>Solicitante<select onchange="setSol(${r.id},this.value)"><option value="">—</option>${opts.map(u=>`<option value="${esc(u)}"${u===r.sol?' selected':''}>${esc(u)}</option>`).join('')}</select></label></div>`
+   +`<div class="dp-add"><input id="ni-${r.id}" placeholder="Escreva a observação e pressione Enter…" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addObs(${r.id})}"><button onclick="addObs(${r.id})">Adicionar</button></div>`
+   +`<div>${L}</div></div></td></tr>`;
+}
+function toggleObs(id){if(EX.has(id))EX.delete(id);else EX.add(id);render();if(EX.has(id)){const i=document.getElementById('ni-'+id);if(i)i.focus()}}
+function addObs(id){
+  const r=S.recs.find(x=>x.id===id),i=document.getElementById('ni-'+id),t=i.value.trim();
+  if(!r||!t){i.focus();return}
+  (r.obs=r.obs||[]).unshift({ts:Date.now(),txt:t});i.value='';
+  save();render();document.getElementById('ni-'+id).focus();
+}
+function delObs(id,ts){
+  const r=S.recs.find(x=>x.id===id);if(!r)return;
+  const i=r.obs.findIndex(o=>o.ts===ts);if(i<0)return;
+  const o=r.obs[i];r.obs.splice(i,1);save();render();
+  toast('Observação excluída.',{label:'Desfazer',fn:()=>{
+    if(r.obs.some(x=>x.ts===o.ts))return;
+    r.obs.splice(Math.min(i,r.obs.length),0,o);save();render();
+  }},15000);
+}
+function setSol(id,v){const r=S.recs.find(x=>x.id===id);if(r){r.sol=v;save();render()}}
+
+function copyGs(b){
+  const t=$('#gs').textContent;
+  const ok=()=>{const o=b.textContent;b.textContent='✓ Copiado';setTimeout(()=>b.textContent=o,1800)};
+  const fb=()=>{const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.append(a);a.select();try{document.execCommand('copy');ok()}catch(e){toast('Não foi possível copiar. Selecione o texto e use Ctrl+C.')}a.remove()};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(ok,fb);else fb();
+}
+/* ===== sincronização com o Google (Apps Script + Drive) ===== */
+const CK_KEYS=['recs','to','pf','users','sla','log'],CK_CFG=['to','users','pf','sla'];
+const hasLocal=()=>S.recs.length||S.to.length||S.users.length;
+const cloudData=()=>{const o={};CK_KEYS.forEach(k=>o[k]=S[k]);return o};
+function setSync(t,c){const el=$('#sync');if(el){el.textContent=t;el.className='sync '+(c||'')}}
+function normD(d){if(d&&Array.isArray(d.recs))d.recs.forEach(r=>{if(!Array.isArray(r.obs))r.obs=[]});return d}
+function setBase(d){
+  BASE={recs:{},k:{}};(d.recs||[]).forEach(r=>BASE.recs[r.id]=JSON.stringify(r));
+  CK_CFG.forEach(k=>BASE.k[k]=JSON.stringify(d[k]));
+  try{localStorage.setItem('cj_base',JSON.stringify(BASE))}catch(e){}
+}
+function adopt(d,rev,base){
+  CK_KEYS.forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
+  if(typeof S.to==='string')S.to=S.to.split(/[,;\s]+/).filter(Boolean);
+  ['recs','to','users','log'].forEach(k=>{if(!Array.isArray(S[k]))S[k]=[]});
+  if(!S.pf||typeof S.pf!=='object')S.pf={};
+  normD(S);S.rev=rev;setBase(base||d);
+  $('#sla').value=S.sla;upPrazo();renderSol();render();renderLog();
+}
+/* junta o que mudou aqui (desde a última sincronização) com a versão do servidor */
+function mergeWith(srv){
+  const L=cloudData(),m=Object.assign({},srv),B=BASE.recs||{},BK=BASE.k||{};
+  const have=new Set(L.recs.map(r=>r.id));
+  const gone=new Set(Object.keys(B).map(Number).filter(id=>!have.has(id)));
+  const map=new Map();
+  (srv.recs||[]).forEach(r=>{if(!gone.has(r.id))map.set(r.id,r)});
+  L.recs.forEach(r=>{if(JSON.stringify(r)!==B[r.id])map.set(r.id,r)});
+  m.recs=[...map.values()].sort((a,b)=>b.id-a.id);
+  CK_CFG.forEach(k=>{if(JSON.stringify(L[k])!==BK[k])m[k]=L[k]});
+  const lg=new Map();[...(L.log||[]),...(srv.log||[])].forEach(e=>lg.set(e.ts+'|'+e.subject,e));
+  m.log=[...lg.values()].sort((a,b)=>b.ts-a.ts).slice(0,200);
+  return m;
+}
+async function cloudGet(){const r=await fetch(S.url+'?rev='+S.rev+'&t='+Date.now());return r.json()}
+async function cloudPost(b){const r=await fetch(S.url,{method:'POST',body:JSON.stringify(b)});return r.json()}
+async function cloudPush(n=0){
+  setSync('Salvando…','wa');
+  const j=await cloudPost({action:'save',baseRev:S.rev,data:cloudData()});
+  if(j&&j.ok){S.rev=j.rev;S.dirty=false;setBase(cloudData());lsSave();setSync('Sincronizado','ok');return true}
+  if(j&&j.conflict&&n<3){normD(j.data);adopt(mergeWith(j.data),j.rev,j.data);S.dirty=true;lsSave();return cloudPush(n+1)}
+  throw new Error('save');
+}
+async function syncOnce(){
+  const j=await cloudGet();
+  if(!j||!j.ok)throw new Error('get');
+  if(j.rev===0){if(hasLocal()){S.rev=0;S.dirty=true;await cloudPush()}return}
+  if(j.unchanged||j.rev===S.rev){if(S.dirty)await cloudPush();return}
+  normD(j.data);
+  if(S.dirty||(S.rev===0&&hasLocal())){adopt(mergeWith(j.data),j.rev,j.data);S.dirty=true;lsSave();await cloudPush()}
+  else{adopt(j.data,j.rev);S.dirty=false;lsSave()}
+}
+const enqueue=fn=>{const p=Q.then(fn);Q=p.catch(()=>{});return p};
+const OFF='Sem conexão com o Google – salvo só neste navegador';
+const cloudFlush=()=>enqueue(async()=>{if(!S.dirty)return true;try{await cloudPush()}catch(e){setSync(OFF,'er')}return true});
+const cloudPull=()=>enqueue(async()=>{try{await syncOnce();setSync('Sincronizado','ok');return true}catch(e){setSync(OFF,'er');return false}});
+function cloudQueue(){clearTimeout(CL.t);setSync('Salvando…','wa');CL.t=setTimeout(cloudFlush,700)}
+
+setSync('Sincronizando…','wa');
+renderSol();renderLog();render();
+(async()=>{await cloudPull();checkOverdue();setInterval(checkOverdue,60*60*1000)})();
+setInterval(()=>{if(!document.hidden&&!CK)cloudPull()},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)cloudPull()});
 </script>
 </body>
 </html>
